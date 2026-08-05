@@ -1,0 +1,33 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+wp-config.php
+*.key
+*.pem
+*.p12
+*.pfx
+*.ppk
+
+# Runtime data
+wp-content/uploads/
+wp-content/cache/
+wp-content/upgrade/
+package/import-media/
+*.log
+*.sql
+*.sqlite
+backups/
+
+# Dependencies and generated artifacts
+node_modules/
+vendor/
+coverage/
+artifacts/
+dist/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

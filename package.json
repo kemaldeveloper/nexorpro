@@ -1,0 +1,13 @@
+{
+  "name": "nexorpro-wordpress",
+  "version": "1.6.0",
+  "private": true,
+  "description": "Native WordPress theme and plugin for nexorpro.ru",
+  "scripts": {
+    "test:unit": "php tests/enhancements-unit.php",
+    "check:js": "find package/wp-content tests tools -type f \\( -name '*.js' -o -name '*.mjs' \\) -print0 | xargs -0 -n1 node --check"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

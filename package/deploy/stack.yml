@@ -1,0 +1,85 @@
+version: "3.9"
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: nexorwp
+      MARIADB_USER: nexorwp
+      MARIADB_PASSWORD_FILE: /run/secrets/nexor_db_password
+      MARIADB_ROOT_PASSWORD_FILE: /run/secrets/nexor_db_root_password
+    secrets:
+      - nexor_db_password
+      - nexor_db_root_password
+    volumes:
+      - nexor_wp_db:/var/lib/mysql
+    networks:
+      - internal
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  wordpress:
+    image: wordpress:7.0-php8.3-apache
+    environment:
+      WORDPRESS_DB_HOST: nexorwp_db:3306
+      WORDPRESS_DB_NAME: nexorwp
+      WORDPRESS_DB_USER: nexorwp
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/nexor_db_password
+    secrets:
+      - nexor_db_password
+      - nexor_wp_secret
+      - nexor_telegram_token
+      - nexor_telegram_chat_id
+    volumes:
+      - nexor_wp_html:/var/www/html
+      - /opt/nexor-wordpress/current/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor:ro
+      - /opt/nexor-wordpress/current/wp-content/plugins/nexor-core:/var/www/html/wp-content/plugins/nexor-core:ro
+      - /opt/nexor-wordpress/shared/uploads:/var/www/html/wp-content/uploads
+      - /opt/nexor-wordpress/shared/logs:/var/log/nexor
+      - /opt/nexor-wordpress/current/deploy/wp-config.php:/var/www/html/wp-config.php:ro
+      - /opt/nexor-wordpress/current/deploy/.htaccess:/var/www/html/.htaccess:ro
+      - /opt/nexor-wordpress/current/deploy/php.ini:/usr/local/etc/php/conf.d/nexor.ini:ro
+    networks:
+      - internal
+      - dokploy-network
+    deploy:
+      replicas: 1
+      update_config:
+        order: start-first
+        failure_action: rollback
+      restart_policy:
+        condition: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "php -r '$$c=stream_context_create([\"http\"=>[\"header\"=>\"Host: nexorpro.ru\\r\\nX-Forwarded-Proto: https\\r\\n\",\"timeout\"=>5]]); exit(@file_get_contents(\"http://127.0.0.1/wp-login.php\",false,$$c)===false);'"]
+      interval: 15s
+      timeout: 8s
+      retries: 12
+
+networks:
+  internal:
+    driver: overlay
+    internal: true
+  dokploy-network:
+    external: true
+
+volumes:
+  nexor_wp_db:
+  nexor_wp_html:
+
+secrets:
+  nexor_db_password:
+    external: true
+  nexor_db_root_password:
+    external: true
+  nexor_wp_secret:
+    external: true
+  nexor_telegram_token:
+    external: true
+  nexor_telegram_chat_id:
+    external: true

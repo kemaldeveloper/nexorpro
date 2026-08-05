@@ -1,0 +1,39 @@
+http:
+  routers:
+    nexor-apex-http:
+      rule: Host(`nexorpro.ru`)
+      entryPoints: [web]
+      service: nexor-wordpress
+    nexor-apex-https:
+      rule: Host(`nexorpro.ru`)
+      entryPoints: [websecure]
+      middlewares: [nexor-compress, nexor-security]
+      service: nexor-wordpress
+      tls:
+        certResolver: letsencrypt
+    nexor-www-http:
+      rule: Host(`www.nexorpro.ru`)
+      entryPoints: [web]
+      service: nexor-wordpress
+    nexor-www-https:
+      rule: Host(`www.nexorpro.ru`)
+      entryPoints: [websecure]
+      service: nexor-wordpress
+      tls:
+        certResolver: letsencrypt
+  middlewares:
+    nexor-compress:
+      compress: {}
+    nexor-security:
+      headers:
+        contentTypeNosniff: true
+        frameDeny: true
+        referrerPolicy: strict-origin-when-cross-origin
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true
+  services:
+    nexor-wordpress:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://nexorwp_wordpress:80

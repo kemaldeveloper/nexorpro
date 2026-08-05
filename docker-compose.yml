@@ -1,0 +1,73 @@
+services:
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: wordpress
+      MARIADB_USER: wordpress
+      MARIADB_PASSWORD: wordpress
+      MARIADB_ROOT_PASSWORD: root
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  wordpress:
+    image: wordpress:php8.3-apache
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - ./package/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor
+      - ./package/wp-content/plugins/nexor-core:/var/www/html/wp-content/plugins/nexor-core
+    depends_on:
+      db:
+        condition: service_healthy
+
+  wp-init:
+    image: wordpress:cli-php8.3
+    depends_on:
+      - wordpress
+    volumes:
+      - wp_data:/var/www/html
+      - ./package/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor
+      - ./package/wp-content/plugins/nexor-core:/var/www/html/wp-content/plugins/nexor-core
+    environment:
+      WORDPRESS_DB_HOST: db
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for WordPress files..."
+        until [ -f /var/www/html/wp-config.php ]; do sleep 2; done
+        until wp core is-installed --path=/var/www/html --allow-root 2>/dev/null; do
+          echo "Running WordPress install..."
+          wp core install \
+            --path=/var/www/html \
+            --url=http://localhost:8080 \
+            --title="Nexor Local" \
+            --admin_user=admin \
+            --admin_password=admin \
+            --admin_email=admin@local.test \
+            --skip-email \
+            --allow-root && break
+          sleep 3
+        done
+        wp theme activate nexor --path=/var/www/html --allow-root
+        wp plugin activate nexor-core --path=/var/www/html --allow-root
+        wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
+        wp rewrite flush --path=/var/www/html --allow-root
+        echo "Done. Site: http://localhost:8080  Admin: admin / admin"
+
+volumes:
+  db_data:
+  wp_data:
