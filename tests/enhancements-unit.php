@@ -14,7 +14,7 @@ function is_page($v=null){$active=$GLOBALS['active_page'];if(!$active)return fal
 function esc_html($v){return htmlspecialchars((string)$v,ENT_QUOTES);} function esc_attr($v){return htmlspecialchars((string)$v,ENT_QUOTES);}
 function esc_textarea($v){return esc_html($v);} function checked($a,$b=true,$echo=true){$value=$a==$b?' checked':'';if($echo)echo$value;return$value;}
 function esc_url($v){return esc_attr($v);} function number_format_i18n($v,$d=0){return number_format($v,$d,'.',' ');}
-function wp_get_attachment_url($id){return'';} function wp_get_attachment_image_url($id,$size){return'';}
+function wp_get_attachment_url($id){return'';} function wp_get_attachment_image_url($id,$size){return$id?('https://example.test/media/'.$id.'-'.$size.'.webp'):'';} function wp_enqueue_media(){}
 function get_theme_file_uri($path=''){return'https://example.test/wp-content/themes/nexor/'.ltrim($path,'/');}
 function get_post_status($id){return'publish';} function get_post_type($id){return'nexor_project';} function get_the_title($post){return is_object($post)?$post->post_title:'Project '.$post;}
 function get_permalink($post){$id=is_object($post)?$post->ID:$post;return'https://example.test/item/'.$id.'/';}
@@ -28,6 +28,7 @@ $GLOBALS['options']=array(
  'nexor_budget_control'=>array('enabled'=>1,'heading'=>'Как мы держим смету','metric'=>'0%','metric_label'=>'отклонение итоговой сметы от первоначальной','rows'=>array(array('id'=>'budget-1','enabled'=>1,'order'=>10,'title'=>'Считаем детально на замере','description'=>'Закладываем все работы'))),
  'nexor_home_timeline'=>array('enabled'=>1,'heading'=>'Реальные сроки ремонта без обещаний «за 30 дней»','disclaimer'=>'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.','rows'=>array(array('id'=>'timeline-1','enabled'=>1,'order'=>10,'area'=>'До 50 м²','new_build'=>'от 45 дней','capital'=>'60–90 дней','designer'=>'90–120 дней'))),
  'nexor_exit_intent'=>array('enabled'=>0),
+ 'nexor_home_stages'=>array('enabled'=>1,'eyebrow'=>'5 этапов работы Nexor','heading'=>'Как мы делаем ремонт предсказуемым','intro'=>'Фиксированный бюджет, понятные сроки и полная прозрачность на каждом этапе.','rows'=>array(array('id'=>'consultation','enabled'=>1,'order'=>10,'title'=>'Консультация','description'=>'Обсуждаем задачи и бюджет.','image_id'=>0,'cta_label'=>'Записаться на замер'))),
 );
 function get_option($key,$default=array()){return$GLOBALS['options'][$key]??$default;}
 require dirname(__DIR__).'/package/wp-content/plugins/nexor-core/class-nexor-enhancements.php';
@@ -66,3 +67,22 @@ $service_html=Nexor_Enhancements::inject_frontend_content($service_source);
 assert_true(str_contains($service_html,'<main class="nexor-service-page">')&&str_contains($service_html,'class="nexor-service-hero '),'service page receives the unified editorial shell');
 assert_true(str_contains($service_html,'Nexor · системный ремонт')&&str_contains($service_html,'class="nexor-service-hero__card"'),'service hero receives trust content without replacing the H1');
 assert_true(substr_count($service_html,'class="nexor-service-standards"')===1&&substr_count($service_html,'<h1>')===1,'service standards are injected once and preserve one H1');
+$stages_html=Nexor_Enhancements::sanitize_stages(array('enabled'=>1,'heading'=>'Stages test','intro'=>'Intro','rows'=>array(array('id'=>'step-1','enabled'=>1,'order'=>10,'title'=>'Шаг 1','description'=>'Описание','image_id'=>0))));
+assert_true(count($stages_html['rows'])>=1,'stages sanitize keeps enabled rows');
+$GLOBALS['is_front_page']=true;
+$stages_source='<main><section id="work-stages"></section><section id="before-after"></section></main>';
+$stages_page=Nexor_Enhancements::inject_frontend_content($stages_source);
+assert_true(str_contains($stages_page,'id="stages"')&&str_contains($stages_page,'Консультация'),'stages section renders below work-stages');
+assert_true(strpos($stages_page,'id="stages"')<strpos($stages_page,'id="before-after"'),'stages section precedes before-after block');
+assert_true(str_contains($stages_page,'nexor-stage-card__index')&&str_contains($stages_page,'01 / 01'),'stage cards expose index above headings');
+assert_true(str_contains($stages_page,'nexor-stage-card__nav')&&str_contains($stages_page,'aria-selected="true"'),'stage cards expose numbered step nav with active marker');
+assert_true(str_contains($stages_page,'nexor-stage-card__heading')&&str_contains($stages_page,'nexor-stage-card__eyebrow')&&str_contains($stages_page,'nexor-stage-card__intro'),'stage cards repeat section heading block inside each card');
+assert_true(str_contains($stages_page,'nexor-stage-card__main')&&str_contains($stages_page,'nexor-stage-card__copy')&&str_contains($stages_page,'nexor-stage-card__description'),'stage cards group visual and copy blocks like the reference');
+assert_true(str_contains($stages_page,'nexor-stage-card__cta')&&str_contains($stages_page,'Записаться на замер'),'first stage can expose optional CTA');
+assert_true(!str_contains($stages_page,'nexor-stage-card__media'),'stages without media library image_id render no fallback theme images');
+$GLOBALS['options']['nexor_home_stages']['rows'][0]['image_id']=42;
+$stages_with_image=Nexor_Enhancements::inject_frontend_content($stages_source);
+assert_true(str_contains($stages_with_image,'nexor-stage-card__media')&&str_contains($stages_with_image,'https://example.test/media/42-large.webp'),'stages use attachment URL from image_id');
+assert_true(!str_contains($stages_with_image,'themes/nexor/assets/'),'stages never fall back to static theme assets');
+ob_start();Nexor_Enhancements::render_admin_sections();$admin_html=ob_get_clean();
+assert_true(str_contains($admin_html,'nexor-media-select')&&str_contains($admin_html,'nexor-media-field'),'stages admin exposes media library picker instead of raw image ID input');

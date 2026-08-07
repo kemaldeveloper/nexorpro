@@ -1,0 +1,10 @@
+{
+  "require-dev": {
+    "php-stubs/wordpress-stubs": "^7.0"
+  },
+  "autoload-dev": {
+    "files": [
+      "vendor/php-stubs/wordpress-stubs/wordpress-stubs.php"
+    ]
+  }
+}
