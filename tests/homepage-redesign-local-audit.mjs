@@ -98,13 +98,13 @@ await evaluate('scrollTo(0,0)');
 const calculator = await evaluate(`(async()=>{const root=document.querySelector('#calculator');root.querySelector('[data-next]')?.click();for(let step=0;step<7;step++){await new Promise(r=>setTimeout(r,20));const options=[...root.querySelectorAll('.nexor-calculator__option')];options[0]?.click();if(step===6)options[1]?.click();if(step===6)root.querySelector('[data-result]')?.click();}await new Promise(r=>setTimeout(r,180));return{result:root.querySelector('.nexor-calculator__result')?.textContent.trim()||'',progress:root.querySelector('.nexor-calculator__progress span')?.style.width||''};})()`);
 const interactions = await evaluate(`(()=>{
   const timeline=document.querySelector('[data-timeline-mode="capital"]');timeline?.click();
-  const processBefore=document.querySelector('[data-stage-number]')?.textContent;document.querySelector('[data-stage-next]')?.click();
+  const stagesRoot=document.querySelector('[data-nexor-stages]');const stageTabs=[...stagesRoot?.querySelectorAll('.nexor-stage-card__nav [role="tab"]')||[]];const processBefore=stageTabs.findIndex(tab=>tab.getAttribute('aria-selected')==='true');stageTabs[2]?.click();
   const slider=document.querySelector('.nexor-before-after');slider?.focus();slider?.dispatchEvent(new KeyboardEvent('keydown',{key:'ArrowRight',bubbles:true}));const sliderAfterKeyboard=slider?.getAttribute('aria-valuenow')||'';
   const secondThumb=[...document.querySelectorAll('.nexor-before-after-thumb')][1];secondThumb?.click();
   const service=[...document.querySelectorAll('.nexor-service-hotspot')][2];service?.click();
   const bonus=document.querySelector('[data-nexor-bonus-details]');bonus?.click();
   const heroCta=[...document.querySelectorAll('.nexor-home-hero button')].find(button=>button.textContent.includes('Рассчитать'));heroCta?.click();const leadModal=!document.querySelector('.nexor-modal')?.hidden;document.querySelector('.nexor-modal__close')?.click();
-  const result={timeline:document.querySelector('#repair-timeline')?.dataset.timelineActive||'',processBefore,processAfter:document.querySelector('[data-stage-number]')?.textContent||'',sliderAfterKeyboard,sliderValue:slider?.getAttribute('aria-valuenow')||'',thumbPressed:secondThumb?.getAttribute('aria-pressed')||'',servicePanel:document.querySelector('.nexor-service-panel.is-active')?.id||'',bonusModal:!document.querySelector('.nexor-bonus-modal')?.hidden,leadModal};
+  const result={timeline:document.querySelector('#repair-timeline')?.dataset.timelineActive||'',processBefore,processAfter:stageTabs.findIndex(tab=>tab.getAttribute('aria-selected')==='true'),sliderAfterKeyboard,sliderValue:slider?.getAttribute('aria-valuenow')||'',thumbPressed:secondThumb?.getAttribute('aria-pressed')||'',servicePanel:document.querySelector('.nexor-service-panel.is-active')?.id||'',bonusModal:!document.querySelector('.nexor-bonus-modal')?.hidden,leadModal};
   document.querySelector('.nexor-bonus-modal__close')?.click();return result;
 })()`);
 

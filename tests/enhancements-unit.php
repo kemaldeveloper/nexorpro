@@ -231,9 +231,10 @@ assert_true(substr_count($service_html, 'class="nexor-service-standards"') === 1
 $stages_html = Nexor_Enhancements::sanitize_stages(array('enabled' => 1, 'heading' => 'Stages test', 'intro' => 'Intro', 'rows' => array(array('id' => 'step-1', 'enabled' => 1, 'order' => 10, 'title' => 'Шаг 1', 'description' => 'Описание', 'image_id' => 0))));
 assert_true(count($stages_html['rows']) >= 1, 'stages sanitize keeps enabled rows');
 $GLOBALS['is_front_page'] = true;
-$stages_source = '<main><section id="work-stages"></section><section id="before-after"></section></main>';
+$stages_source = '<main><section class="py-[120px] md:py-[140px] bg-card"><div class="grid grid-cols-5"><h3>Старые пять шагов</h3></div></section><section id="before-after"></section></main>';
 $stages_page = Nexor_Enhancements::inject_frontend_content($stages_source);
-assert_true(str_contains($stages_page, 'id="stages"') && str_contains($stages_page, 'Консультация'), 'stages section renders below work-stages');
+assert_true(str_contains($stages_page, 'id="stages"') && str_contains($stages_page, 'Консультация'), 'stages section renders on the homepage');
+assert_true(!str_contains($stages_page, 'Старые пять шагов') && !str_contains($stages_page, 'bg-card'), 'migrated five-step block is dropped in favour of the stages dial');
 assert_true(strpos($stages_page, 'id="stages"') < strpos($stages_page, 'id="before-after"'), 'stages section precedes before-after block');
 assert_true(str_contains($stages_page, 'nexor-stage-card__index') && str_contains($stages_page, '<span>01</span> / <span>01</span>'), 'stage slides expose index above headings');
 assert_true(str_contains($stages_page, 'nexor-stage-card__nav') && str_contains($stages_page, 'aria-selected="true"'), 'stage cards expose numbered step nav with active marker');

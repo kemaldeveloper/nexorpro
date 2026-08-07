@@ -528,6 +528,16 @@ final class Nexor_Enhancements
     if (false === $section) $section = $at;
     return substr($content, 0, $section) . $html . substr($content, $section);
   }
+  private static function drop_section(string $content, string $open_tag): string
+  {
+    $at = strpos($content, $open_tag);
+    if (false === $at) return $content;
+    $end = strpos($content, '</section>', $at);
+    if (false === $end) return $content;
+    $inner = substr($content, $at + strlen($open_tag), $end - $at - strlen($open_tag));
+    if (str_contains($inner, '<section')) return $content;
+    return substr($content, 0, $at) . substr($content, $end + strlen('</section>'));
+  }
   private static function pull_section(string &$content, string $id): string
   {
     $pattern = '/<section\b[^>]*\bid="' . preg_quote($id, '/') . '"[^>]*>.*?<\/section>/s';
@@ -892,7 +902,8 @@ final class Nexor_Enhancements
       $content = str_replace('<div class="container-nexor relative z-10 py-28 md:py-36"><div class="max-w-3xl">', '<div class="container-nexor relative z-10 py-28 md:py-36">' . self::hero_promotion() . '<div class="max-w-3xl">', $content);
       $content = str_replace('<section id="cases" class="py-16 md:py-24 bg-card">', '<section id="cases" class="nexor-projects-section py-16 md:py-24 bg-card">', $content);
       $content = str_replace('<section class="py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', '<section id="nexor-system" class="nexor-system-section py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', $content);
-      $content = str_replace('<section class="py-[120px] md:py-[140px] bg-card">', '<section id="work-stages" class="nexor-process-section py-[120px] md:py-[140px] bg-card">', $content);
+      // The migrated five-step block is replaced by the interactive stages dial below.
+      $content = self::drop_section($content, '<section class="py-[120px] md:py-[140px] bg-card">');
       $content = str_replace('<section class="bg-background py-[120px] md:py-[160px]">', '<section id="before-after" class="nexor-before-after-section bg-background py-[120px] md:py-[160px]">', $content);
       $content = self::insert_before($content, 'id="before-after"', self::stages_section());
       $cases = self::pull_section($content, 'cases');

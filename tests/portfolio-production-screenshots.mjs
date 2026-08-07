@@ -332,8 +332,8 @@ try {
     title: 'Этапы ремонта — активное состояние',
     url: home,
     viewport: desktopTall,
-    prepare: async () => click('.nexor-process-experience__nav [role="tab"]:nth-child(3)'),
-    target: { selector: '#work-stages .text-center', top: 34, midpage: true },
+    prepare: async () => click('.nexor-stage-card__nav [role="tab"]:nth-child(3)'),
+    target: { selector: '#stages .nexor-stage-card__heading', top: 34, midpage: true },
   });
   await capture({
     filename: '07-before-after-mobile.png',

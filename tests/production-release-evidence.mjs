@@ -148,7 +148,7 @@ try {
   desktopShots.services = await screenshot('services-projects-1440x900.png', '#main-services');
   desktopShots.budget = await screenshot('budget-1440x900.png', '#budget-control');
   desktopShots.timeline = await screenshot('timeline-1440x900.png', '#repair-timeline');
-  desktopShots.stages = await screenshot('work-stages-1440x900.png', '#work-stages');
+  desktopShots.stages = await screenshot('work-stages-1440x900.png', '#stages');
   desktopShots.beforeAfter = await screenshot('before-after-1440x900.png', '#before-after');
   desktopShots.additional = await screenshot('additional-services-1440x900.png', '#additional-services');
   desktopShots.bonuses = await screenshot('bonuses-1440x900.png', '#promotions');
@@ -166,7 +166,7 @@ try {
       overflow:document.documentElement.scrollWidth>document.documentElement.clientWidth+1,
       searchIcon:!!searchButton?.querySelector('svg'),
       searchLabel:searchButton?.getAttribute('aria-label')||'',
-      stages:document.querySelectorAll('.nexor-process-experience__nav [role="tab"]').length,
+      stages:document.querySelectorAll('.nexor-stage-card__nav [role="tab"]').length,
       bonusCards:document.querySelectorAll('.nexor-bonus-card').length,
       featuredText:featured?.innerText.replace(/\\s+/g,' ').trim()||'',
       timerCells:featured?.querySelectorAll('[data-days],[data-hours],[data-minutes],[data-seconds]').length||0,
@@ -194,13 +194,13 @@ try {
   mobileShots.home = await screenshot('homepage-390x844.png');
   mobileShots.budget = await screenshot('budget-390x844.png', '#budget-control');
   mobileShots.timeline = await screenshot('timeline-390x844.png', '#repair-timeline');
-  mobileShots.stages = await screenshot('work-stages-390x844.png', '#work-stages');
+  mobileShots.stages = await screenshot('work-stages-390x844.png', '#stages');
   mobileShots.beforeAfter = await screenshot('before-after-390x844.png', '#before-after');
   mobileShots.additional = await screenshot('additional-services-390x844.png', '#additional-services');
   mobileShots.bonuses = await screenshot('bonuses-390x844.png', '#promotions');
 
   const mobile = await evaluate(`(()=>{
-    const stage=document.querySelector('.nexor-process-experience');
+    const stage=document.querySelector('.nexor-stage-card');
     const stageRect=stage?.getBoundingClientRect();
     const timeline=document.querySelector('#repair-timeline');
     const activeCells=[...timeline?.querySelectorAll('tbody td')||[]].filter(cell=>getComputedStyle(cell).display!=='none');
@@ -236,7 +236,7 @@ try {
   await writeFile(`${outputDir}/evidence.json`, `${JSON.stringify(result, null, 2)}\n`);
   console.log(JSON.stringify(result, null, 2));
 
-  const expectedOrder = ['main-services', 'cases', 'calculator', 'budget-control', 'repair-timeline', 'nexor-system', 'work-stages', 'before-after', 'additional-services', 'promotions'];
+  const expectedOrder = ['main-services', 'cases', 'calculator', 'budget-control', 'repair-timeline', 'nexor-system', 'stages', 'before-after', 'additional-services', 'promotions'];
   const ordered = expectedOrder.every((section, index) => desktop.order[index] === section);
   if (!ordered || desktop.overflow || desktop.headerOverlapPixels > 0 || desktop.navOverflowPixels > 0 || !desktop.searchIcon || desktop.searchLabel !== 'Найти' || desktop.stages !== 5 || desktop.bonusCards !== 4 || desktop.timerCells !== 4 || /5\s*000\s*000/.test(desktop.featuredText) || mobile.overflow || !mobile.stageExists || mobile.stageDisplay === 'none' || mobile.stageHeight < 300 || mobile.stageTabs !== 5 || mobile.timelineRows !== 4 || mobile.timelineVisibleCells !== 4 || mobile.budgetToggles !== 3 || !mobile.menuOpen || result.browserErrors.length) {
     process.exitCode = 1;

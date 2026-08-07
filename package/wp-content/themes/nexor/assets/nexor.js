@@ -340,79 +340,6 @@
       });
     });
   }
-  function setupProcessSteps() {
-    const section = document.querySelector('#work-stages');
-    const source = section?.querySelector('.grid-cols-5');
-    const items = source ? [...source.children] : [];
-    if (!section || items.length !== 5) return;
-    const data = items.map((item, index) => ({
-      number: String(index + 1).padStart(2, '0'),
-      title: item.querySelector('h3')?.textContent.trim() || '',
-      description: item.querySelector('p')?.textContent.trim() || '',
-    }));
-    const assetRoot = new URL('.', document.querySelector('img[src*="/wp-content/themes/nexor/assets/"]')?.src || location.href).href;
-    const images = [
-      'design-materials-samples-BJsw3pIb.webp',
-      'remont-domov-engineering-BF5F-lJ4.webp',
-      'calculator-section-interior.webp',
-      'design-quality-control-DaTkqu7m.webp',
-      'projects-showcase-interior-tGz2B9H-.webp',
-    ];
-    const experience = document.createElement('div');
-    experience.className = 'nexor-process-experience nexor-reveal';
-    experience.innerHTML = `<div class="nexor-process-experience__stage" tabindex="0" aria-label="Этапы работы Nexor"><div class="nexor-process-experience__copy"><p class="nexor-process-experience__eyebrow">Этап <strong data-stage-number>01</strong> из 05</p><h3 data-stage-title></h3><p data-stage-description></p><div class="nexor-process-experience__arrows"><button type="button" data-stage-prev aria-label="Предыдущий этап">&#8592;</button><button type="button" data-stage-next aria-label="Следующий этап">&#8594;</button></div></div><figure><img data-stage-image alt="" loading="lazy" width="1100" height="760"><figcaption>Система работы Nexor</figcaption></figure></div><div class="nexor-process-experience__nav" role="tablist" aria-label="Этапы ремонта">${data.map((stage, index) => `<button type="button" role="tab" data-stage-index="${index}" aria-selected="${index === 0}"><span>${stage.number}</span><strong>${esc(stage.title)}</strong></button>`).join('')}</div>`;
-    source.parentElement.replaceWith(experience);
-    const image = experience.querySelector('[data-stage-image]'),
-      title = experience.querySelector('[data-stage-title]'),
-      description = experience.querySelector('[data-stage-description]'),
-      number = experience.querySelector('[data-stage-number]'),
-      tabs = [...experience.querySelectorAll('[data-stage-index]')];
-    let active = 0,
-      startX = null;
-    const render = index => {
-      active = (index + data.length) % data.length;
-      const stage = data[active];
-      number.textContent = stage.number;
-      title.textContent = stage.title;
-      description.textContent = stage.description;
-      image.src = new URL(images[active], assetRoot).href;
-      image.alt = `${stage.title} — этап работы Nexor`;
-      tabs.forEach((tab, tabIndex) => {
-        tab.setAttribute('aria-selected', String(tabIndex === active));
-        tab.tabIndex = tabIndex === active ? 0 : -1;
-      });
-      experience.style.setProperty('--stage-progress', `${(active / (data.length - 1)) * 100}%`);
-    };
-    tabs.forEach((tab, index) => {
-      tab.addEventListener('click', () => render(index));
-      tab.addEventListener('keydown', event => {
-        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-        event.preventDefault();
-        const next = event.key === 'Home' ? 0 : event.key === 'End' ? data.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + data.length) % data.length;
-        render(next);
-        tabs[next].focus();
-      });
-    });
-    experience.querySelector('[data-stage-prev]').addEventListener('click', () => render(active - 1));
-    experience.querySelector('[data-stage-next]').addEventListener('click', () => render(active + 1));
-    const stage = experience.querySelector('.nexor-process-experience__stage');
-    stage.addEventListener('pointerdown', event => {
-      startX = event.clientX;
-      stage.setPointerCapture?.(event.pointerId);
-    });
-    stage.addEventListener('pointerup', event => {
-      if (startX === null) return;
-      const delta = event.clientX - startX;
-      startX = null;
-      if (Math.abs(delta) > 45) render(active + (delta < 0 ? 1 : -1));
-    });
-    stage.addEventListener('keydown', event => {
-      if (!['ArrowLeft', 'ArrowRight'].includes(event.key)) return;
-      event.preventDefault();
-      render(active + (event.key === 'ArrowRight' ? 1 : -1));
-    });
-    render(0);
-  }
   function setupBeforeAfter() {
     const heading = [...document.querySelectorAll('main h2')].find(el => el.textContent.includes('сравните результат до и после'));
     const section = heading?.closest('section');
@@ -605,7 +532,7 @@
     box.innerHTML = '<button aria-label="Закрыть">×</button><img alt="">';
     document.body.append(box);
     document.querySelectorAll('main img').forEach(img => {
-      if (img.closest('#calculator,.nexor-before-after-section,.nexor-service-desk,.nexor-process-experience')) return;
+      if (img.closest('#calculator,.nexor-before-after-section,.nexor-service-desk,.nexor-stage-card')) return;
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', () => {
         box.querySelector('img').src = img.currentSrc || img.src;
@@ -1353,7 +1280,6 @@
     setupSystemBlueprint();
     setupProjectFilters();
     setupCalculator();
-    setupProcessSteps();
     setupBeforeAfter();
     setupAdditionalServices();
     setupBonusDetails();
