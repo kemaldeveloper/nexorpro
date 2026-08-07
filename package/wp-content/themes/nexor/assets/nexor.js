@@ -1075,6 +1075,268 @@
       }
     });
   }
+
+  function initStagesAnimations() {
+    const card = document.querySelector('[data-nexor-stages]');
+    const dial = card?.querySelector('[data-stage-dial]');
+    const knob = card?.querySelector('[data-stage-knob]');
+    if (!card || !dial || !knob) return;
+    const nav = card.querySelector('.nexor-stage-card__nav');
+    const tabs = [...card.querySelectorAll('[data-stage-index]')];
+    const slides = [...card.querySelectorAll('[data-stage-slide]')];
+    const images = [...card.querySelectorAll('[data-stage-media]')];
+    const total = Number(card.dataset.stageCount) || slides.length;
+    if (total < 2) {
+      knob.hidden = true;
+      return;
+    }
+    const hasGsap = typeof gsap !== 'undefined';
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const step = 360 / total;
+    const wrap = deg => ((deg % 360) + 360) % 360;
+    let active = 0;
+    let rotation = 0;
+    let tween = null;
+    let idle = null;
+    let drag = null;
+
+    const render = index => {
+      active = index;
+      card.dataset.activeIndex = String(index);
+      nav?.setAttribute('data-active-index', String(index));
+      slides.forEach(slide => {
+        const on = Number(slide.dataset.stageSlide) === index;
+        slide.classList.toggle('is-active', on);
+        slide.setAttribute('aria-hidden', String(!on));
+      });
+      images.forEach(image => image.classList.toggle('is-active', Number(image.dataset.stageMedia) === index));
+      tabs.forEach(tab => {
+        const on = Number(tab.dataset.stageIndex) === index;
+        tab.setAttribute('aria-selected', String(on));
+        tab.tabIndex = on ? 0 : -1;
+      });
+      const title =
+        slides
+          .find(slide => Number(slide.dataset.stageSlide) === index)
+          ?.querySelector('h3')
+          ?.textContent.trim() || '';
+      knob.setAttribute('aria-valuenow', String(index + 1));
+      knob.setAttribute('aria-valuetext', `Этап ${index + 1} из ${total}: ${title}`);
+    };
+
+    const hint = card.querySelector('[data-stage-hint]');
+    let hintTimer = 0;
+    const hideHint = () => {
+      clearTimeout(hintTimer);
+      if (hint) {
+        hint.dataset.shown = '1';
+        hint.classList.remove('is-visible');
+      }
+    };
+    const showHint = () => {
+      if (!hint || hint.dataset.shown) return;
+      hint.dataset.shown = '1';
+      hint.classList.add('is-visible');
+      hintTimer = setTimeout(() => hint.classList.remove('is-visible'), 3200);
+    };
+    // Reads the dial angle and swaps the stage once it passes the halfway point of a step.
+    const update = deg => {
+      rotation = deg;
+      const traveled = wrap(deg);
+      const index = Math.round(traveled / step) % total;
+      // Measure the arc from the active stage, so turning slightly below zero reads as empty instead of a full lap.
+      let offset = traveled - index * step;
+      if (offset > 180) offset -= 360;
+      else if (offset < -180) offset += 360;
+      card.style.setProperty('--stage-progress', String(Math.min(1, Math.max(0, (index * step + offset) / 360))));
+      if (index !== active) render(index);
+    };
+
+    const setRotation = deg => {
+      if (hasGsap) gsap.set(dial, { rotation: deg });
+      else dial.style.transform = `rotate(${deg}deg)`;
+      update(deg);
+    };
+
+    const turnTo = (deg, duration) => {
+      hideHint();
+      tween?.kill();
+      if (!hasGsap || reduced) {
+        setRotation(deg);
+        drag?.update();
+        card.classList.remove('is-turning');
+        return;
+      }
+      const proxy = { deg: rotation };
+      card.classList.add('is-turning');
+      tween = gsap.to(proxy, {
+        deg,
+        duration,
+        ease: 'power3.out',
+        onUpdate: () => setRotation(proxy.deg),
+        onComplete: () => {
+          drag?.update();
+          card.classList.remove('is-turning');
+        },
+      });
+    };
+
+    const snap = () => turnTo(Math.round(rotation / step) * step, 0.45);
+
+    // Springy idle loop: the dial keeps offering the gesture (never far enough to switch a stage) until the visitor grabs it.
+    const nudge = () => {
+      if (!hasGsap || reduced || idle || Math.round(rotation) !== 0) return;
+      const proxy = { deg: 0 };
+      card.classList.add('is-turning');
+      idle = tween = gsap
+        .timeline({
+          repeat: -1,
+          repeatDelay: 1.4,
+          onUpdate: () => setRotation(proxy.deg),
+          onInterrupt: () => {
+            idle = null;
+            card.classList.remove('is-turning');
+          },
+        })
+        .to(proxy, { deg: step / 3, duration: 0.5, ease: 'back.out(2.6)' })
+        .to(proxy, { deg: 0, duration: 1, ease: 'elastic.out(1, 0.4)' });
+    };
+
+    const goTo = index => {
+      const target = ((index % total) + total) % total;
+      let delta = (target - active) * step;
+      if (delta > 180) delta -= 360;
+      else if (delta < -180) delta += 360;
+      turnTo(Math.round(rotation / step) * step + delta, 0.7);
+    };
+
+    if (hasGsap && typeof Draggable !== 'undefined') {
+      const inertia = typeof InertiaPlugin !== 'undefined';
+      gsap.registerPlugin(Draggable);
+      if (inertia) gsap.registerPlugin(InertiaPlugin);
+      drag = Draggable.create(dial, {
+        type: 'rotation',
+        trigger: knob,
+        inertia,
+        maxDuration: 1.1,
+        zIndexBoost: false,
+        // A flick may not skip more than two stages, otherwise the dial spins past the whole story.
+        snap: {
+          rotation: value => {
+            const reach = 1.5 * step;
+            return Math.round(Math.max(rotation - reach, Math.min(rotation + reach, value)) / step) * step;
+          },
+        },
+        onPress() {
+          hideHint();
+          tween?.kill();
+          card.classList.add('is-dragging', 'is-turning');
+        },
+        onDrag() {
+          update(this.rotation);
+        },
+        onThrowUpdate() {
+          update(this.rotation);
+        },
+        onRelease() {
+          card.classList.remove('is-dragging');
+          if (!inertia) snap();
+        },
+        onThrowComplete() {
+          update(this.rotation);
+          card.classList.remove('is-turning');
+        },
+      })[0];
+    } else {
+      const angleAt = event => {
+        const rect = dial.getBoundingClientRect();
+        return (Math.atan2(event.clientY - rect.top - rect.height / 2, event.clientX - rect.left - rect.width / 2) * 180) / Math.PI;
+      };
+      let previous = null;
+      let velocity = 0;
+      let stamp = 0;
+      knob.addEventListener('pointerdown', event => {
+        hideHint();
+        tween?.kill();
+        previous = angleAt(event);
+        velocity = 0;
+        stamp = event.timeStamp;
+        card.classList.add('is-dragging', 'is-turning');
+        knob.setPointerCapture?.(event.pointerId);
+        knob.focus({ preventScroll: true });
+        event.preventDefault();
+      });
+      knob.addEventListener('pointermove', event => {
+        if (previous === null) return;
+        const angle = angleAt(event);
+        let delta = angle - previous;
+        if (delta > 180) delta -= 360;
+        else if (delta < -180) delta += 360;
+        previous = angle;
+        const elapsed = event.timeStamp - stamp;
+        stamp = event.timeStamp;
+        if (elapsed > 0) velocity = delta / elapsed;
+        setRotation(rotation + delta);
+      });
+      const release = event => {
+        if (previous === null) return;
+        previous = null;
+        card.classList.remove('is-dragging');
+        knob.releasePointerCapture?.(event.pointerId);
+        const throwDistance = Math.max(-2 * step, Math.min(2 * step, velocity * 130));
+        turnTo(Math.round((rotation + throwDistance) / step) * step, 0.55);
+      };
+      knob.addEventListener('pointerup', release);
+      knob.addEventListener('pointercancel', release);
+    }
+
+    knob.addEventListener('keydown', event => {
+      const forward = ['ArrowRight', 'ArrowUp', 'PageUp'].includes(event.key);
+      const backward = ['ArrowLeft', 'ArrowDown', 'PageDown'].includes(event.key);
+      if (!forward && !backward && event.key !== 'Home' && event.key !== 'End') return;
+      event.preventDefault();
+      if (event.key === 'Home') goTo(0);
+      else if (event.key === 'End') goTo(total - 1);
+      else goTo(active + (forward ? 1 : -1));
+    });
+
+    tabs.forEach((tab, index) => {
+      tab.addEventListener('click', () => goTo(index));
+      tab.addEventListener('keydown', event => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? total - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + total) % total;
+        goTo(next);
+        tabs[next].focus();
+      });
+    });
+
+    let introduced = false;
+    const introduce = () => {
+      introduced = true;
+      showHint();
+      nudge();
+    };
+    if ('IntersectionObserver' in window) {
+      // Keeps observing: the idle bounce only runs while the section is on screen.
+      new IntersectionObserver(
+        entries => {
+          if (!entries.some(entry => entry.isIntersecting)) {
+            idle?.pause();
+            return;
+          }
+          if (idle) idle.resume();
+          else if (!introduced) hintTimer = setTimeout(introduce, 600);
+        },
+        { threshold: 0.35 },
+      ).observe(card);
+    } else {
+      introduce();
+    }
+
+    render(0);
+  }
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeModal();
@@ -1100,5 +1362,6 @@
     setupBonusCountdown();
     setupRevealAnimations();
     setupExitIntent();
+    initStagesAnimations();
   });
 })();

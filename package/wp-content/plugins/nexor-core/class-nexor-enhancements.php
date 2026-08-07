@@ -646,64 +646,76 @@ final class Nexor_Enhancements
       $heading .= '<p class="nexor-stage-card__intro">' . esc_html($o['intro']) . '</p>';
     }
     $heading .= '</div>';
-    $cards = '';
+    $media  = '';
+    $slides = '';
+    $tabs   = '';
     foreach ($rows as $i => $row) {
-      $image  = self::stage_image_url($row);
-      $number = sprintf('<span class="nexor-stage-card__number" aria-hidden="true">%02d</span>', $i + 1);
-      $illustration = '<div class="nexor-stage-card__illustration"></div>';
-      $figure = $image
-        ? sprintf(
-          '<figure class="nexor-stage-card__media"><img src="%s" alt="%s" loading="lazy" width="640" height="420"></figure>',
+      $image = self::stage_image_url($row);
+      if ($image) {
+        $media .= sprintf(
+          '<img class="nexor-stage-card__media-item%1$s" data-stage-media="%2$d" src="%3$s" alt="%4$s" loading="%5$s" width="640" height="420">',
+          0 === $i ? ' is-active' : '',
+          $i,
           esc_url($image),
-          esc_attr($row['title'])
-        )
-        : '';
-      $visual = '<div class="nexor-stage-card__visual">' . $illustration . $number . $figure . '</div>';
-      $cta    = trim((string) ($row['cta_label'] ?? ''))
+          esc_attr($row['title']),
+          0 === $i ? 'eager' : 'lazy'
+        );
+      }
+      $cta = trim((string) ($row['cta_label'] ?? ''))
         ? sprintf(
           '<a class="nexor-stage-card__cta" href="%s">%s <span aria-hidden="true">&#8594;</span></a>',
           esc_url(home_url('/#calculator')),
           esc_html($row['cta_label'])
         )
         : '';
-      $copy = sprintf(
-        '<div class="nexor-stage-card__copy"><p class="nexor-stage-card__index"><span>%02d</span> / <span>%02d</span></p><h3>%s</h3><p class="nexor-stage-card__description">%s</p>%s</div>',
+      $slides .= sprintf(
+        '<div class="nexor-stage-card__slide%1$s" id="stage-%2$s" role="tabpanel" data-stage-slide="%3$d" aria-hidden="%4$s"><p class="nexor-stage-card__index"><span>%5$02d</span> / <span>%6$02d</span></p><h3>%7$s</h3><p class="nexor-stage-card__description">%8$s</p>%9$s</div>',
+        0 === $i ? ' is-active' : '',
+        esc_attr($row['id']),
+        $i,
+        0 === $i ? 'false' : 'true',
         $i + 1,
         $total,
         esc_html($row['title']),
         esc_html($row['description']),
         $cta
       );
-      $main = '<div class="nexor-stage-card__main">' . $visual . $copy . '</div>';
-      $progress = $total > 1 ? round(($i / ($total - 1)) * 100, 2) : 100;
-      $nav  = sprintf(
-        '<nav class="nexor-stage-card__nav" role="tablist" aria-label="Этапы работы" data-active-index="%d" style="--stage-progress:%s%%;grid-template-columns:repeat(%d,minmax(0,1fr))">',
-        $i,
-        esc_attr((string) $progress),
-        $total
-      );
-      foreach ($rows as $j => $nav_row) {
-        $nav .= sprintf(
-          '<button type="button" role="tab" aria-selected="%s" aria-controls="stage-%s" data-stage-index="%d"><span>%02d</span><strong>%s</strong></button>',
-          $i === $j ? 'true' : 'false',
-          esc_attr($nav_row['id']),
-          $j,
-          $j + 1,
-          esc_html($nav_row['title'])
-        );
-      }
-      $nav .= '</nav>';
-      $cards .= sprintf(
-        '<article class="nexor-stage-card" data-slot="slot-%2$d" id="stage-%1$s" data-stage-index="%6$d">%3$s%4$s%5$s</article>',
+      $tabs .= sprintf(
+        '<button type="button" role="tab" aria-selected="%1$s" aria-controls="stage-%2$s" data-stage-index="%3$d" tabindex="%4$s"><span>%5$02d</span><strong>%6$s</strong></button>',
+        0 === $i ? 'true' : 'false',
         esc_attr($row['id']),
+        $i,
+        0 === $i ? '0' : '-1',
         $i + 1,
-        $heading,
-        $main,
-        $nav,
-        $i
+        esc_html($row['title'])
       );
     }
-    return '<section id="stages" class="nexor-stages-section"><div class="container-fluid"><div class="nexor-stages-grid">' . $cards . '</div></div></section>';
+    $figure = $media ? '<figure class="nexor-stage-card__media">' . $media . '</figure>' : '';
+    $dial   = sprintf(
+      '<div class="nexor-stage-card__dial" data-stage-dial><button type="button" class="nexor-stage-card__knob" data-stage-knob role="slider" aria-label="Поверните по часовой стрелке, чтобы сменить этап" aria-valuemin="1" aria-valuemax="%1$d" aria-valuenow="1" aria-valuetext="%2$s"><span aria-hidden="true"></span></button></div>',
+      $total,
+      esc_attr(sprintf('Этап 1 из %d: %s', $total, $rows[0]['title']))
+    );
+    $visual = '<div class="nexor-stage-card__visual"><div class="nexor-stage-card__illustration" aria-hidden="true"></div><svg class="nexor-stage-card__progress" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="47" pathLength="100"></circle></svg>'
+      . $figure
+      . '<p class="nexor-stage-card__hint" data-stage-hint aria-hidden="true">Потяните по кругу</p>'
+      . $dial
+      . '</div>';
+    $main = '<div class="nexor-stage-card__main">' . $visual . '<div class="nexor-stage-card__copy"><div class="nexor-stage-card__slides">' . $slides . '</div></div></div>';
+    $nav  = sprintf(
+      '<nav class="nexor-stage-card__nav" role="tablist" aria-label="Этапы работы" data-active-index="0" style="grid-template-columns:repeat(%1$d,minmax(0,1fr))">%2$s</nav>',
+      $total,
+      $tabs
+    );
+    $card = sprintf(
+      '<article class="nexor-stage-card" data-nexor-stages data-stage-count="%1$d" data-active-index="0" style="--stage-progress:%2$s">%3$s%4$s%5$s</article>',
+      $total,
+      $total > 1 ? '0' : '1',
+      $heading,
+      $main,
+      $nav
+    );
+    return '<section id="stages" class="nexor-stages-section"><div class="container-nexor">' . $card . '</div></section>';
   }
 
   private static function hero_promotion(): string

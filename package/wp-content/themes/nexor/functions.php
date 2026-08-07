@@ -96,8 +96,28 @@ add_action(
 			wp_enqueue_style( 'nexor-design', get_template_directory_uri() . '/assets/' . basename( $styles[0] ), array(), filemtime( $styles[0] ) );
 		}
 		wp_enqueue_style( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.css', array( 'nexor-design' ), NEXOR_THEME_VERSION );
+
+		$gsap_deps = array();
+		$gsap_dir  = get_template_directory() . '/assets/vendor/gsap/minified';
+		$gsap_uri  = get_template_directory_uri() . '/assets/vendor/gsap/minified';
+		if ( file_exists( $gsap_dir . '/gsap.min.js' ) ) {
+			wp_enqueue_script( 'gsap', $gsap_uri . '/gsap.min.js', array(), (string) filemtime( $gsap_dir . '/gsap.min.js' ), true );
+			$gsap_deps[] = 'gsap';
+			$gsap_plugins = array(
+				'gsap-inertia'   => 'InertiaPlugin.min.js',
+				'gsap-draggable' => 'Draggable.min.js',
+			);
+			foreach ( $gsap_plugins as $handle => $file ) {
+				if ( ! file_exists( $gsap_dir . '/' . $file ) ) {
+					continue;
+				}
+				wp_enqueue_script( $handle, $gsap_uri . '/' . $file, array( 'gsap' ), (string) filemtime( $gsap_dir . '/' . $file ), true );
+				$gsap_deps[] = $handle;
+			}
+		}
+
 		$script_file = get_template_directory() . '/assets/nexor.js';
-		wp_enqueue_script( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.js', array(), file_exists( $script_file ) ? filemtime( $script_file ) : NEXOR_THEME_VERSION, true );
+		wp_enqueue_script( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.js', $gsap_deps, file_exists( $script_file ) ? filemtime( $script_file ) : NEXOR_THEME_VERSION, true );
 		$enhancements = class_exists( 'Nexor_Enhancements' ) ? Nexor_Enhancements::frontend_config() : array();
 		wp_localize_script(
 			'nexor-theme',

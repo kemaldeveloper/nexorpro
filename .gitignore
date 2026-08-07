@@ -21,7 +21,7 @@ backups/
 
 # Dependencies and generated artifacts
 node_modules/
-vendor/
+/vendor/
 coverage/
 artifacts/
 dist/

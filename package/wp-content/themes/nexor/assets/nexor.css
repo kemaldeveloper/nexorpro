@@ -2326,7 +2326,9 @@ body:has(.nexor-home) header > div {
 }
 
 .nexor-stages-section {
-  padding: 30px 0;
+  display: flex;
+  align-items: center;
+  padding: 60px 0;
   background: #121316 !important;
   min-height: 100vh;
 }
@@ -2335,9 +2337,9 @@ body:has(.nexor-home) header > div {
   text-align: left;
 }
 .nexor-stages-section .heading-section {
-  font-size: 21px;
+  font-size: clamp(30px, 3.4vw, 46px);
   font-weight: 600;
-  letter-spacing: -2px;
+  letter-spacing: -0.04em;
   color: #fff;
   margin-bottom: 7px;
 }
@@ -2347,179 +2349,295 @@ body:has(.nexor-home) header > div {
   color: #6b635c;
   line-height: 1.65;
 }
-.nexor-stages-grid {
-  display: grid;
-  grid-template-columns: repeat(20, 1fr);
-  justify-items: center;
-  /* grid-template-areas:
-    'top top'
-    'left1 right1'
-    'left2 right2'; */
-  gap: 7px;
-}
 
 .nexor-stage-card {
   position: relative;
   overflow: hidden;
+  overflow-anchor: none;
+  max-width: 1040px;
+  margin: 0 auto;
   border: 1px solid #312c2a;
-  border-radius: 4px;
+  border-radius: 10px;
   background: #151617;
   box-shadow: 0 14px 40px rgba(38, 30, 23, 0.06);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  padding-top: 13px;
-  padding-inline: 10px;
-  padding-bottom: 7px;
+  padding: 34px 26px 20px;
   color: #656766;
 }
 
-.nexor-stage-card[data-slot='slot-1'] {
-  grid-column: 5/16;
-}
-
-.nexor-stage-card[data-slot='slot-2'] {
-  grid-column: 1/11;
-}
-
-.nexor-stage-card[data-slot='slot-3'] {
-  grid-column: 11/-1;
-}
-
-.nexor-stage-card[data-slot='slot-4'] {
-  grid-column: 1/11;
-}
-
-.nexor-stage-card[data-slot='slot-5'] {
-  grid-column: 11/-1;
-}
-
 .nexor-stage-card__heading {
-  grid-column: 1/-1;
   text-align: center;
 }
 
 .nexor-stage-card__eyebrow {
+  margin: 0 0 10px;
   font-weight: 700;
-  font-size: 7px;
-  letter-spacing: -0.04em;
+  font-size: 12px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  color: #c66d45;
 }
 
 .nexor-stage-card__intro {
-  font-weight: 600;
-  font-size: 8px;
+  max-width: 620px;
+  margin: 0 auto;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 1.6;
 }
 
 .nexor-stage-card__main {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
-  gap: 27px;
-  padding-inline: 28px;
+  gap: clamp(28px, 5vw, 72px);
+  padding: clamp(28px, 4vw, 54px) clamp(10px, 3vw, 48px);
 }
 
 .nexor-stage-card__visual {
   position: relative;
   z-index: 1;
-  width: 250px;
-  height: 226px;
+  width: clamp(240px, 30vw, 380px);
+  height: clamp(240px, 30vw, 380px);
   border: 1px solid #656667;
   border-radius: 100%;
-  padding: 12px;
+  padding: 22px;
+  touch-action: none;
+  box-shadow:
+    0 0 0 1px rgba(198, 109, 69, 0.2),
+    0 0 34px rgba(198, 109, 69, 0.22);
 }
 
-/* .nexor-stage-card__visual::before {
-  content: '';
+.nexor-stage-card__illustration {
   position: absolute;
-  top: -6px;
-  left: -6px;
-  width: calc(100% + 12px);
-  height: calc(100% + 12px);
-} */
+  inset: 6px;
+  border: 4px solid rgba(154, 89, 59, 0.18);
+  border-radius: 100%;
+  box-shadow: 0 0 18px rgba(198, 109, 69, 0.25);
+}
+
+.nexor-stage-card__progress {
+  position: absolute;
+  inset: 6px;
+  width: calc(100% - 12px);
+  height: calc(100% - 12px);
+  transform: rotate(-90deg);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.nexor-stage-card__progress circle {
+  fill: none;
+  stroke: #9a593b;
+  stroke-width: 1.1;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - 100 * var(--stage-progress, 0));
+  transition: stroke-dashoffset 0.35s ease-out;
+}
+
+.nexor-stage-card__dial {
+  position: absolute;
+  inset: 0;
+  border-radius: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.nexor-stage-card__knob {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 26px;
+  height: 26px;
+  margin: 0;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(233, 168, 133, 0.65);
+  border-radius: 100%;
+  background: radial-gradient(circle at 32% 28%, #f0a87d 0%, #c66d45 45%, #7e3f24 100%);
+  box-shadow:
+    0 0 0 4px rgba(18, 19, 22, 0.9),
+    0 0 16px rgba(198, 109, 69, 0.55);
+  cursor: grab;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.nexor-stage-card__knob span {
+  position: absolute;
+  top: 4px;
+  left: 50%;
+  width: 2px;
+  height: 7px;
+  transform: translateX(-50%);
+  border-radius: 2px;
+  background: rgba(24, 14, 9, 0.75);
+}
+
+.nexor-stage-card__knob:hover {
+  box-shadow:
+    0 0 0 4px rgba(18, 19, 22, 0.9),
+    0 0 22px rgba(198, 109, 69, 0.85);
+}
+
+.nexor-stage-card__knob:focus-visible {
+  outline: 2px solid #e8926a;
+  outline-offset: 4px;
+}
+
+.nexor-stage-card.is-dragging .nexor-stage-card__knob {
+  cursor: grabbing;
+  transform: translate(-50%, -50%) scale(1.12);
+}
+
+.nexor-stage-card.is-turning .nexor-stage-card__progress circle {
+  transition: none;
+}
+
 .nexor-stage-card__visual::after {
   content: '';
   position: absolute;
-  top: 6px;
-  left: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
+  top: 7px;
+  left: 7px;
+  width: calc(100% - 14px);
+  height: calc(100% - 14px);
   border: 1px solid #656667;
   z-index: -1;
   border-radius: 100%;
 }
 
-.nexor-stage-card__number {
+.nexor-stage-card__hint {
   position: absolute;
-  top: 15px;
+  top: 48px;
   left: 50%;
-  transform: translateX(-50%);
-  color: #995b3c;
-  font-size: 30px;
+  z-index: 4;
+  margin: 0;
+  padding: 6px 12px;
+  transform: translate(-50%, -6px);
+  border: 1px solid rgba(198, 109, 69, 0.45);
+  border-radius: 999px;
+  background: rgba(18, 19, 22, 0.82);
+  backdrop-filter: blur(4px);
+  color: #e8926a;
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
   pointer-events: none;
-  z-index: 2;
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    visibility 0.45s;
 }
+
+.nexor-stage-card__hint.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+}
+
 .nexor-stage-card__media {
   position: relative;
   margin: 0;
   height: 100%;
   width: 100%;
   border-radius: 100%;
+  overflow: hidden;
   flex-shrink: 0;
   z-index: 1;
+  box-shadow:
+    0 0 0 1px rgba(233, 168, 133, 0.35),
+    0 0 22px rgba(198, 109, 69, 0.45);
 }
 
-.nexor-stage-card__media img {
+.nexor-stage-card__media-item {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: 100%;
+  opacity: 0;
+  transform: scale(1.06);
+  transition:
+    opacity 0.5s ease,
+    transform 0.7s ease;
+  will-change: opacity, transform;
 }
+
+.nexor-stage-card__media-item.is-active {
+  opacity: 1;
+  transform: scale(1);
+}
+
 .nexor-stage-card__copy {
-  padding: 22px 22px 26px;
+  padding: 10px 0;
+}
+
+.nexor-stage-card__slides {
+  display: grid;
+}
+
+.nexor-stage-card__slide {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(14px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease,
+    visibility 0.4s;
+}
+
+.nexor-stage-card__slide.is-active {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
 }
 
 .nexor-stage-card__copy h3 {
-  margin: 0 0 12px;
-  font-size: 15px;
+  margin: 0 0 14px;
+  font-size: clamp(20px, 2.2vw, 28px);
   font-weight: 600;
-  line-height: 19px;
+  line-height: 1.2;
   letter-spacing: -0.03em;
   color: #f7f6f6;
-  max-width: 145px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
-  row-gap: 9px;
+  row-gap: 14px;
 }
 
 .nexor-stage-card__copy h3:after {
   content: '';
   display: block;
-  width: 20px;
+  width: 34px;
   height: 1px;
   background: #61402e;
 }
 
 .nexor-stage-card__index {
-  margin: 0 0 6px;
-  /* color: #c66d45; */
-  font-size: 11px;
+  margin: 0 0 10px;
+  font-size: 13px;
   font-weight: 500;
 }
 
 .nexor-stage-card__index span:first-child {
   color: #c66d45;
-  font-size: 13px;
+  font-size: 16px;
 }
 
 .nexor-stage-card__description {
-  font-weight: 700;
-  font-size: 7px;
+  font-weight: 400;
+  font-size: 15px;
   line-height: 1.65;
   margin: 0;
-  color: #625b54;
-  max-width: 170px;
+  color: #8d837a;
+  max-width: 440px;
 }
 
 .nexor-stage-card__cta {
@@ -2527,17 +2645,17 @@ body:has(.nexor-home) header > div {
   align-items: center;
   gap: 8px;
   margin-top: 18px;
+  color: #d07a52;
 }
 
 .nexor-stage-card__nav {
   position: relative;
   display: grid;
   gap: 0;
-  padding: 8px 16px;
+  padding: 14px 20px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 4px;
+  border-radius: 6px;
   background: rgba(21, 21, 22, 0.8);
-  margin-top: -18px;
   z-index: 1;
 }
 
@@ -2585,7 +2703,7 @@ body:has(.nexor-home) header > div {
 .nexor-stage-card__nav button strong {
   flex: 0 1 auto;
   max-width: 11em;
-  font-size: 5px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1.35;
   color: rgba(255, 255, 255, 0.42);
@@ -2606,6 +2724,39 @@ body:has(.nexor-home) header > div {
 
 .nexor-stage-card__nav button[aria-selected='true'] strong {
   color: #d07a52;
+}
+
+@media (max-width: 900px) {
+  .nexor-stage-card__main {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+  .nexor-stage-card__copy h3,
+  .nexor-stage-card__description {
+    max-width: none;
+  }
+  .nexor-stage-card__copy h3 {
+    align-items: center;
+  }
+  .nexor-stage-card__nav button strong {
+    display: none;
+  }
+  .nexor-stage-card__nav {
+    justify-items: center;
+  }
+  .nexor-stage-card__nav button:not(:last-child)::after {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nexor-stage-card__media-item,
+  .nexor-stage-card__slide,
+  .nexor-stage-card__hint,
+  .nexor-stage-card__progress circle {
+    transition-duration: 0.01ms;
+  }
 }
 
 /* Honest before/after comparison. */
