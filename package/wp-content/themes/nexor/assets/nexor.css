@@ -2129,9 +2129,12 @@ body:has(.nexor-home) header > div {
 .nexor-stages-section {
   display: flex;
   align-items: center;
-  padding: 60px 0;
-  background: #121316 !important;
-  min-height: 100vh;
+  padding: 0;
+  background-color: #121316 !important;
+  background-image: url("stage-card-blueprint.webp");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 .nexor-stages-section .nexor-section-heading {
   margin-bottom: 40px;
@@ -2155,18 +2158,11 @@ body:has(.nexor-home) header > div {
   position: relative;
   overflow: hidden;
   overflow-anchor: none;
+  width: 100%;
   margin: 0 auto;
-  border: 1px solid #312c2a;
-  border-radius: 10px;
-  background-color: #151617;
-  background-image: url("stage-card-blueprint.webp");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  box-shadow: 0 14px 40px rgba(38, 30, 23, 0.06);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  padding: 34px 26px 20px;
+  padding: 34px 26px 40px;
   color: #656766;
 }
 
@@ -2527,14 +2523,6 @@ body:has(.nexor-home) header > div {
   max-width: 440px;
 }
 
-.nexor-stage-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 18px;
-  color: #d07a52;
-}
-
 .nexor-stage-card__nav {
   position: relative;
   display: grid;
@@ -2639,16 +2627,12 @@ body:has(.nexor-home) header > div {
 
 /* Phones: keep the bulk of the card inside one screen. */
 @media (max-width: 640px) {
-  .nexor-stages-section {
-    min-height: auto;
-    padding: 36px 0;
-  }
   .nexor-stages-section .heading-section {
     font-size: clamp(21px, 6vw, 26px);
     margin-bottom: 5px;
   }
   .nexor-stage-card {
-    padding: 22px 16px 14px;
+    padding: 22px 16px 28px;
   }
   .nexor-stage-card__eyebrow {
     margin-bottom: 6px;
@@ -2660,7 +2644,7 @@ body:has(.nexor-home) header > div {
   }
   .nexor-stage-card__main {
     gap: 20px;
-    padding: 20px 0 4px;
+    padding: 20px 0 24px;
   }
   .nexor-stage-card__visual {
     width: clamp(200px, 56vw, 240px);
@@ -2685,11 +2669,14 @@ body:has(.nexor-home) header > div {
     font-size: 13.5px;
     line-height: 1.55;
   }
-  .nexor-stage-card__cta {
-    margin-top: 12px;
-  }
   .nexor-stage-card__nav {
     padding: 10px 12px;
+  }
+  .nexor-stage-card__hint {
+    top: 28px;
+    padding: 3px 8px;
+    font-size: 9px;
+    letter-spacing: 0.01em;
   }
 }
 

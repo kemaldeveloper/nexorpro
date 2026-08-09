@@ -165,7 +165,7 @@ $GLOBALS['options'] = array(
   'nexor_budget_control' => array('enabled' => 1, 'heading' => 'Как мы держим смету', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'rows' => array(array('id' => 'budget-1', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально на замере', 'description' => 'Закладываем все работы'))),
   'nexor_home_timeline' => array('enabled' => 1, 'heading' => 'Реальные сроки ремонта без обещаний «за 30 дней»', 'disclaimer' => 'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.', 'rows' => array(array('id' => 'timeline-1', 'enabled' => 1, 'order' => 10, 'area' => 'До 50 м²', 'new_build' => 'от 45 дней', 'capital' => '60–90 дней', 'designer' => '90–120 дней'))),
   'nexor_exit_intent' => array('enabled' => 0),
-  'nexor_home_stages' => array('enabled' => 1, 'eyebrow' => '5 этапов работы Nexor', 'heading' => 'Как мы делаем ремонт предсказуемым', 'intro' => 'Фиксированный бюджет, понятные сроки и полная прозрачность на каждом этапе.', 'rows' => array(array('id' => 'consultation', 'enabled' => 1, 'order' => 10, 'title' => 'Консультация', 'description' => 'Обсуждаем задачи и бюджет.', 'image_id' => 0, 'cta_label' => 'Записаться на замер'))),
+  'nexor_home_stages' => array('enabled' => 1, 'eyebrow' => '5 этапов работы Nexor', 'heading' => 'Как мы делаем ремонт предсказуемым', 'intro' => 'Фиксированный бюджет, понятные сроки и полная прозрачность на каждом этапе.', 'rows' => array(array('id' => 'consultation', 'enabled' => 1, 'order' => 10, 'title' => 'Консультация', 'description' => 'Обсуждаем задачи и бюджет.', 'image_id' => 0))),
 );
 function get_option($key, $default = array())
 {
@@ -242,7 +242,7 @@ assert_true(substr_count($stages_page, 'class="nexor-stage-card"') === 1 && subs
 assert_true(str_contains($stages_page, 'data-stage-dial') && str_contains($stages_page, 'data-stage-knob') && str_contains($stages_page, 'role="slider"'), 'stage card exposes the rotary knob control');
 assert_true(str_contains($stages_page, 'nexor-stage-card__heading') && str_contains($stages_page, 'nexor-stage-card__eyebrow') && str_contains($stages_page, 'nexor-stage-card__intro'), 'stage card keeps the section heading block');
 assert_true(str_contains($stages_page, 'nexor-stage-card__main') && str_contains($stages_page, 'nexor-stage-card__copy') && str_contains($stages_page, 'nexor-stage-card__description'), 'stage cards group visual and copy blocks like the reference');
-assert_true(str_contains($stages_page, 'nexor-stage-card__cta') && str_contains($stages_page, 'Записаться на замер'), 'first stage can expose optional CTA');
+assert_true(substr_count($stages_page, '>Записаться на замер</button>') === 1 && str_contains($stages_page, 'bg-primary text-primary-foreground hover:bg-terracotta-dark') && !str_contains($stages_page, 'nexor-stage-card__description">Обсуждаем задачи и бюджет.</p><button'), 'stages keep a single static header CTA outside animated slides');
 assert_true(!str_contains($stages_page, 'nexor-stage-card__media'), 'stages without media library image_id render no fallback theme images');
 $GLOBALS['options']['nexor_home_stages']['rows'][0]['image_id'] = 42;
 $stages_with_image = Nexor_Enhancements::inject_frontend_content($stages_source);

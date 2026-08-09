@@ -95,7 +95,8 @@ add_action(
 		if ( $styles ) {
 			wp_enqueue_style( 'nexor-design', get_template_directory_uri() . '/assets/' . basename( $styles[0] ), array(), filemtime( $styles[0] ) );
 		}
-		wp_enqueue_style( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.css', array( 'nexor-design' ), NEXOR_THEME_VERSION );
+		$style_file = get_template_directory() . '/assets/nexor.css';
+		wp_enqueue_style( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.css', array( 'nexor-design' ), file_exists( $style_file ) ? filemtime( $style_file ) : NEXOR_THEME_VERSION );
 
 		$gsap_deps = array();
 		$gsap_dir  = get_template_directory() . '/assets/vendor/gsap/minified';

@@ -52,11 +52,11 @@ final class Nexor_Enhancements
   private static function stages_seed(): array
   {
     return array(
-      array('id' => 'consultation', 'enabled' => 1, 'order' => 10, 'title' => 'Консультация и анализ объекта', 'description' => 'Обсуждаем ваши задачи, пожелания и бюджет. Выезжаем на объект, изучаем все особенности и фиксируем исходные данные.', 'image_id' => 0, 'cta_label' => 'Записаться на замер'),
-      array('id' => 'measurement', 'enabled' => 1, 'order' => 20, 'title' => 'Выезд инженера и точные замеры', 'description' => 'Проводим профессиональные замеры всех помещений, фиксируем коммуникации и технические особенности.', 'image_id' => 0, 'cta_label' => ''),
-      array('id' => 'estimate-contract', 'enabled' => 1, 'order' => 30, 'title' => 'Детальная смета и договор', 'description' => 'Составляем подробную смету с точным расчетом стоимости и сроков. Фиксируем все в договоре — без скрытых условий.', 'image_id' => 0, 'cta_label' => ''),
-      array('id' => 'execution', 'enabled' => 1, 'order' => 40, 'title' => 'Реализация под контролем специалистов', 'description' => 'Выполняем работы строго по проекту и графику. Технический надзор, контроль качества и фотоотчёты на каждом этапе.', 'image_id' => 0, 'cta_label' => ''),
-      array('id' => 'handover', 'enabled' => 1, 'order' => 50, 'title' => 'Сдача объекта и сопровождение', 'description' => 'Сдаем объект, проводим финальную проверку и передаём вам всю документацию. Остаёмся на связи после завершения проекта.', 'image_id' => 0, 'cta_label' => ''),
+      array('id' => 'consultation', 'enabled' => 1, 'order' => 10, 'title' => 'Консультация и анализ объекта', 'description' => 'Обсуждаем ваши задачи, пожелания и бюджет. Выезжаем на объект, изучаем все особенности и фиксируем исходные данные.', 'image_id' => 0),
+      array('id' => 'measurement', 'enabled' => 1, 'order' => 20, 'title' => 'Выезд инженера и точные замеры', 'description' => 'Проводим профессиональные замеры всех помещений, фиксируем коммуникации и технические особенности.', 'image_id' => 0),
+      array('id' => 'estimate-contract', 'enabled' => 1, 'order' => 30, 'title' => 'Детальная смета и договор', 'description' => 'Составляем подробную смету с точным расчетом стоимости и сроков. Фиксируем все в договоре — без скрытых условий.', 'image_id' => 0),
+      array('id' => 'execution', 'enabled' => 1, 'order' => 40, 'title' => 'Реализация под контролем специалистов', 'description' => 'Выполняем работы строго по проекту и графику. Технический надзор, контроль качества и фотоотчёты на каждом этапе.', 'image_id' => 0),
+      array('id' => 'handover', 'enabled' => 1, 'order' => 50, 'title' => 'Сдача объекта и сопровождение', 'description' => 'Сдаем объект, проводим финальную проверку и передаём вам всю документацию. Остаёмся на связи после завершения проекта.', 'image_id' => 0),
     );
   }
 
@@ -274,7 +274,7 @@ final class Nexor_Enhancements
       'eyebrow' => sanitize_text_field($input['eyebrow'] ?? $d['eyebrow']),
       'heading' => sanitize_text_field($input['heading'] ?? $d['heading']),
       'intro'   => sanitize_textarea_field($input['intro'] ?? $d['intro']),
-      'rows'    => self::merge_stages_rows(self::clean_rows((array) ($input['rows'] ?? array()), array('title' => 'text', 'description' => 'textarea', 'image_id' => 'int', 'cta_label' => 'text'))),
+      'rows'    => self::merge_stages_rows(self::clean_rows((array) ($input['rows'] ?? array()), array('title' => 'text', 'description' => 'textarea', 'image_id' => 'int'))),
     );
   }
   public static function sanitize_popup($input): array
@@ -447,10 +447,9 @@ final class Nexor_Enhancements
         'title'       => array('Название этапа', 'text'),
         'description' => array('Описание', 'textarea'),
         'image_id'    => array('Изображение', 'image'),
-        'cta_label'   => array('CTA-кнопка (необязательно)', 'text'),
       )
     );
-    echo '<p class="description">Секция выводится на главной под блоком «Как мы делаем ремонт предсказуемым». Загрузите изображение для каждого этапа через медиатеку WordPress.</p></section>';
+    echo '<p class="description">Секция выводится на главной. Кнопка «Записаться на замер» фиксирована на карточке и не настраивается. Загрузите изображение для каждого этапа через медиатеку WordPress.</p></section>';
   }
   private static function render_promotions_admin(): void
   {
@@ -671,15 +670,8 @@ final class Nexor_Enhancements
           0 === $i ? 'eager' : 'lazy'
         );
       }
-      $cta = trim((string) ($row['cta_label'] ?? ''))
-        ? sprintf(
-          '<a class="nexor-stage-card__cta" href="%s">%s <span aria-hidden="true">&#8594;</span></a>',
-          esc_url(home_url('/#calculator')),
-          esc_html($row['cta_label'])
-        )
-        : '';
       $slides .= sprintf(
-        '<div class="nexor-stage-card__slide%1$s" id="stage-%2$s" role="tabpanel" data-stage-slide="%3$d" aria-hidden="%4$s"><p class="nexor-stage-card__index"><span>%5$02d</span> / <span>%6$02d</span></p><h3>%7$s</h3><p class="nexor-stage-card__description">%8$s</p>%9$s</div>',
+        '<div class="nexor-stage-card__slide%1$s" id="stage-%2$s" role="tabpanel" data-stage-slide="%3$d" aria-hidden="%4$s"><p class="nexor-stage-card__index"><span>%5$02d</span> / <span>%6$02d</span></p><h3>%7$s</h3><p class="nexor-stage-card__description">%8$s</p></div>',
         0 === $i ? ' is-active' : '',
         esc_attr($row['id']),
         $i,
@@ -687,8 +679,7 @@ final class Nexor_Enhancements
         $i + 1,
         $total,
         esc_html($row['title']),
-        esc_html($row['description']),
-        $cta
+        esc_html($row['description'])
       );
       $tabs .= sprintf(
         '<button type="button" role="tab" aria-selected="%1$s" aria-controls="stage-%2$s" data-stage-index="%3$d" tabindex="%4$s"><span>%5$02d</span><strong>%6$s</strong></button>',
@@ -711,7 +702,8 @@ final class Nexor_Enhancements
       . '<p class="nexor-stage-card__hint" data-stage-hint aria-hidden="true">Потяните по кругу</p>'
       . $dial
       . '</div>';
-    $main = '<div class="nexor-stage-card__main">' . $visual . '<div class="nexor-stage-card__copy"><div class="nexor-stage-card__slides">' . $slides . '</div></div></div>';
+    $cta  = '<button type="button" class="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-10 px-5 py-2 font-medium mt-4">Записаться на замер</button>';
+    $main = '<div class="nexor-stage-card__main">' . $visual . '<div class="nexor-stage-card__copy"><div class="nexor-stage-card__slides">' . $slides . '</div>' . $cta . '</div></div>';
     $nav  = sprintf(
       '<nav class="nexor-stage-card__nav" role="tablist" aria-label="Этапы работы" data-active-index="0" style="grid-template-columns:repeat(%1$d,minmax(0,1fr))">%2$s</nav>',
       $total,
