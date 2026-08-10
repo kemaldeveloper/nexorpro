@@ -2,15 +2,6 @@
 /** Native, noindex search results. */
 get_header();
 ?>
-<header class="nexor-search-header">
-	<div class="container-nexor">
-		<a class="nexor-search-header__logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">Nexor</a>
-		<nav aria-label="Основная навигация">
-			<?php wp_nav_menu( array( 'theme_location'=>'primary', 'container'=>false, 'fallback_cb'=>false, 'depth'=>1 ) ); ?>
-		</nav>
-		<?php get_search_form(); ?>
-	</div>
-</header>
 <main class="nexor-search-page">
 	<div class="container-nexor">
 		<?php $query = trim( get_search_query() ); ?>

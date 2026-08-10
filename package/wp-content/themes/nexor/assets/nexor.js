@@ -47,19 +47,43 @@
       panel.setAttribute('role', 'dialog');
       panel.setAttribute('aria-modal', 'true');
       panel.setAttribute('aria-label', 'Меню сайта');
-      panel.innerHTML = `<div class="nexor-mobile-menu__top"><strong>Nexor</strong><button type="button" class="nexor-mobile-menu__close" aria-label="Закрыть меню">×</button></div>${searchForm}<nav aria-label="Мобильная навигация"><button type="button" class="nexor-mobile-menu__toggle" aria-expanded="false" aria-controls="nexor-mobile-services">Услуги</button><div id="nexor-mobile-services" class="nexor-mobile-menu__services" hidden>${links(mobileServices)}</div>${links(mobileItems)}<a href="tel:+79260832324">+7 (926) 083-23-24</a></nav>`;
+      const phoneLink = cfg.phoneLink || '+79260832324';
+      const phoneDisplay = cfg.phoneDisplay || '+7 (926) 083-23-24';
+      const vkPromo = `<a class="nexor-mobile-menu__vk" href="${esc(cfg.vkUrl || 'https://vk.com/club238015413')}" target="_blank" rel="noopener noreferrer" aria-label="Мы ВКонтакте"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M15.684 0H8.316C1.592 0 0 1.592 0 8.316v7.368C0 22.408 1.592 24 8.316 24h7.368C22.408 24 24 22.408 24 15.684V8.316C24 1.592 22.408 0 15.684 0zm3.692 17.123h-1.744c-.66 0-.864-.525-2.05-1.727-1.033-1-1.49-1.135-1.744-1.135-.356 0-.458.102-.458.593v1.575c0 .424-.135.678-1.253.678-1.846 0-3.896-1.118-5.335-3.202C4.624 10.857 4 8.673 4 8.231c0-.254.102-.491.593-.491h1.744c.44 0 .61.203.78.678.863 2.49 2.303 4.675 2.896 4.675.22 0 .322-.102.322-.66V9.721c-.068-1.186-.695-1.287-.695-1.71 0-.203.17-.407.44-.407h2.744c.373 0 .508.203.508.643v3.473c0 .372.17.508.271.508.22 0 .407-.136.813-.542 1.254-1.406 2.151-3.574 2.151-3.574.119-.254.322-.491.763-.491h1.744c.525 0 .644.27.525.643-.22 1.017-2.354 4.031-2.354 4.031-.186.305-.254.44 0 .78.186.254.796.779 1.203 1.253.745.847 1.32 1.558 1.473 2.05.17.49-.085.744-.576.744z"></path></svg></a>`;
+      panel.innerHTML = `<div class="nexor-mobile-menu__top"><strong>Nexor</strong><button type="button" class="nexor-mobile-menu__close" aria-label="Закрыть меню">×</button></div>${searchForm}<nav aria-label="Мобильная навигация"><button type="button" class="nexor-mobile-menu__toggle" aria-expanded="false" aria-controls="nexor-mobile-services">Услуги</button><div id="nexor-mobile-services" class="nexor-mobile-menu__services" hidden>${links(mobileServices)}</div>${links(mobileItems)}<a href="tel:${esc(phoneLink)}">${esc(phoneDisplay)}</a></nav>${vkPromo}`;
       document.body.append(panel);
+      panel.querySelector('.nexor-mobile-menu__top')?.style.setProperty('--nexor-stagger', '0');
+      panel.querySelector(':scope > .nexor-search')?.style.setProperty('--nexor-stagger', '1');
+      panel.querySelectorAll('nav > *').forEach((el, index) => el.style.setProperty('--nexor-stagger', String(index + 2)));
+      const vkLink = panel.querySelector('.nexor-mobile-menu__vk');
+      if (vkLink) vkLink.style.setProperty('--nexor-stagger', String((panel.querySelectorAll('nav > *').length || 0) + 3));
+      const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+      let exitTimer = 0;
       closeMobile = (restore = true) => {
-        if (panel.hidden) return;
-        panel.hidden = true;
-        lock(false);
+        if (panel.hidden || !panel.classList.contains('is-open')) {
+          if (!panel.hidden) {
+            panel.hidden = true;
+            lock(false);
+          }
+          return;
+        }
+        clearTimeout(exitTimer);
+        panel.classList.remove('is-open');
         mobileTrigger.setAttribute('aria-expanded', 'false');
+        const finish = () => {
+          panel.hidden = true;
+          lock(false);
+        };
+        if (reducedMotion.matches) finish();
+        else exitTimer = setTimeout(finish, 420);
         if (restore) mobileTrigger.focus();
       };
       mobileTrigger.addEventListener('click', () => {
+        clearTimeout(exitTimer);
         panel.hidden = false;
         lock(true);
         mobileTrigger.setAttribute('aria-expanded', 'true');
+        requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('is-open')));
         panel.querySelector('.nexor-mobile-menu__close').focus();
       });
       panel.querySelector('.nexor-mobile-menu__close').addEventListener('click', () => closeMobile());

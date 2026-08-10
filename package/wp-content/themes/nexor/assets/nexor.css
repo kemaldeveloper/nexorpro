@@ -126,9 +126,50 @@ main {
   position: fixed;
   z-index: 9999;
   inset: 0;
+  display: flex;
+  flex-direction: column;
   background: #fafaf8;
   padding: 24px;
   overflow: auto;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(100%, 0, 0);
+  transition:
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.28s ease;
+}
+.nexor-mobile-menu.is-open {
+  pointer-events: auto;
+  opacity: 1;
+  transform: none;
+}
+.nexor-mobile-menu__top,
+.nexor-mobile-menu > .nexor-search,
+.nexor-mobile-menu nav > *,
+.nexor-mobile-menu__vk {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+  transition:
+    opacity 0.34s ease,
+    transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.nexor-mobile-menu.is-open .nexor-mobile-menu__top,
+.nexor-mobile-menu.is-open > .nexor-search,
+.nexor-mobile-menu.is-open nav > *,
+.nexor-mobile-menu.is-open .nexor-mobile-menu__vk {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(120ms + var(--nexor-stagger, 0) * 40ms);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nexor-mobile-menu,
+  .nexor-mobile-menu__top,
+  .nexor-mobile-menu > .nexor-search,
+  .nexor-mobile-menu nav > *,
+  .nexor-mobile-menu__vk {
+    transition: none !important;
+    transform: none !important;
+  }
 }
 .nexor-mobile-menu__top {
   display: flex;
@@ -136,17 +177,8 @@ main {
   align-items: center;
   margin-bottom: 28px;
 }
-.nexor-mobile-menu__close {
-  font-size: 32px;
-  background: none;
-  border: 0;
-}
-.nexor-mobile-menu nav {
-  display: grid;
-  gap: 8px;
-}
-.nexor-mobile-menu a,
-.nexor-mobile-menu button {
+.nexor-mobile-menu a:not(.nexor-mobile-menu__vk),
+.nexor-mobile-menu button:not(.nexor-mobile-menu__close) {
   display: block;
   padding: 13px 0;
   color: #24211e;
@@ -155,6 +187,48 @@ main {
   background: none;
   border: 0;
   text-align: left;
+}
+.nexor-mobile-menu nav {
+  display: grid;
+  gap: 8px;
+}
+.nexor-mobile-menu .nexor-mobile-menu__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin: -8px -8px -8px 0;
+  padding: 0;
+  font-size: 44px;
+  line-height: 1;
+  color: #24211e;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.nexor-mobile-menu .nexor-mobile-menu__vk {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  margin-top: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 12px;
+  background: #4a76a8;
+  color: #fff;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.nexor-mobile-menu .nexor-mobile-menu__vk:hover {
+  background: #3b6694;
+  transform: translateY(-1px);
+}
+.nexor-mobile-menu .nexor-mobile-menu__vk svg {
+  display: block;
 }
 .nexor-mobile-menu__services {
   padding-left: 16px !important;
@@ -411,30 +485,24 @@ main {
     padding-left: clamp(32px, 2.5vw, 52px);
     padding-right: clamp(32px, 2.5vw, 52px);
   }
-  header .container-nexor > div {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    column-gap: clamp(28px, 2.5vw, 52px);
-  }
-  .nexor-desktop-nav {
-    width: 100%;
-    max-width: none !important;
-    justify-content: flex-start;
-    gap: clamp(8px, 0.75vw, 14px) !important;
-  }
-  .nexor-desktop-nav .nexor-search {
-    flex-shrink: 0;
-  }
-  .nexor-desktop-contact {
-    flex-shrink: 0;
-  }
 }
-@media (min-width: 1024px) and (max-width: 1439px) {
-  .nexor-desktop-nav {
-    display: none !important;
-  }
-  .nexor-mobile-trigger {
-    display: block !important;
+/* Reference header: logo left, contacts+CTA+burger right — no inline desktop links */
+header .container-nexor > div > nav.hidden,
+.nexor-desktop-nav {
+  display: none !important;
+}
+header button:has(.lucide-menu),
+.nexor-mobile-trigger {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+@media (min-width: 768px) {
+  .nexor-desktop-contact,
+  header .container-nexor > div > .hidden.md\:flex {
+    margin-left: auto;
+    margin-right: clamp(12px, 1.5vw, 28px);
   }
 }
 .nexor-enhancement-section {
@@ -717,7 +785,7 @@ main {
 }
 .nexor-search-page {
   min-height: 70vh;
-  padding: 70px 0;
+  padding: 144px 0 70px;
 }
 .nexor-search-page .nav-links {
   display: flex;
@@ -1524,23 +1592,27 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   outline-offset: 4px;
 }
 
+header > a[href*="vk.com"] {
+  display: none !important;
+}
 /* Glass header and the three-column opening screen. */
 body:has(.nexor-home) header {
-  padding: 10px 16px 0;
+  padding: 0;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 }
 body:has(.nexor-home) header > a {
-  width: min(100%, 1480px);
-  margin: auto;
-  border-radius: 14px 14px 0 0;
-  background: rgba(241, 239, 235, 0.82) !important;
-  backdrop-filter: blur(16px);
+  display: none !important;
+}
+body:has(.nexor-home) header > div > .container-nexor {
+  width: min(100% - 32px, 1480px);
+  margin-inline: auto;
 }
 body:has(.nexor-home) header > div {
-  width: min(100%, 1480px);
-  margin: auto;
-  border: 1px solid rgba(255, 255, 255, 0.46);
-  border-radius: 0 0 17px 17px;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.46);
+  border-radius: 0;
   background: rgba(248, 247, 244, 0.82) !important;
   backdrop-filter: blur(18px);
 }
@@ -1549,7 +1621,7 @@ body:has(.nexor-home) header > div {
 }
 .nexor-home-hero {
   min-height: max(760px, 100svh) !important;
-  padding: 154px 0 30px !important;
+  padding: 110px 0 30px !important;
   background: #171512;
 }
 .nexor-home-hero > div:first-child img {
@@ -3162,11 +3234,14 @@ body:has(.nexor-home) header > div {
 
 @media (max-width: 1023px) {
   body:has(.nexor-home) header {
-    padding: 8px 10px 0;
+    padding: 0;
+  }
+  body:has(.nexor-home) header > div > .container-nexor {
+    width: min(100% - 20px, 1480px);
   }
   .nexor-home-hero {
     min-height: 850px !important;
-    padding-top: 146px !important;
+    padding-top: 110px !important;
   }
   .nexor-home-hero > .container-nexor {
     display: grid;
@@ -3297,7 +3372,7 @@ body:has(.nexor-home) header > div {
     display: none !important;
   }
   body:has(.nexor-home) header > div {
-    border-radius: 15px;
+    border-radius: 0;
   }
   body:has(.nexor-home) header > div > div > div {
     height: 64px !important;
@@ -3757,21 +3832,22 @@ body:has(.nexor-home) header > div {
   display: none !important;
 }
 body:has(.nexor-service-page) header {
-  padding: 10px 16px 0;
+  padding: 0;
   filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 }
 body:has(.nexor-service-page) header > a {
-  width: min(100%, 1480px);
-  margin: auto;
-  border-radius: 14px 14px 0 0;
-  background: rgba(241, 239, 235, 0.84) !important;
-  backdrop-filter: blur(16px);
+  display: none !important;
+}
+body:has(.nexor-service-page) header > div > .container-nexor {
+  width: min(100% - 32px, 1480px);
+  margin-inline: auto;
 }
 body:has(.nexor-service-page) header > div {
-  width: min(100%, 1480px);
-  margin: auto;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  border-radius: 0 0 17px 17px;
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 0;
   background: rgba(248, 247, 244, 0.87) !important;
   backdrop-filter: blur(18px);
 }
@@ -4156,13 +4232,16 @@ body:has(.nexor-service-page) header > div {
 }
 @media (max-width: 767px) {
   body:has(.nexor-service-page) header {
-    padding: 8px 10px 0;
+    padding: 0;
   }
   body:has(.nexor-service-page) header > a {
     display: none !important;
   }
   body:has(.nexor-service-page) header > div {
-    border-radius: 15px;
+    border-radius: 0;
+  }
+  body:has(.nexor-service-page) header > div > .container-nexor {
+    width: min(100% - 20px, 1480px);
   }
   body:has(.nexor-service-page) header > div > div > div {
     height: 64px !important;

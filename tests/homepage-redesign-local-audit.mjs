@@ -116,7 +116,10 @@ for (const [, width, height] of viewports) {
 }
 
 await send('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
-const mobileMenu = await evaluate(`(()=>{const trigger=document.querySelector('.nexor-mobile-trigger');trigger?.click();const open=!document.querySelector('.nexor-mobile-menu')?.hidden;document.querySelector('.nexor-mobile-menu__close')?.click();return{open,closed:document.querySelector('.nexor-mobile-menu')?.hidden===true}})()`);
+const mobileMenuOpen = await evaluate(`(()=>{const trigger=document.querySelector('.nexor-mobile-trigger');trigger?.click();return!document.querySelector('.nexor-mobile-menu')?.hidden})()`);
+await evaluate(`document.querySelector('.nexor-mobile-menu__close')?.click()`);
+await sleep(600);
+const mobileMenu = { open: mobileMenuOpen, closed: await evaluate(`document.querySelector('.nexor-mobile-menu')?.hidden===true`) };
 
 const assertions = {
   noRuntimeErrors: runtimeErrors.length === 0,

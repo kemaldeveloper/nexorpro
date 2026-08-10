@@ -11,6 +11,27 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'NEXOR_THEME_VERSION', '1.6.0' );
 
+/** Contacts for the global PHP header (from Nexor settings with safe defaults). */
+function nexor_contact_settings(): array {
+	$defaults = array(
+		'phone_display' => '+7 (926) 083-23-24',
+		'phone_link'    => '+79260832324',
+		'telegram_url'  => 'https://t.me/nexor_msk',
+		'vk_url'        => 'https://vk.com/club238015413',
+	);
+	$option = get_option( 'nexor_settings', array() );
+	if ( ! is_array( $option ) ) {
+		return $defaults;
+	}
+	return wp_parse_args( $option, $defaults );
+}
+
+/** Strip legacy per-page &lt;header&gt; blocks from migrated HTML (now rendered in header.php). */
+function nexor_strip_embedded_header( string $content ): string {
+	$stripped = preg_replace( '/<header\b[^>]*\bfixed\b[^>]*>.*?<\/header>/is', '', $content, 1 );
+	return is_string( $stripped ) ? $stripped : $content;
+}
+
 /** Return flat menu data for the migrated-header compatibility layer. */
 function nexor_menu_payload( string $location ): array {
 	$result = array( 'items' => array(), 'services' => array() );
@@ -120,6 +141,7 @@ add_action(
 		$script_file = get_template_directory() . '/assets/nexor.js';
 		wp_enqueue_script( 'nexor-theme', get_template_directory_uri() . '/assets/nexor.js', $gsap_deps, file_exists( $script_file ) ? filemtime( $script_file ) : NEXOR_THEME_VERSION, true );
 		$enhancements = class_exists( 'Nexor_Enhancements' ) ? Nexor_Enhancements::frontend_config() : array();
+		$contacts = nexor_contact_settings();
 		wp_localize_script(
 			'nexor-theme',
 			'NexorSettings',
@@ -129,6 +151,10 @@ add_action(
 				'thankYou' => home_url( '/thank-you/' ),
 				'privacy'  => home_url( '/privacy/' ),
 				'consent'  => home_url( '/consent/' ),
+				'phoneDisplay' => $contacts['phone_display'],
+				'phoneLink'    => $contacts['phone_link'],
+				'telegramUrl'  => $contacts['telegram_url'],
+				'vkUrl'        => $contacts['vk_url'],
 				'navigation' => nexor_navigation_payload(),
 				'enhancements' => $enhancements,
 			)
@@ -201,6 +227,7 @@ add_action(
 /** Render trusted, administrator-managed migration markup. */
 function nexor_render_migrated_content(): void {
 	$content = get_the_content();
+	$content = nexor_strip_embedded_header( $content );
 	$replacements = apply_filters( 'nexor_content_replacements', array() );
 	if ( $replacements ) {
 		$content = str_replace( array_keys( $replacements ), array_values( $replacements ), $content );
