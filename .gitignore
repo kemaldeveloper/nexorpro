@@ -3,6 +3,7 @@
 .env.*
 !.env.example
 wp-config.php
+wp-config.local.php
 *.key
 *.pem
 *.p12

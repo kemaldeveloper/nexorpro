@@ -204,7 +204,7 @@
       .join('');
     return `<form class="nexor-form" data-source="${esc(source)}"><input type="text" name="website" class="nexor-hp" tabindex="-1" autocomplete="off"><input type="hidden" name="project" value="${esc(project)}">${contextFields}<label>Имя<input name="name" autocomplete="name" required maxlength="80"></label><label>Телефон<input name="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required></label>${projectFields}<button type="submit">Отправить заявку</button><p class="nexor-form__legal">Нажимая кнопку, вы соглашаетесь с <a href="${cfg.privacy}">политикой конфиденциальности</a> и <a href="${cfg.consent}">обработкой персональных данных</a>.</p><p class="nexor-form__status" role="status" aria-live="polite"></p></form>`;
   }
-  function openForm(source = 'Запись на замер', project = '', context = {}) {
+  function openForm(source = 'Запись на замер', project = '', context = {}, copy = {}) {
     let modal = document.querySelector('.nexor-modal');
     if (!modal) {
       modal = document.createElement('div');
@@ -212,12 +212,32 @@
       modal.hidden = true;
       modal.setAttribute('role', 'dialog');
       modal.setAttribute('aria-modal', 'true');
+      modal.setAttribute('aria-labelledby', 'nexor-modal-title');
       modal.innerHTML =
-        '<div class="nexor-modal__panel"><button class="nexor-modal__close" aria-label="Закрыть">×</button><h2 class="heading-card mb-5">Оставить заявку</h2><div class="nexor-modal__body"></div></div>';
+        '<div class="nexor-modal__panel"><button type="button" class="nexor-modal__close" aria-label="Закрыть">×</button><h2 id="nexor-modal-title" class="nexor-modal__title heading-card">Оставить заявку</h2><p class="nexor-modal__lead" hidden></p><div class="nexor-modal__body"></div></div>';
       document.body.append(modal);
       modal.addEventListener('click', e => {
         if (e.target === modal || e.target.closest('.nexor-modal__close')) closeModal();
       });
+    }
+    let titleEl = modal.querySelector('#nexor-modal-title') || modal.querySelector('.nexor-modal__title') || modal.querySelector('h2');
+    let leadEl = modal.querySelector('.nexor-modal__lead');
+    if (titleEl && !titleEl.id) titleEl.id = 'nexor-modal-title';
+    if (titleEl) {
+      titleEl.classList.add('nexor-modal__title', 'heading-card');
+      titleEl.classList.remove('mb-5');
+      titleEl.textContent = copy.title || 'Оставить заявку';
+    }
+    if (!leadEl && titleEl) {
+      leadEl = document.createElement('p');
+      leadEl.className = 'nexor-modal__lead';
+      leadEl.hidden = true;
+      titleEl.after(leadEl);
+    }
+    if (leadEl) {
+      const lead = (copy.lead || '').trim();
+      leadEl.textContent = lead;
+      leadEl.hidden = !lead;
     }
     modal.querySelector('.nexor-modal__body').innerHTML = formMarkup(source, project, context);
     modal.hidden = false;
@@ -265,10 +285,29 @@
       const type = trigger.dataset.nexorContextType,
         id = trigger.dataset.nexorContextId;
       const key = type === 'additional' ? 'additional_service_id' : type === 'promotion' ? 'promotion_id' : type === 'price' ? 'price_row_id' : '';
-      openForm(type === 'promotion' ? 'Акция' : type === 'additional' ? 'Дополнительная услуга' : 'Услуга', '', key ? { [key]: id } : {});
+      const fromHeroPromo = !!trigger.closest('.nexor-hero-promo');
+      openForm(
+        type === 'promotion' ? 'Акция' : type === 'additional' ? 'Дополнительная услуга' : 'Услуга',
+        '',
+        key ? { [key]: id } : {},
+        fromHeroPromo
+          ? {
+              title: 'Получите дизайн-проект в подарок',
+              lead: 'Оставьте номер телефона — расскажем условия акции и как получить подарок.',
+            }
+          : {}
+      );
     });
     document.querySelectorAll('button,a').forEach(el => {
       if (el.matches('[data-nexor-context-type],[data-nexor-open-form]')) return;
+      if (el.matches('a[href*="#calculator"]')) return;
+      if (el.closest('.nexor-home-hero__actions') && /рассчитать/.test(el.textContent.toLowerCase())) {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          document.querySelector('#calculator')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        return;
+      }
       const text = el.textContent.trim().toLowerCase();
       const measurement = text === 'записаться' || text.includes('записаться на замер') || text.includes('получить смету после замера');
       const project = text.includes('рассчитать') || text.includes('получить расч') || text.includes('узнать стоимость') || text.includes('обсудить ваш проект') || text.includes('обсудить ремонт');
@@ -305,6 +344,61 @@
     items.forEach((item, index) => {
       item.style.setProperty('--reveal-delay', `${Math.min(index % 5, 4) * 55}ms`);
       observer.observe(item);
+    });
+  }
+
+  function setupHeroIntro() {
+    const hero = document.querySelector('.nexor-home-hero');
+    if (!hero) return;
+
+    const promo = hero.querySelector('.nexor-hero-promo');
+    const copy = hero.querySelector('.nexor-home-hero__copy');
+    const aside = hero.querySelector('.nexor-home-hero__aside');
+    const features = hero.querySelector('.nexor-home-hero__features');
+    const steps = [promo, copy, aside, features].filter(Boolean);
+    if (!steps.length) return;
+
+    promo?.classList.remove('nexor-reveal');
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const gsap = window.gsap;
+    if (gsap) {
+      const clear = () => gsap.set(steps, { clearProps: 'opacity,transform,x,y' });
+      const tl = gsap.timeline({
+        defaults: { duration: 0.48, ease: 'power2.out' },
+        onComplete: clear,
+      });
+
+      if (promo) {
+        gsap.set(promo, { opacity: 0, y: -18 });
+        tl.to(promo, { opacity: 1, y: 0 }, 0.06);
+      }
+      if (copy) {
+        gsap.set(copy, { opacity: 0, y: -18 });
+        tl.to(copy, { opacity: 1, y: 0, duration: 0.42 }, promo ? '+=0.1' : 0.06);
+      }
+      if (aside) {
+        gsap.set(aside, { opacity: 0, y: -18 });
+        tl.to(aside, { opacity: 1, y: 0, duration: 0.42 }, '+=0.08');
+      }
+      if (features) {
+        gsap.set(features, { opacity: 0, x: -22 });
+        tl.to(features, { opacity: 1, x: 0, duration: 0.5 }, '+=0.12');
+      }
+      return;
+    }
+
+    steps.forEach(el => el.classList.add('nexor-hero-intro'));
+    promo?.classList.add('nexor-hero-intro--down');
+    copy?.classList.add('nexor-hero-intro--down');
+    aside?.classList.add('nexor-hero-intro--down');
+    features?.classList.add('nexor-hero-intro--left');
+    requestAnimationFrame(() => {
+      if (promo) promo.classList.add('is-hero-in');
+      window.setTimeout(() => copy?.classList.add('is-hero-in'), 200);
+      window.setTimeout(() => aside?.classList.add('is-hero-in'), 360);
+      window.setTimeout(() => features?.classList.add('is-hero-in'), 520);
     });
   }
   function setupFaq() {
@@ -1310,6 +1404,7 @@
     setupLightbox();
     setupVideoFacades();
     setupBonusCountdown();
+    setupHeroIntro();
     setupRevealAnimations();
     setupExitIntent();
     initStagesAnimations();

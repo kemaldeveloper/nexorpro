@@ -1,117 +1,86 @@
 <div class="min-h-screen bg-background">
-  <main class="pt-[104px] md:pt-[124px]">
-    <section class="relative min-h-[85vh] flex items-center pt-16 md:pt-20">
-      <div class="absolute inset-0 overflow-hidden">
-        <img src="{{THEME_URI}}/assets/hero-interior-DlyWYF5d.webp" alt="Современный интерьер квартиры после ремонта" class="w-full h-full object-cover hero-bg-zoom" fetchpriority="high" />
-        <div class="absolute inset-0 hero-overlay"></div>
-      </div>
-      <div class="container-nexor relative z-10 py-28 md:py-36">
-        <div class="max-w-3xl">
-          <h1 class="heading-hero text-white mb-8">Ремонт квартир и домов под ключ в Москве и Московской области</h1>
-          <p class="text-body-large text-white/90 mb-10 max-w-xl">
-            Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.
-          </p>
-          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-12">
-            <button
-              class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-calculator mr-2.5 h-5 w-5"
-              >
-                <rect width="16" height="20" x="4" y="2" rx="2"></rect>
-                <line x1="8" x2="16" y1="6" y2="6"></line>
-                <line x1="16" x2="16" y1="14" y2="18"></line>
-                <path d="M16 10h.01"></path>
-                <path d="M12 10h.01"></path>
-                <path d="M8 10h.01"></path>
-                <path d="M12 14h.01"></path>
-                <path d="M8 14h.01"></path>
-                <path d="M12 18h.01"></path>
-                <path d="M8 18h.01"></path></svg
-              >Рассчитать стоимость</button
-            ><a href="#cases" class="group flex items-center gap-2 text-white/60 font-medium text-base hover:text-white/80 transition-colors duration-200"
-              >Реализованные проекты<svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
-              >
-                <path d="M5 12h14"></path>
-                <path d="m12 5 7 7-7 7"></path></svg
-            ></a>
+  <main class="nexor-home">
+    <section class="nexor-home-hero">
+      <div class="container-nexor">
+        <div class="nexor-home-hero__layout">
+          <div class="nexor-home-hero__main">
+            <div class="nexor-home-hero__copy">
+              <h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1>
+              <p class="nexor-home-hero__sub">в Москве и Московской области</p>
+            </div>
+            <div class="nexor-home-hero__aside">
+              <p class="nexor-home-hero__eyebrow">Работаем по фиксированной смете</p>
+              <p class="nexor-home-hero__lead">
+                Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.
+              </p>
+              <div class="nexor-home-hero__actions">
+                <a
+                  href="#calculator"
+                  class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-calculator mr-2.5 h-5 w-5"
+                  >
+                    <rect width="16" height="20" x="4" y="2" rx="2"></rect>
+                    <line x1="8" x2="16" y1="6" y2="6"></line>
+                    <line x1="16" x2="16" y1="14" y2="18"></line>
+                    <path d="M16 10h.01"></path>
+                    <path d="M12 10h.01"></path>
+                    <path d="M8 10h.01"></path>
+                    <path d="M12 14h.01"></path>
+                    <path d="M8 14h.01"></path>
+                    <path d="M12 18h.01"></path>
+                    <path d="M8 18h.01"></path></svg
+                  >Рассчитать стоимость</a
+                ><a href="#cases" class="group inline-flex items-center justify-center gap-2 font-medium text-base"
+                  >Реализованные проекты<svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"
+                  >
+                    <path d="M5 12h14"></path>
+                    <path d="m12 5 7 7-7 7"></path></svg
+                ></a>
+              </div>
+            </div>
           </div>
-          <div class="flex flex-wrap gap-x-8 gap-y-3">
-            <div class="flex items-center gap-2.5 text-white/90">
-              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check w-3 h-3 text-white"
-                >
-                  <path d="M20 6 9 17l-5-5"></path>
-                </svg>
+          <div class="nexor-home-hero__features" aria-label="Преимущества Nexor">
+            <div class="nexor-home-hero__feature">
+              <span class="nexor-home-hero__num" aria-hidden="true">01</span>
+              <div>
+                <strong>Фиксированная смета</strong>
+                <span>Без скрытых работ</span>
               </div>
-              <span class="text-sm font-medium">Фиксированная смета без скрытых работ</span>
             </div>
-            <div class="flex items-center gap-2.5 text-white/90">
-              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check w-3 h-3 text-white"
-                >
-                  <path d="M20 6 9 17l-5-5"></path>
-                </svg>
+            <div class="nexor-home-hero__feature">
+              <span class="nexor-home-hero__num" aria-hidden="true">02</span>
+              <div>
+                <strong>Поэтапная оплата</strong>
+                <span>Платите за результат</span>
               </div>
-              <span class="text-sm font-medium">Поэтапная оплата — платите за результат</span>
             </div>
-            <div class="flex items-center gap-2.5 text-white/90">
-              <div class="w-5 h-5 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="lucide lucide-check w-3 h-3 text-white"
-                >
-                  <path d="M20 6 9 17l-5-5"></path>
-                </svg>
+            <div class="nexor-home-hero__feature">
+              <span class="nexor-home-hero__num" aria-hidden="true">03</span>
+              <div>
+                <strong>Гарантия 3 года</strong>
+                <span>На выполненные работы</span>
               </div>
-              <span class="text-sm font-medium">Гарантия на выполненные работы</span>
             </div>
           </div>
         </div>

@@ -18,11 +18,16 @@ services:
     image: wordpress:php8.3-apache
     ports:
       - "8080:80"
+    env_file:
+      - path: .env
+        required: false
     environment:
       WORDPRESS_DB_HOST: db:3306
       WORDPRESS_DB_USER: wordpress
       WORDPRESS_DB_PASSWORD: wordpress
       WORDPRESS_DB_NAME: wordpress
+      NEXOR_TELEGRAM_BOT_TOKEN: ${NEXOR_TELEGRAM_BOT_TOKEN:-}
+      NEXOR_TELEGRAM_CHAT_ID: ${NEXOR_TELEGRAM_CHAT_ID:-}
     volumes:
       - wp_data:/var/www/html
       - ./package/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor
@@ -64,6 +69,7 @@ services:
         done
         wp theme activate nexor --path=/var/www/html --allow-root
         wp plugin activate nexor-core --path=/var/www/html --allow-root
+        wp option update timezone_string 'Europe/Moscow' --path=/var/www/html --allow-root
         wp rewrite structure '/%postname%/' --path=/var/www/html --allow-root
         wp rewrite flush --path=/var/www/html --allow-root
         echo "Done. Site: http://localhost:8080  Admin: admin / admin"

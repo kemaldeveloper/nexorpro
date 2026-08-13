@@ -168,11 +168,32 @@ final class Nexor_Core {
 		$token   = defined( 'NEXOR_TELEGRAM_BOT_TOKEN' ) ? NEXOR_TELEGRAM_BOT_TOKEN : '';
 		$chat_id = defined( 'NEXOR_TELEGRAM_CHAT_ID' ) ? NEXOR_TELEGRAM_CHAT_ID : self::settings()['telegram_chat_id'];
 		if ( ! $token || ! $chat_id ) return new WP_Error( 'telegram_config', 'Telegram не настроен.' );
-		$data  = (array) get_post_meta( $post_id, '_nexor_lead_data', true );
-		$lines = array( '<b>Новая заявка Nexor</b>' );
-		foreach ( $data as $key => $value ) {
-			$lines[] = '<b>' . esc_html( ucfirst( str_replace( '_', ' ', $key ) ) ) . ':</b> ' . esc_html( (string) $value );
+		$data   = (array) get_post_meta( $post_id, '_nexor_lead_data', true );
+		$labels = array(
+			'name'        => '👤 Имя',
+			'phone'       => '📞 Телефон',
+			'address'     => '📍 Адрес',
+			'object_type' => '🏠 Тип объекта',
+			'area'        => '📐 Площадь',
+			'repair_type' => '🛠 Тип ремонта',
+			'project'     => '📁 Проект',
+			'source'      => '🔗 Источник',
+		);
+		$lines = array( '📩 <b>Новая заявка Nexor</b>' );
+		foreach ( $labels as $key => $label ) {
+			if ( ! isset( $data[ $key ] ) ) {
+				continue;
+			}
+			$value = trim( (string) $data[ $key ] );
+			if ( '' === $value ) {
+				continue;
+			}
+			$lines[] = '<b>' . esc_html( $label ) . ':</b> ' . esc_html( $value );
 		}
+		$datetime  = get_post_datetime( $post_id, 'date', 'gmt' );
+		$timestamp = $datetime ? $datetime->getTimestamp() : time();
+		$lines[]   = '📅 <b>Дата:</b> ' . esc_html( wp_date( 'd.m.Y', $timestamp ) );
+		$lines[]   = '🕐 <b>Время:</b> ' . esc_html( wp_date( 'H:i', $timestamp ) );
 		$response = wp_remote_post(
 			'https://api.telegram.org/bot' . rawurlencode( $token ) . '/sendMessage',
 			array( 'timeout' => 12, 'body' => array( 'chat_id' => $chat_id, 'text' => implode( "\n", $lines ), 'parse_mode' => 'HTML', 'disable_web_page_preview' => 'true' ) )

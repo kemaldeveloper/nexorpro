@@ -735,14 +735,134 @@ final class Nexor_Enhancements
       }
     }
     if (! $featured) return '';
+    $threshold = absint($featured['threshold_amount'] ?? 0);
+    $note = '';
+    if ($threshold >= 1000000) {
+      $millions = $threshold / 1000000;
+      $millions_label = abs($millions - (int) $millions) < 0.05
+        ? (string) (int) $millions
+        : rtrim(rtrim(number_format($millions, 1, ',', ''), '0'), ',');
+      $note = '<p class="nexor-hero-promo__note">при ремонте от ' . esc_html($millions_label) . ' млн ₽</p>';
+    }
+    $icon = '<div class="nexor-hero-promo__icon" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg></div>';
     return sprintf(
-      '<aside class="nexor-hero-promo nexor-reveal" data-nexor-deadline="%1$s" aria-label="%2$s"><p class="nexor-hero-promo__eyebrow">Временное предложение</p><div class="nexor-hero-promo__copy"><span>До 31 августа</span><strong>%3$s</strong></div><div class="nexor-hero-countdown" role="timer" aria-live="off"><span><strong data-days>00</strong><small>дней</small></span><span><strong data-hours>00</strong><small>часов</small></span><span><strong data-minutes>00</strong><small>минут</small></span><span><strong data-seconds>00</strong><small>секунд</small></span></div><button type="button" data-nexor-context-type="promotion" data-nexor-context-id="%4$s">%5$s</button></aside>',
+      '<aside class="nexor-hero-promo" data-nexor-deadline="%1$s" aria-label="%2$s"><div class="nexor-hero-promo__head"><div class="nexor-hero-promo__media">%3$s</div><div class="nexor-hero-promo__copy"><p class="nexor-hero-promo__eyebrow">Спецпредложение</p><strong class="nexor-hero-promo__title">%4$s</strong>%5$s<p class="nexor-hero-promo__action" aria-hidden="true">Получить подарок <span>→</span></p><p class="nexor-hero-promo__timer-label">До конца акции осталось</p></div></div><div class="nexor-hero-promo__countdown"><div class="nexor-hero-countdown" role="timer" aria-live="off"><span><strong data-days>00</strong><small>дней</small></span><span><strong data-hours>00</strong><small>часов</small></span><span><strong data-minutes>00</strong><small>минут</small></span><span><strong data-seconds>00</strong><small>секунд</small></span></div></div><button type="button" class="nexor-hero-promo__cta" data-nexor-context-type="promotion" data-nexor-context-id="%6$s">Получить подарок</button></aside>',
       esc_attr($o['featured_deadline']),
       esc_attr($featured['title']),
+      $icon,
       esc_html($featured['title']),
-      esc_attr($featured['id']),
-      esc_html($featured['cta_label'])
+      $note,
+      esc_attr($featured['id'])
     );
+  }
+
+  private static function home_hero_features(): string
+  {
+    $items = array(
+      array('01', 'Фиксированная смета', 'Без скрытых работ'),
+      array('02', 'Поэтапная оплата', 'Платите за результат'),
+      array('03', 'Гарантия 3 года', 'На выполненные работы'),
+    );
+    $html = '';
+    foreach ($items as $item) {
+      $html .= sprintf(
+        '<div class="nexor-home-hero__feature"><span class="nexor-home-hero__num" aria-hidden="true">%1$s</span><div><strong>%2$s</strong><span>%3$s</span></div></div>',
+        esc_html($item[0]),
+        esc_html($item[1]),
+        esc_html($item[2])
+      );
+    }
+    return '<div class="nexor-home-hero__features" aria-label="Преимущества Nexor">' . $html . '</div>';
+  }
+
+  private static function home_hero_main(string $actions = ''): string
+  {
+    if (! $actions) {
+      $actions = '<div class="nexor-home-hero__actions"><a href="#calculator" class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator mr-2.5 h-5 w-5"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>Рассчитать стоимость</a><a href="#cases" class="group inline-flex items-center justify-center gap-2 font-medium text-base">Реализованные проекты<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>';
+    }
+    return '<div class="nexor-home-hero__main"><div class="nexor-home-hero__copy"><h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1><p class="nexor-home-hero__sub">в Москве и Московской области</p></div><div class="nexor-home-hero__aside"><p class="nexor-home-hero__eyebrow">Работаем по фиксированной смете</p><p class="nexor-home-hero__lead">Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.</p>' . $actions . '</div></div>' . self::home_hero_features();
+  }
+
+  private static function replace_balanced_div(string $content, string $open_tag, string $replacement): string
+  {
+    $start = strpos($content, $open_tag);
+    if (false === $start) return $content;
+    $pos = $start;
+    $depth = 0;
+    $length = strlen($content);
+    while ($pos < $length) {
+      $next_open = strpos($content, '<div', $pos);
+      $next_close = strpos($content, '</div>', $pos);
+      if (false === $next_close) break;
+      if (false !== $next_open && $next_open < $next_close) {
+        $depth++;
+        $gt = strpos($content, '>', $next_open);
+        $pos = false === $gt ? $next_open + 4 : $gt + 1;
+        continue;
+      }
+      $depth--;
+      $pos = $next_close + 6;
+      if (0 === $depth) {
+        return substr($content, 0, $start) . $replacement . substr($content, $pos);
+      }
+    }
+    return $content;
+  }
+
+  private static function compose_home_hero(string $content): string
+  {
+    if (str_contains($content, 'nexor-home-hero__main')) {
+      if (! str_contains($content, 'nexor-home-hero__copy')) {
+        $content = preg_replace(
+          '/<h1 class="heading-hero text-white">\s*Ремонт квартир и домов под ключ\s*(?:<span class="nexor-home-hero__sub">([^<]*)<\/span>)?\s*<\/h1>(?:\s*<p class="nexor-home-hero__sub">([^<]*)<\/p>)?/u',
+          '<div class="nexor-home-hero__copy"><h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1><p class="nexor-home-hero__sub">' . 'в Москве и Московской области' . '</p></div>',
+          $content,
+          1
+        ) ?? $content;
+      }
+      $content = self::hero_calculate_cta_to_anchor($content);
+      return $content;
+    }
+
+    return self::replace_balanced_div($content, '<div class="max-w-3xl">', self::home_hero_main(''));
+  }
+
+  private static function hero_calculate_cta_to_anchor(string $content): string
+  {
+    if (! str_contains($content, 'Рассчитать стоимость')) {
+      return $content;
+    }
+    if (preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\']#calculator["\'][^>]*>[\s\S]*?Рассчитать стоимость/u', $content)) {
+      return $content;
+    }
+    $content = preg_replace(
+      '/(<div class="nexor-home-hero__actions">[\s\S]*?)<button\b([^>]*)>([\s\S]*?Рассчитать стоимость[\s\S]*?)<\/button>/u',
+      '$1<a href="#calculator"$2>$3</a>',
+      $content,
+      1
+    ) ?? $content;
+    $content = preg_replace(
+      '/(<a href="#calculator")([^>]*?)\stype="button"/u',
+      '$1$2',
+      $content,
+      1
+    ) ?? $content;
+    // Legacy hero without actions wrapper: first calculate button near hero CTAs.
+    if (! preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\']#calculator["\']/u', $content)) {
+      $content = preg_replace(
+        '/<button\b([^>]*bg-primary[^>]*)>([\s\S]*?Рассчитать стоимость[\s\S]*?)<\/button>/u',
+        '<a href="#calculator"$1>$2</a>',
+        $content,
+        1
+      ) ?? $content;
+      $content = preg_replace(
+        '/(<a href="#calculator")([^>]*?)\stype="button"/u',
+        '$1$2',
+        $content,
+        1
+      ) ?? $content;
+    }
+    return $content;
   }
   private static function video_section(): string
   {
@@ -887,11 +1007,36 @@ final class Nexor_Enhancements
   public static function inject_frontend_content(string $content): string
   {
     if (is_front_page()) {
-      $content = str_replace('<main class="pt-[104px] md:pt-[124px]">', '<main class="nexor-home pt-[104px] md:pt-[124px]">', $content);
-      $content = str_replace('<section class="relative min-h-[85vh] flex items-center pt-16 md:pt-20">', '<section class="nexor-home-hero relative min-h-[85vh] flex items-center pt-16 md:pt-20">', $content);
-      $hero_image = esc_url(get_theme_file_uri('assets/design-fullwidth-interior-t1Ou1Olm.webp'));
-      $content = preg_replace_callback('/(<section class="nexor-home-hero[^>]*>.*?<img\b[^>]*\bsrc=")[^"]+("[^>]*>)/s', static fn($matches) => $matches[1] . $hero_image . $matches[2], $content, 1);
-      $content = str_replace('<div class="container-nexor relative z-10 py-28 md:py-36"><div class="max-w-3xl">', '<div class="container-nexor relative z-10 py-28 md:py-36">' . self::hero_promotion() . '<div class="max-w-3xl">', $content);
+      $content = str_replace('<main class="pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
+      $content = str_replace('<main class="nexor-home pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
+      $content = str_replace('<section class="relative min-h-[85vh] flex items-center pt-16 md:pt-20">', '<section class="nexor-home-hero">', $content);
+      $content = preg_replace(
+        '/(<section class="nexor-home-hero">)\s*<div[^>]*>\s*<img\b[^>]*>\s*(?:<div[^>]*hero-overlay[^>]*><\/div>\s*)?<\/div>\s*/s',
+        '$1',
+        $content,
+        1
+      ) ?? $content;
+      $content = str_replace(
+        array(
+          '<div class="container-nexor relative z-10 py-28 md:py-36">',
+          '<div class="container-nexor relative z-10">',
+        ),
+        '<div class="container-nexor">',
+        $content
+      );
+      if (str_contains($content, 'nexor-home-hero') && ! str_contains($content, 'nexor-home-hero__layout')) {
+        $content = preg_replace(
+          '/(<section class="nexor-home-hero">\s*<div class="container-nexor">)([\s\S]*?)(<\/div>\s*<\/section>)/',
+          '$1<div class="nexor-home-hero__layout">$2</div>$3',
+          $content,
+          1
+        ) ?? $content;
+      }
+      $promo = self::hero_promotion();
+      if ($promo !== '') {
+        $content = str_replace('<div class="nexor-home-hero__layout">', '<div class="nexor-home-hero__layout">' . $promo, $content);
+      }
+      $content = self::compose_home_hero($content);
       $content = str_replace('<section id="cases" class="py-16 md:py-24 bg-card">', '<section id="cases" class="nexor-projects-section py-16 md:py-24 bg-card">', $content);
       $content = str_replace('<section class="py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', '<section id="nexor-system" class="nexor-system-section py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', $content);
       // The migrated five-step block is replaced by the interactive stages dial below.

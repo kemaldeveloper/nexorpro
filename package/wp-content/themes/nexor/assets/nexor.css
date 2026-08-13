@@ -1,15 +1,16 @@
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 100 900;
   font-display: swap;
   src: url('fonts/montserrat-cyrillic.woff2') format('woff2');
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
+
 @font-face {
   font-family: 'Montserrat';
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 100 900;
   font-display: swap;
   src: url('fonts/montserrat-latin.woff2') format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
@@ -68,6 +69,24 @@ main {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
   position: relative;
 }
+
+.nexor-modal__title {
+  margin: 0 0 20px;
+  padding-right: 32px;
+}
+
+.nexor-modal__lead {
+  margin: -8px 0 20px;
+  padding-right: 32px;
+  color: #5c5854;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.nexor-modal__lead[hidden] {
+  display: none !important;
+}
+
 .nexor-modal__close {
   position: absolute;
   right: 16px;
@@ -221,7 +240,9 @@ main {
   background: #4a76a8;
   color: #fff;
   text-decoration: none;
-  transition: background 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
 }
 .nexor-mobile-menu .nexor-mobile-menu__vk:hover {
   background: #3b6694;
@@ -869,147 +890,31 @@ header button:has(.lucide-menu),
   line-height: 1.65;
 }
 
-/* Homepage composition: style reference implemented with existing Nexor content. */
-.nexor-home-hero {
-  min-height: clamp(650px, calc(100vh - 124px), 820px) !important;
-  isolation: isolate;
-}
-.nexor-home-hero .hero-overlay {
-  background: linear-gradient(90deg, rgba(20, 17, 15, 0.86) 0%, rgba(20, 17, 15, 0.68) 48%, rgba(20, 17, 15, 0.5) 100%);
-}
-.nexor-home-hero > .container-nexor {
-  width: 100%;
-  padding-top: clamp(84px, 10vw, 132px) !important;
-  padding-bottom: 42px !important;
-}
-.nexor-home-hero .max-w-3xl {
-  display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(310px, 0.8fr);
-  grid-template-areas: 'title trust' 'title actions' 'benefits benefits';
-  column-gap: clamp(48px, 7vw, 112px);
-  row-gap: 28px;
-  max-width: none;
-}
-.nexor-home-hero h1 {
-  grid-area: title;
-  align-self: center;
-  max-width: 820px;
-  margin: 0 !important;
-  font-size: clamp(46px, 4.6vw, 68px);
-  line-height: 1.05;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-}
-.nexor-home-hero .max-w-3xl > p {
-  grid-area: trust;
-  align-self: end;
-  max-width: 430px;
-  margin: 0 !important;
-  font-size: clamp(17px, 1.35vw, 21px);
-  line-height: 1.55;
-  color: rgba(255, 255, 255, 0.92);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
-  grid-area: actions;
-  align-self: start;
-  margin: 0 !important;
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 13px;
-  max-width: 360px;
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > button,
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > a {
-  width: 100%;
-  min-height: 52px;
-  border-radius: 10px;
-  justify-content: center;
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > a {
-  border: 1px solid rgba(255, 255, 255, 0.55);
-  background: rgba(20, 17, 15, 0.28);
-  color: #fff;
-  padding: 0 24px;
-  backdrop-filter: blur(6px);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > a:hover {
-  border-color: #fff;
-  background: rgba(255, 255, 255, 0.12);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) {
-  grid-area: benefits;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: 28px;
-  padding: 22px 0 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.28);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div {
-  padding-right: 24px;
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div + div {
-  padding-left: 24px;
-  border-left: 1px solid rgba(255, 255, 255, 0.22);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) span {
-  line-height: 1.4;
-}
-.nexor-hero-promo {
-  position: absolute;
-  top: 28px;
-  left: 0;
-  width: min(620px, calc(100% - 40px));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 15px 18px;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 15px;
-  background: rgba(31, 21, 17, 0.52);
-  color: #fff;
-  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.16);
-  backdrop-filter: blur(10px);
-}
-.nexor-hero-promo__copy {
-  display: grid;
-  gap: 4px;
-  min-width: 0;
-}
-.nexor-hero-promo__copy span {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.nexor-hero-promo__copy strong {
-  font-size: 20px;
-  line-height: 1.15;
-  white-space: nowrap;
-}
+/* Homepage hero base tokens — layout lives with .nexor-home editorial block below. */
 .nexor-hero-countdown {
   display: grid;
-  grid-template-columns: repeat(4, minmax(42px, 1fr));
-  gap: 5px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
 }
 .nexor-hero-countdown span {
   display: grid;
   place-items: center;
-  padding: 7px 5px;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 6px;
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 .nexor-hero-countdown strong {
-  font-size: 19px;
+  font-size: 20px;
   line-height: 1;
   font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }
 .nexor-hero-countdown small {
   margin-top: 4px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 9px;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  text-transform: lowercase;
 }
 
 .nexor-budget-section {
@@ -1256,23 +1161,6 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   }
 }
 @media (max-width: 1023px) {
-  .nexor-home-hero {
-    min-height: 700px !important;
-  }
-  .nexor-hero-promo {
-    position: relative;
-    top: auto;
-    left: auto;
-    width: 100%;
-    margin: 0 0 28px;
-  }
-  .nexor-home-hero .max-w-3xl {
-    grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
-    column-gap: 36px;
-  }
-  .nexor-home-hero h1 {
-    font-size: clamp(42px, 5.6vw, 56px);
-  }
   #promotions .nexor-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1343,63 +1231,6 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   }
   .nexor-search-header .nexor-search input {
     width: 100%;
-  }
-  .nexor-home-hero {
-    min-height: auto !important;
-    padding-top: 36px !important;
-  }
-  .nexor-home-hero .hero-overlay {
-    background: linear-gradient(180deg, rgba(20, 17, 15, 0.8) 0%, rgba(20, 17, 15, 0.7) 55%, rgba(20, 17, 15, 0.9) 100%);
-  }
-  .nexor-home-hero > .container-nexor {
-    padding-top: 68px !important;
-    padding-bottom: 34px !important;
-  }
-  .nexor-hero-promo {
-    display: grid;
-    gap: 13px;
-    margin-bottom: 24px;
-    padding: 14px;
-  }
-  .nexor-hero-promo__copy strong {
-    font-size: 19px;
-    white-space: normal;
-  }
-  .nexor-hero-countdown {
-    width: 100%;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-  .nexor-hero-countdown span {
-    padding: 8px 3px;
-  }
-  .nexor-home-hero .max-w-3xl {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas: 'title' 'trust' 'actions' 'benefits';
-    gap: 24px;
-  }
-  .nexor-home-hero h1 {
-    font-size: clamp(36px, 10.5vw, 46px);
-    line-height: 1.08;
-  }
-  .nexor-home-hero .max-w-3xl > p {
-    font-size: 17px;
-    line-height: 1.5;
-  }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
-    max-width: none;
-    width: 100%;
-  }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) {
-    grid-template-columns: 1fr;
-    gap: 14px;
-    margin-top: 5px;
-    padding-top: 20px;
-  }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div,
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div + div {
-    padding: 0;
-    border: 0;
   }
   .nexor-budget-section {
     padding: 64px 0;
@@ -1580,6 +1411,7 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   opacity: 0;
   transform: translateY(26px);
 }
+
 .nexor-js .nexor-reveal.is-visible {
   opacity: 1;
   transform: none;
@@ -1587,18 +1419,37 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
     opacity 0.72s ease var(--reveal-delay, 0ms),
     transform 0.72s cubic-bezier(0.2, 0.7, 0.2, 1) var(--reveal-delay, 0ms);
 }
+
+.nexor-js .nexor-hero-intro {
+  opacity: 0;
+}
+
+.nexor-js .nexor-hero-intro--down {
+  transform: translateY(-18px);
+}
+
+.nexor-js .nexor-hero-intro--left {
+  transform: translateX(-22px);
+}
+
+.nexor-js .nexor-hero-intro.is-hero-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.48s ease,
+    transform 0.48s cubic-bezier(0.22, 0.7, 0.25, 1);
+}
 .nexor-home :where(a, button, [role='button'], [role='slider']):focus-visible {
   outline: 3px solid #d8794e;
   outline-offset: 4px;
 }
 
-header > a[href*="vk.com"] {
+header > a[href*='vk.com'] {
   display: none !important;
 }
-/* Glass header and the three-column opening screen. */
+/* Glass header over full-bleed hero — light frosted bar, dark chrome (matches reference). */
 body:has(.nexor-home) header {
   padding: 0;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.1));
 }
 body:has(.nexor-home) header > a {
   display: none !important;
@@ -1611,166 +1462,483 @@ body:has(.nexor-home) header > div {
   width: 100%;
   margin: 0;
   border: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.46);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.55);
   border-radius: 0;
-  background: rgba(248, 247, 244, 0.82) !important;
-  backdrop-filter: blur(18px);
+  background: rgba(248, 246, 242, 0.55) !important;
+  backdrop-filter: blur(18px) saturate(1.1);
+  -webkit-backdrop-filter: blur(18px) saturate(1.1);
+  box-shadow: 0 1px 0 rgba(40, 30, 22, 0.06);
+  color: #2b2622;
 }
-.nexor-home.pt-\[104px\] {
-  padding-top: 0 !important;
+body:has(.nexor-home) header > div :is(a, button, span, svg, .text-foreground, .text-muted-foreground) {
+  color: #2b2622 !important;
 }
+body:has(.nexor-home) header > div a[href^='tel'],
+body:has(.nexor-home) header > div .nexor-mobile-trigger {
+  color: #3a342f !important;
+}
+body:has(.nexor-home) header > div button.bg-primary,
+body:has(.nexor-home) header > div .bg-primary {
+  color: #fff !important;
+}
+body:has(.nexor-home) header > div a[href*='t.me'] svg circle,
+body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
+  fill: #229ed9;
+}
+
 .nexor-home-hero {
-  min-height: max(760px, 100svh) !important;
-  padding: 110px 0 30px !important;
-  background: #171512;
-}
-.nexor-home-hero > div:first-child img {
-  transform: scale(1.02);
-  animation: none !important;
-}
-.nexor-home-hero .hero-overlay {
-  background: linear-gradient(90deg, rgba(16, 15, 13, 0.76) 0%, rgba(16, 15, 13, 0.5) 46%, rgba(16, 15, 13, 0.72) 100%);
-}
-.nexor-home-hero > .container-nexor {
-  display: grid;
-  grid-template-columns: minmax(230px, 0.72fr) minmax(0, 2.65fr);
-  gap: clamp(30px, 4vw, 70px);
+  --hero-accent: #d4895a;
+  --hero-accent-deep: #9a4a28;
+  isolation: isolate;
+  display: flex;
   align-items: stretch;
-  padding: 40px 0 28px !important;
+  padding: 0;
+  background-color: #171512;
+  background-image:
+    linear-gradient(105deg, rgba(10, 8, 7, 0.78) 0%, rgba(10, 8, 7, 0.48) 42%, rgba(10, 8, 7, 0.74) 100%), linear-gradient(180deg, rgba(10, 8, 7, 0.36) 0%, transparent 28%, rgba(10, 8, 7, 0.7) 100%),
+    url(design-fullwidth-interior-t1Ou1Olm.webp);
+  background-size: cover;
+  background-position:
+    center,
+    center,
+    55% center;
+  background-repeat: no-repeat;
+  min-height: 100svh;
 }
+
+.nexor-home-hero__layout {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    'promo copy aside'
+    'features features features';
+  column-gap: clamp(28px, 3vw, 48px);
+  row-gap: 0;
+  box-sizing: border-box;
+  min-height: 100svh;
+  padding: 118px 0 36px;
+  align-content: stretch;
+  align-items: stretch;
+}
+
+.nexor-home-hero__features {
+  grid-area: features;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 0;
+  padding: 28px 0 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  align-items: center;
+}
+
+@keyframes nexor-hero-promo-glow {
+  0%,
+  100% {
+    opacity: 0.52;
+  }
+
+  50% {
+    opacity: 0.92;
+  }
+}
+
 .nexor-home-hero .nexor-hero-promo {
-  position: static;
-  width: auto;
+  grid-area: promo;
+  position: relative;
+  isolation: isolate;
+  width: 100%;
   min-width: 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: flex-end;
-  padding: 26px 22px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(39, 28, 22, 0.58));
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
-  backdrop-filter: blur(18px);
+  align-self: center;
+  gap: 0;
+  padding: 28px 24px 22px;
+  border: 1px solid rgba(212, 137, 90, 0.72);
+  border-radius: 20px;
+  background: linear-gradient(155deg, rgba(55, 36, 28, 0.48), rgba(12, 10, 8, 0.6));
+  box-shadow:
+    0 0 0 1px rgba(212, 137, 90, 0.28),
+    0 0 40px rgba(180, 100, 55, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 64px rgba(0, 0, 0, 0.38);
+  backdrop-filter: blur(20px) saturate(1.18);
+  -webkit-backdrop-filter: blur(20px) saturate(1.18);
+  color: #fff;
+  transition:
+    border-color 0.55s ease,
+    box-shadow 0.55s ease,
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.55s ease;
 }
-.nexor-hero-promo__eyebrow {
-  margin: 0 auto auto 0;
-  padding: 8px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 999px;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+
+.nexor-home-hero .nexor-hero-promo::before,
+.nexor-home-hero .nexor-hero-promo::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
 }
+
+.nexor-home-hero .nexor-hero-promo::before {
+  box-shadow:
+    0 0 52px rgba(180, 100, 55, 0.42),
+    0 0 24px rgba(212, 137, 90, 0.22);
+  opacity: 0.72;
+  animation: nexor-hero-promo-glow 5.5s ease-in-out infinite;
+}
+
+.nexor-home-hero .nexor-hero-promo::after {
+  box-shadow:
+    0 0 72px rgba(212, 137, 90, 0.36),
+    0 0 28px rgba(232, 149, 95, 0.18);
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.nexor-home-hero .nexor-hero-promo:hover,
+.nexor-home-hero .nexor-hero-promo:focus-within {
+  border-color: rgba(232, 149, 95, 0.9);
+  background: linear-gradient(155deg, rgba(70, 42, 30, 0.58), rgba(16, 12, 10, 0.68));
+  box-shadow:
+    0 0 0 1px rgba(232, 149, 95, 0.4),
+    0 0 48px rgba(180, 100, 55, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 28px 70px rgba(0, 0, 0, 0.42);
+  transform: translateY(-3px);
+}
+
+.nexor-home-hero .nexor-hero-promo:hover::after,
+.nexor-home-hero .nexor-hero-promo:focus-within::after {
+  opacity: 0.7;
+}
+
+.nexor-home-hero .nexor-hero-promo:hover .nexor-hero-promo__icon,
+.nexor-home-hero .nexor-hero-promo:focus-within .nexor-hero-promo__icon {
+  box-shadow: 0 0 34px rgba(232, 149, 95, 0.62);
+  border-color: rgba(232, 149, 95, 0.95);
+}
+
+.nexor-home-hero .nexor-hero-promo:hover .nexor-hero-promo__action,
+.nexor-home-hero .nexor-hero-promo:focus-within .nexor-hero-promo__action {
+  color: #fff;
+}
+
+.nexor-home-hero .nexor-hero-promo:hover .nexor-hero-promo__action span,
+.nexor-home-hero .nexor-hero-promo:focus-within .nexor-hero-promo__action span {
+  transform: translateX(3px);
+}
+
+.nexor-hero-promo__head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: start;
+  margin-bottom: 20px;
+}
+
+.nexor-hero-promo__media {
+  display: flex;
+  align-items: flex-start;
+}
+
+.nexor-hero-promo__icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  margin: 0;
+  border-radius: 10px;
+  border: 1px solid rgba(212, 137, 90, 0.8);
+  color: var(--hero-accent);
+  background: rgba(212, 137, 90, 0.14);
+  box-shadow: 0 0 24px rgba(212, 137, 90, 0.42);
+  transition:
+    box-shadow 0.55s ease,
+    border-color 0.55s ease;
+}
+
 .nexor-hero-promo__copy {
-  margin-top: 55px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding-top: 12px;
 }
-.nexor-hero-promo__copy span {
+
+.nexor-hero-promo__eyebrow {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: rgba(255, 255, 255, 0.94);
   font-size: 11px;
-}
-.nexor-hero-promo__copy strong {
-  font-size: clamp(24px, 2.3vw, 36px);
   font-weight: 500;
-  white-space: normal;
-  letter-spacing: -0.04em;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1.2;
 }
-.nexor-hero-countdown {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: 22px;
+
+.nexor-hero-promo__title {
+  display: block;
+  margin: 0;
+  max-width: none;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+.nexor-hero-promo__note {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.nexor-hero-promo__action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 0;
+  color: var(--hero-accent);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  transition: color 0.5s ease;
+}
+
+.nexor-hero-promo__action span {
+  display: inline-block;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nexor-hero-promo__timer-label {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.nexor-hero-promo__countdown {
+  margin-top: auto;
+}
+
+.nexor-hero-promo .nexor-hero-countdown {
+  margin: 0;
   gap: 8px;
 }
-.nexor-hero-countdown span {
-  min-height: 58px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-}
-.nexor-hero-promo > button {
-  min-height: 46px;
-  margin-top: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.36);
+
+.nexor-hero-promo .nexor-hero-countdown span {
+  min-height: 64px;
+  padding: 10px 4px 8px;
   border-radius: 10px;
-  background: #fff;
-  color: #3b251c;
-  font-weight: 650;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(36, 32, 26, 0.4);
+}
+
+.nexor-hero-promo .nexor-hero-countdown strong {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.nexor-hero-promo .nexor-hero-countdown small {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nexor-hero-promo__cta {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: transparent;
   cursor: pointer;
 }
-.nexor-home-hero .max-w-3xl {
+
+.nexor-hero-promo__cta:focus-visible {
+  outline: 3px solid var(--hero-accent);
+  outline-offset: 4px;
+}
+
+.nexor-home-hero__main {
+  display: contents;
+}
+
+.nexor-home-hero__copy {
+  grid-area: copy;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-self: center;
+}
+
+.nexor-home-hero h1 {
+  margin: 0 !important;
+  max-width: none;
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: #fff;
+}
+
+.nexor-home-hero__sub {
+  margin: 0;
+  max-width: none;
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.nexor-home-hero__aside {
+  grid-area: aside;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
   min-width: 0;
   max-width: none;
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(290px, 0.65fr);
-  grid-template-areas: 'title trust' 'title actions' 'benefits benefits';
-  column-gap: clamp(42px, 6vw, 92px);
-  row-gap: 22px;
-  padding: clamp(22px, 3vw, 46px) 0 0;
-}
-.nexor-home-hero h1 {
-  grid-area: title;
   align-self: center;
-  max-width: 760px;
-  margin: 0 !important;
-  font-size: clamp(50px, 5.3vw, 78px);
-  font-weight: 560;
-  line-height: 1.01;
-  letter-spacing: -0.058em;
-  text-wrap: balance;
+  justify-self: stretch;
 }
-.nexor-home-hero .max-w-3xl > p {
-  grid-area: trust;
-  align-self: end;
-  margin: 0 !important;
-  font-size: clamp(16px, 1.32vw, 20px);
-  line-height: 1.58;
-  color: rgba(255, 255, 255, 0.86);
-}
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
-  grid-area: actions;
-  align-self: start;
-  display: grid;
+
+.nexor-home-hero__eyebrow {
+  display: flex;
+  align-items: center;
   gap: 12px;
   margin: 0 !important;
+  color: var(--hero-accent);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.3;
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > * {
+
+.nexor-home-hero__eyebrow::before {
+  content: '';
+  width: 28px;
+  height: 1px;
+  background: var(--hero-accent);
+  flex-shrink: 0;
+}
+
+.nexor-home-hero__lead {
+  margin: 0 !important;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55 !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.nexor-home-hero__actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 4px;
+  max-width: 300px;
+}
+
+.nexor-home-hero__actions > * {
   width: 100%;
-  min-height: 52px !important;
+  min-height: 50px !important;
   margin: 0 !important;
   border-radius: 10px;
   justify-content: center;
+  font-size: 15px;
+  font-weight: 500;
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(1) > a {
-  border: 1px solid rgba(255, 255, 255, 0.48);
-  background: rgba(0, 0, 0, 0.18);
-  color: #fff;
+
+.nexor-home-hero__actions > button,
+.nexor-home-hero__actions > a.bg-primary {
+  border: 0;
+  background: var(--hero-accent-deep) !important;
+  color: #fff !important;
+  padding: 0 18px;
+}
+
+.nexor-home-hero__actions > button:hover,
+.nexor-home-hero__actions > a.bg-primary:hover {
+  background: #823d20 !important;
+  color: #fff !important;
+}
+
+.nexor-home-hero__actions > a:not(.bg-primary) {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: transparent;
+  color: #fff !important;
+  padding: 0 18px;
+}
+
+.nexor-home-hero__actions > a:not(.bg-primary):hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff !important;
+}
+
+.nexor-home-hero__feature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
   padding: 0 20px;
-  backdrop-filter: blur(8px);
+  color: #fff;
+  text-align: left;
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) {
-  grid-area: benefits;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0;
-  margin-top: auto;
-  padding-top: 24px;
-  border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+.nexor-home-hero__feature + .nexor-home-hero__feature {
+  padding-left: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.16);
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div {
-  padding-right: 22px;
+
+.nexor-home-hero__num {
+  flex-shrink: 0;
+  font-size: 80px;
+  font-weight: 200;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  color: rgba(87, 83, 78, 1);
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div + div {
-  padding-left: 22px;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
+
+.nexor-home-hero__feature > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div > div {
-  display: none;
+
+.nexor-home-hero__feature strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.25;
 }
-.nexor-home-hero .max-w-3xl > div:nth-of-type(2) span {
-  font-size: 12px;
-  line-height: 1.45;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+
+.nexor-home-hero__feature span:not(.nexor-home-hero__num) {
+  display: block;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.35;
 }
 
 /* Editorial service composition. */
@@ -2203,7 +2371,7 @@ body:has(.nexor-home) header > div {
   align-items: center;
   padding: 0;
   background-color: #121316 !important;
-  background-image: url("stage-card-blueprint.webp");
+  background-image: url('stage-card-blueprint.webp');
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -3205,28 +3373,176 @@ body:has(.nexor-home) header > div {
   }
 }
 
-@media (max-width: 1199px) {
-  .nexor-home-hero > .container-nexor {
-    grid-template-columns: 220px minmax(0, 1fr);
-    gap: 28px;
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .nexor-home-hero {
+    min-height: auto;
   }
-  .nexor-home-hero .max-w-3xl {
-    grid-template-columns: 1fr 280px;
-    column-gap: 30px;
+
+  .nexor-home-hero__layout {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: clamp(24px, 3vw, 40px);
+    min-height: 0;
+    padding-top: 140px;
+    padding-bottom: 24px;
+    align-items: start;
+    row-gap: 36px;
   }
+
+  .nexor-home-hero__main {
+    display: contents;
+  }
+
+  .nexor-home-hero .nexor-hero-promo {
+    align-self: start;
+    padding: 18px 16px 16px;
+    width: 100%;
+  }
+
+  .nexor-home-hero__copy {
+    gap: 8px;
+    width: auto;
+    max-width: none;
+    align-self: start;
+  }
+
   .nexor-home-hero h1 {
-    font-size: clamp(45px, 5.8vw, 64px);
+    max-width: none;
+    font-size: clamp(28px, 2.9vw, 34px);
+    line-height: 1.08;
   }
+
+  .nexor-home-hero__sub {
+    max-width: none;
+    font-size: clamp(16px, 1.7vw, 18px);
+    line-height: 1.25;
+  }
+
+  .nexor-home-hero__aside {
+    max-width: none;
+    gap: 12px;
+    align-self: start;
+    justify-self: stretch;
+  }
+
+  .nexor-home-hero__eyebrow {
+    gap: 8px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .nexor-home-hero__eyebrow::before {
+    width: 20px;
+  }
+
+  .nexor-home-hero__lead {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .nexor-home-hero__actions {
+    gap: 10px;
+    max-width: none;
+    width: 100%;
+  }
+
+  .nexor-home-hero__actions > * {
+    min-height: 44px !important;
+    font-size: 13px;
+  }
+
+  .nexor-home-hero__features {
+    padding-top: 18px;
+    align-self: stretch;
+  }
+
+  .nexor-home-hero__feature {
+    gap: 10px;
+    padding: 0 10px;
+  }
+
+  .nexor-home-hero__feature + .nexor-home-hero__feature {
+    padding-left: 10px;
+  }
+
+  .nexor-home-hero__num {
+    font-size: clamp(40px, 5vw, 56px);
+  }
+
+  .nexor-home-hero__feature strong {
+    font-size: 14px;
+  }
+
+  .nexor-home-hero__feature span:not(.nexor-home-hero__num) {
+    font-size: 12px;
+  }
+
+  .nexor-hero-promo__head {
+    column-gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .nexor-hero-promo__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nexor-hero-promo__copy {
+    gap: 6px;
+    padding-top: 6px;
+  }
+
+  .nexor-hero-promo__eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+
+  .nexor-hero-promo__title {
+    font-size: 18px;
+    line-height: 1.15;
+  }
+
+  .nexor-hero-promo__note {
+    font-size: 11px;
+  }
+
+  .nexor-hero-promo__action {
+    font-size: 12px;
+  }
+
+  .nexor-hero-promo__timer-label {
+    font-size: 9px;
+  }
+
+  .nexor-hero-promo .nexor-hero-countdown {
+    gap: 6px;
+  }
+
+  .nexor-hero-promo .nexor-hero-countdown span {
+    min-height: 48px;
+    padding: 8px 2px 6px;
+  }
+
+  .nexor-hero-promo .nexor-hero-countdown strong {
+    font-size: 18px;
+  }
+
+  .nexor-hero-promo .nexor-hero-countdown small {
+    font-size: 9px;
+  }
+
   .nexor-service-card__body {
     grid-template-columns: 45px 1fr;
     padding: 24px;
   }
+
   .nexor-service-card__link {
     display: none;
   }
+
   .nexor-service-card p {
     grid-column: 2;
   }
+
   .nexor-service-desk {
     grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   }
@@ -3236,128 +3552,207 @@ body:has(.nexor-home) header > div {
   body:has(.nexor-home) header {
     padding: 0;
   }
+
   body:has(.nexor-home) header > div > .container-nexor {
     width: min(100% - 20px, 1480px);
   }
+
   .nexor-home-hero {
-    min-height: 850px !important;
-    padding-top: 110px !important;
+    min-height: auto !important;
   }
-  .nexor-home-hero > .container-nexor {
-    display: grid;
-    grid-template-columns: 1fr 1.9fr;
+
+  .nexor-home-hero__layout {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+    gap: 24px;
+    min-height: 0;
+    padding-top: 140px;
+    padding-bottom: 35px;
+    row-gap: 35px;
   }
-  .nexor-home-hero .nexor-hero-promo {
-    margin: 0;
+
+  .nexor-home-hero__main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    align-self: stretch;
+    width: 100%;
+    padding: 0;
+    text-align: center;
   }
-  .nexor-home-hero .max-w-3xl {
-    grid-template-columns: 1fr;
-    grid-template-areas: 'title' 'trust' 'actions' 'benefits';
-    padding-top: 0;
+
+  .nexor-home-hero__copy {
+    grid-area: auto;
+    width: auto;
+    /* max-width: 28ch; */
+    justify-self: center;
   }
+
   .nexor-home-hero h1 {
-    align-self: end;
+    max-width: none;
+    margin-inline: auto !important;
+    font-size: clamp(30px, 4vw, 38px);
   }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
-    grid-template-columns: 1fr 1fr;
+
+  .nexor-home-hero__sub {
+    max-width: none;
+    margin-inline: auto;
+    font-size: clamp(17px, 2.2vw, 22px);
   }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) {
+
+  .nexor-home-hero__aside {
+    grid-area: auto;
+    max-width: 420px;
+    width: 100%;
+    align-items: center;
+    justify-self: center;
+  }
+
+  .nexor-home-hero__eyebrow {
+    justify-content: center;
+  }
+
+  .nexor-home-hero__lead {
+    text-align: center;
+  }
+
+  .nexor-home-hero__actions {
     grid-template-columns: 1fr;
-    margin-top: 10px;
+    max-width: 320px;
+    width: 100%;
+    margin-inline: auto;
   }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div,
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) > div + div {
-    padding: 7px 0;
-    border: 0;
+
+  .nexor-home-hero__actions > * {
+    min-height: 46px !important;
+    white-space: nowrap;
   }
+
+  .nexor-home-hero .nexor-hero-promo {
+    order: 2;
+    width: 100%;
+    max-width: 420px;
+    align-self: center;
+    margin-top: 0;
+    text-align: left;
+  }
+
+  .nexor-home-hero__features {
+    order: 3;
+    /* width: 100%; */
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    padding-top: 20px;
+  }
+
+  .nexor-home-hero__feature {
+    gap: 10px;
+    padding: 0 8px;
+    justify-content: center;
+  }
+
+  .nexor-home-hero__feature + .nexor-home-hero__feature {
+    padding-left: 8px;
+    border-left: 1px solid rgba(255, 255, 255, 0.16);
+  }
+
+  .nexor-home-hero__num {
+    font-size: clamp(36px, 5vw, 52px);
+  }
+
   .nexor-services-editorial {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-auto-rows: auto;
   }
+
   .nexor-service-card {
     height: 320px;
   }
+
   .nexor-service-card:nth-child(n) {
     grid-column: auto;
     grid-row: auto;
   }
+
   .nexor-service-card:first-child {
-    grid-column: 1/-1;
+    grid-column: 1 / -1;
     height: 500px;
     min-height: 500px;
   }
+
   .nexor-projects-section .grid.grid-cols-1 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     grid-template-rows: 420px 330px;
   }
+
   .nexor-projects-section .grid.grid-cols-1 > a:nth-child(1) {
-    grid-column: 1/-1;
+    grid-column: 1 / -1;
     grid-row: 1;
   }
+
   .nexor-projects-section .grid.grid-cols-1 > a:nth-child(2),
   .nexor-projects-section .grid.grid-cols-1 > a:nth-child(3) {
     grid-column: auto;
     grid-row: 2;
   }
+
   .nexor-budget__grid {
     gap: 50px;
   }
+
   .nexor-budget__metric {
     min-height: 360px;
   }
+
   .nexor-additional-section .nexor-section-heading {
     grid-template-columns: 1fr;
   }
+
   .nexor-additional-section .nexor-section-heading > p {
     grid-column: auto;
   }
+
   .nexor-service-desk {
     grid-template-columns: 1fr;
     overflow: visible;
   }
+
   .nexor-service-desk__scene {
     min-height: 590px;
   }
+
   .nexor-service-desk__drawer {
     min-height: 460px;
   }
 }
 
 @media (max-width: 899px) and (min-width: 768px) {
-  .nexor-home-hero {
-    min-height: 980px !important;
+  .nexor-home-hero__layout {
+    gap: 22px;
   }
-  .nexor-home-hero > .container-nexor {
-    display: flex;
-    flex-direction: column;
-  }
-  .nexor-home-hero .max-w-3xl {
-    width: 100%;
-    grid-template-columns: minmax(0, 1.15fr) minmax(250px, 0.85fr);
-    grid-template-areas: 'title trust' 'title actions' 'benefits benefits';
-  }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
-    grid-template-columns: 1fr;
-  }
+
   .nexor-home-hero .nexor-hero-promo {
     order: 2;
-    display: grid;
-    grid-template-columns: 1fr 1.2fr;
-    gap: 14px 24px;
-    align-items: end;
+    min-height: 0;
   }
-  .nexor-home-hero .nexor-hero-promo__eyebrow {
-    grid-column: 1/-1;
+
+  .nexor-hero-promo__title {
+    max-width: none;
   }
-  .nexor-home-hero .nexor-hero-promo__copy {
-    margin-top: 18px;
+
+  .nexor-home-hero__actions {
+    grid-template-columns: 1fr;
+    max-width: none;
   }
-  .nexor-home-hero .nexor-hero-countdown {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    margin: 0;
+
+  .nexor-home-hero__features {
+    order: 3;
   }
-  .nexor-home-hero .nexor-hero-promo > button {
-    grid-column: 1/-1;
+
+  .nexor-home-hero__feature strong {
+    font-size: 14px;
   }
 }
 
@@ -3379,48 +3774,85 @@ body:has(.nexor-home) header > div {
   }
   .nexor-home-hero {
     min-height: auto !important;
-    padding: 92px 0 22px !important;
+    display: block;
   }
-  .nexor-home-hero > .container-nexor {
+  .nexor-home-hero__layout {
     display: flex;
     flex-direction: column;
-    padding: 30px 0 10px !important;
-  }
-  .nexor-home-hero .max-w-3xl {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-areas: 'title' 'trust' 'actions' 'benefits';
     gap: 22px;
+    min-height: 0;
+  }
+  .nexor-home-hero__main {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 0;
   }
   .nexor-home-hero h1 {
-    font-size: clamp(38px, 11.7vw, 52px);
-    line-height: 1.02;
+    max-width: none;
+    font-size: clamp(34px, 9.5vw, 42px);
+    line-height: 1.05;
   }
-  .nexor-home-hero .max-w-3xl > p {
-    font-size: 15px;
+
+  .nexor-home-hero__sub {
+    max-width: none;
+    font-size: clamp(20px, 5.2vw, 26px);
+    white-space: normal;
   }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(1) {
+  .nexor-home-hero__aside {
+    /* max-width: none; */
+    justify-self: stretch;
+  }
+  .nexor-home-hero__lead {
+    font-size: 15px !important;
+    max-width: none;
+  }
+  .nexor-home-hero__actions {
     grid-template-columns: 1fr;
-  }
-  .nexor-home-hero .max-w-3xl > div:nth-of-type(2) {
-    grid-template-columns: 1fr;
-    gap: 4px;
+    max-width: none;
   }
   .nexor-home-hero .nexor-hero-promo {
     order: 2;
-    padding: 20px;
+    min-height: 0;
+    padding: 20px 18px;
   }
-  .nexor-hero-promo__copy {
-    margin-top: 24px;
+  .nexor-hero-promo__title {
+    max-width: none;
+    font-size: 26px;
   }
-  .nexor-hero-countdown {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .nexor-hero-promo .nexor-hero-countdown span {
+    min-height: 52px;
+    padding: 8px 4px;
   }
-  .nexor-hero-countdown span {
-    min-height: 50px;
+  .nexor-home-hero__features {
+    order: 3;
+    grid-template-columns: repeat(2, max-content);
+    column-gap: 16px;
+    row-gap: 12px;
+    margin-top: 4px;
+    padding-top: 20px;
+    justify-content: center;
   }
-  .nexor-hero-promo > button {
-    width: 100%;
+
+  .nexor-home-hero__feature,
+  .nexor-home-hero__feature + .nexor-home-hero__feature {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+    align-items: center;
+    padding: 0;
+    border: 0;
+    gap: inherit;
+  }
+
+  .nexor-home-hero__num {
+    /* grid-column: 2; */
+    font-size: 44px;
+    -webkit-text-stroke-width: 1px;
+  }
+
+  .nexor-home-hero__feature > div {
+    /* grid-column: 3; */
   }
   .nexor-services-section,
   .nexor-projects-section,
@@ -3706,13 +4138,47 @@ body:has(.nexor-home) header > div {
     opacity: 1;
     transform: none;
   }
+
   .nexor-js .nexor-reveal.is-visible {
     transition: none;
   }
+
+  .nexor-js .nexor-hero-intro,
+  .nexor-js .nexor-hero-intro.is-hero-in {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .nexor-home-hero .nexor-hero-promo,
+  .nexor-home-hero .nexor-hero-promo:hover,
+  .nexor-home-hero .nexor-hero-promo:focus-within {
+    transform: none;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease,
+      background 0.2s ease;
+  }
+
+  .nexor-home-hero .nexor-hero-promo::before {
+    animation: none;
+    opacity: 0.72;
+  }
+
+  .nexor-home-hero .nexor-hero-promo::after {
+    transition: none;
+  }
+
+  .nexor-home-hero .nexor-hero-promo:hover .nexor-hero-promo__action span,
+  .nexor-home-hero .nexor-hero-promo:focus-within .nexor-hero-promo__action span {
+    transform: none;
+  }
+
   .nexor-service-card__media img,
   .nexor-service-desk__drawer {
     transition: none;
   }
+
   .nexor-service-desk.is-guided .nexor-service-hotspot:first-of-type {
     animation: none;
   }
