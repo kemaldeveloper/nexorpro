@@ -164,8 +164,7 @@ main {
 }
 .nexor-mobile-menu__top,
 .nexor-mobile-menu > .nexor-search,
-.nexor-mobile-menu nav > *,
-.nexor-mobile-menu__vk {
+.nexor-mobile-menu nav > * {
   opacity: 0;
   transform: translate3d(0, 16px, 0);
   transition:
@@ -174,8 +173,7 @@ main {
 }
 .nexor-mobile-menu.is-open .nexor-mobile-menu__top,
 .nexor-mobile-menu.is-open > .nexor-search,
-.nexor-mobile-menu.is-open nav > *,
-.nexor-mobile-menu.is-open .nexor-mobile-menu__vk {
+.nexor-mobile-menu.is-open nav > * {
   opacity: 1;
   transform: none;
   transition-delay: calc(120ms + var(--nexor-stagger, 0) * 40ms);
@@ -184,8 +182,7 @@ main {
   .nexor-mobile-menu,
   .nexor-mobile-menu__top,
   .nexor-mobile-menu > .nexor-search,
-  .nexor-mobile-menu nav > *,
-  .nexor-mobile-menu__vk {
+  .nexor-mobile-menu nav > * {
     transition: none !important;
     transform: none !important;
   }
@@ -196,7 +193,7 @@ main {
   align-items: center;
   margin-bottom: 28px;
 }
-.nexor-mobile-menu a:not(.nexor-mobile-menu__vk),
+.nexor-mobile-menu a,
 .nexor-mobile-menu button:not(.nexor-mobile-menu__close) {
   display: block;
   padding: 13px 0;
@@ -226,31 +223,7 @@ main {
   border: 0;
   cursor: pointer;
 }
-.nexor-mobile-menu .nexor-mobile-menu__vk {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  margin-top: 28px;
-  padding: 0;
-  border: 0;
-  border-radius: 12px;
-  background: #4a76a8;
-  color: #fff;
-  text-decoration: none;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-.nexor-mobile-menu .nexor-mobile-menu__vk:hover {
-  background: #3b6694;
-  transform: translateY(-1px);
-}
-.nexor-mobile-menu .nexor-mobile-menu__vk svg {
-  display: block;
-}
+
 .nexor-mobile-menu__services {
   padding-left: 16px !important;
   border-left: 2px solid hsl(var(--primary));
@@ -1486,6 +1459,24 @@ body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
   fill: #229ed9;
 }
 
+body:has(.nexor-home) header > div a[href*='vk.com'] svg circle,
+body:has(.nexor-home) header > div a[aria-label*='ВКонтакте'] svg circle {
+  fill: #4a76a8;
+}
+
+body:has(.nexor-home) header > div a[href*='vk.com'] svg path,
+body:has(.nexor-home) header > div a[aria-label*='ВКонтакте'] svg path {
+  fill: #fff;
+}
+
+header > div a[aria-label*='ВКонтакте'] svg circle {
+  fill: #4a76a8;
+}
+
+header > div a[aria-label*='ВКонтакте'] svg path {
+  fill: #fff;
+}
+
 .nexor-home-hero {
   --hero-accent: #d4895a;
   --hero-accent-deep: #9a4a28;
@@ -1536,11 +1527,11 @@ body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
 @keyframes nexor-hero-promo-glow {
   0%,
   100% {
-    opacity: 0.52;
+    opacity: 0.58;
   }
 
   50% {
-    opacity: 0.92;
+    opacity: 0.98;
   }
 }
 
@@ -1562,7 +1553,7 @@ body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
   background: linear-gradient(155deg, rgba(55, 36, 28, 0.48), rgba(12, 10, 8, 0.6));
   box-shadow:
     0 0 0 1px rgba(212, 137, 90, 0.28),
-    0 0 40px rgba(180, 100, 55, 0.28),
+    0 0 48px rgba(180, 100, 55, 0.34),
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 24px 64px rgba(0, 0, 0, 0.38);
   backdrop-filter: blur(20px) saturate(1.18);
@@ -1587,9 +1578,9 @@ body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
 
 .nexor-home-hero .nexor-hero-promo::before {
   box-shadow:
-    0 0 52px rgba(180, 100, 55, 0.42),
-    0 0 24px rgba(212, 137, 90, 0.22);
-  opacity: 0.72;
+    0 0 60px rgba(180, 100, 55, 0.48),
+    0 0 30px rgba(212, 137, 90, 0.28);
+  opacity: 0.78;
   animation: nexor-hero-promo-glow 5.5s ease-in-out infinite;
 }
 
@@ -4162,7 +4153,7 @@ body:has(.nexor-home) header > div a[aria-label*='Telegram'] svg circle {
 
   .nexor-home-hero .nexor-hero-promo::before {
     animation: none;
-    opacity: 0.72;
+    opacity: 0.78;
   }
 
   .nexor-home-hero .nexor-hero-promo::after {

@@ -778,7 +778,8 @@ final class Nexor_Enhancements
   private static function home_hero_main(string $actions = ''): string
   {
     if (! $actions) {
-      $actions = '<div class="nexor-home-hero__actions"><a href="#calculator" class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator mr-2.5 h-5 w-5"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>Рассчитать стоимость</a><a href="#cases" class="group inline-flex items-center justify-center gap-2 font-medium text-base">Реализованные проекты<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>';
+      $projects_url = esc_url( home_url( '/projects/' ) );
+      $actions      = '<div class="nexor-home-hero__actions"><a href="#calculator" class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator mr-2.5 h-5 w-5"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>Рассчитать стоимость</a><a href="' . $projects_url . '" class="group inline-flex items-center justify-center gap-2 font-medium text-base">Реализованные проекты<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>';
     }
     return '<div class="nexor-home-hero__main"><div class="nexor-home-hero__copy"><h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1><p class="nexor-home-hero__sub">в Москве и Московской области</p></div><div class="nexor-home-hero__aside"><p class="nexor-home-hero__eyebrow">Работаем по фиксированной смете</p><p class="nexor-home-hero__lead">Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.</p>' . $actions . '</div></div>' . self::home_hero_features();
   }
@@ -821,6 +822,7 @@ final class Nexor_Enhancements
         ) ?? $content;
       }
       $content = self::hero_calculate_cta_to_anchor($content);
+      $content = self::hero_projects_cta_to_page($content);
       return $content;
     }
 
@@ -864,6 +866,23 @@ final class Nexor_Enhancements
     }
     return $content;
   }
+
+  private static function hero_projects_cta_to_page(string $content): string
+  {
+    if (! str_contains($content, 'Реализованные проекты')) {
+      return $content;
+    }
+    if (preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\'][^"\']*\/projects\/?["\'][^>]*>[\s\S]*?Реализованные проекты/u', $content)) {
+      return $content;
+    }
+    return preg_replace(
+      '/(<div class="nexor-home-hero__actions">[\s\S]*?<a\b[^>]*?)href=["\']#cases["\']([^>]*>[\s\S]*?Реализованные проекты)/u',
+      '$1href="' . esc_url(home_url('/projects/')) . '"$2',
+      $content,
+      1
+    ) ?? $content;
+  }
+
   private static function video_section(): string
   {
     $o = self::option(self::VIDEO);
