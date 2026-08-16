@@ -1354,6 +1354,8 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   --nx-line: rgba(45, 39, 34, 0.16);
   --nx-radius: 20px;
   --nx-shadow: 0 24px 70px rgba(40, 30, 23, 0.12);
+  --hero-accent: #d4895a;
+  --hero-accent-deep: #9a4a28;
 }
 .nexor-home {
   background: var(--nx-paper);
@@ -1478,8 +1480,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 }
 
 .nexor-home-hero {
-  --hero-accent: #d4895a;
-  --hero-accent-deep: #9a4a28;
   isolation: isolate;
   display: flex;
   align-items: stretch;
@@ -1934,26 +1934,34 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
 /* Editorial service composition. */
 .nexor-services-section {
-  padding: clamp(86px, 10vw, 150px) 0;
+  padding: clamp(34px, 5vw, 65px) 0;
   background: var(--nx-paper);
 }
 .nexor-services-section .nexor-section-heading {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  align-items: end;
+  display: flex;
+  flex-direction: column;
+  row-gap: 0;
   margin-bottom: 58px;
 }
-.nexor-services-section .nexor-section-heading > p {
-  align-self: start;
+
+.nexor-services-section .heading-section {
+  margin: 0 0 7px;
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  text-wrap: balance;
 }
-.nexor-services-section h2 {
-  grid-column: 2;
+
+.nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
+  margin: 0;
 }
+
 .nexor-services-editorial {
   display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr));
-  grid-auto-rows: minmax(220px, auto);
-  gap: 18px;
+  grid-template-columns: repeat(16, 1fr);
+  grid-auto-rows: 350px 155px;
+  gap: 10px;
 }
 .nexor-service-card {
   min-width: 0;
@@ -1963,20 +1971,25 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   box-shadow: 0 16px 50px rgba(38, 30, 25, 0.08);
 }
 .nexor-service-card:nth-child(1) {
-  grid-column: 1/8;
+  grid-column: 1 / 9;
   grid-row: 1/3;
 }
+
+.nexor-service-card:nth-child(1) h3 {
+  font-size: clamp(28px, 2.4vw, 34px);
+}
+
 .nexor-service-card:nth-child(2) {
-  grid-column: 8/13;
+  grid-column: 9 / 12;
 }
 .nexor-service-card:nth-child(3) {
-  grid-column: 8/13;
+  grid-column: 12 / -1;
 }
 .nexor-service-card:nth-child(4) {
-  grid-column: 1/6;
+  grid-column: 9 / 13;
 }
 .nexor-service-card:nth-child(5) {
-  grid-column: 6/13;
+  grid-column: 13 / -1;
 }
 .nexor-service-card > a {
   position: relative;
@@ -1987,6 +2000,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   color: #fff;
   text-decoration: none;
   isolation: isolate;
+  container-type: inline-size;
 }
 .nexor-service-card__media {
   position: absolute;
@@ -2004,14 +2018,23 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(180deg, transparent 30%, rgba(17, 14, 12, 0.86) 100%);
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(17, 14, 12, 0.18) 34%,
+    rgba(17, 14, 12, 0.62) 64%,
+    rgba(10, 8, 7, 0.88) 84%,
+    rgba(6, 5, 4, 0.98) 100%
+  );
+  transition: opacity 0.7s ease;
 }
 .nexor-service-card__body {
-  align-self: end;
-  display: grid;
-  grid-template-columns: 52px 1fr auto;
-  gap: 9px 16px;
-  align-items: end;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: clamp(16px, 1.35em, 24px);
   padding: 28px;
 }
 .nexor-service-card__body small {
@@ -2026,10 +2049,15 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 }
 .nexor-service-card h3 {
   margin: 0;
-  font-size: clamp(22px, 2.2vw, 35px);
-  font-weight: 560;
-  line-height: 1.08;
-  letter-spacing: -0.035em;
+  color: #fff;
+  font-size: clamp(16px, 1.25vw, 20px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.42),
+    0 6px 20px rgba(0, 0, 0, 0.38);
 }
 .nexor-service-card p {
   grid-column: 2/4;
@@ -2040,15 +2068,56 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   line-height: 1.5;
 }
 .nexor-service-card__link {
-  grid-column: 3;
-  grid-row: 1;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
   white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
-.nexor-service-card:hover img {
-  transform: scale(1.045);
+
+.nexor-service-card__arrow {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: min(1.75em, 10cqw);
+  height: 1px;
+  background: var(--hero-accent);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nexor-service-card__arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--hero-accent);
+  border-right: 1px solid var(--hero-accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.nexor-service-card:nth-child(1) .nexor-service-card__arrow {
+  width: min(4.5em, 12cqw);
+}
+
+.nexor-service-card > a:hover::after,
+.nexor-service-card > a:focus-visible::after {
+  opacity: 0.74;
+}
+
+.nexor-service-card > a:hover .nexor-service-card__arrow,
+.nexor-service-card > a:focus-visible .nexor-service-card__arrow {
+  transform: translateX(5px);
+}
+
+.nexor-service-card > a:hover img,
+.nexor-service-card > a:focus-visible img {
+  transform: scale(1.03);
 }
 
 /* Approved asymmetric real projects. */
@@ -2410,12 +2479,19 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   color: #c66d45;
 }
 
-.nexor-stage-card__intro {
+.nexor-stage-card__intro,
+.nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
   max-width: 620px;
-  margin: 0 auto;
   font-weight: 500;
   font-size: 15px;
   line-height: 1.6;
+  color: #656766;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.nexor-stage-card__intro {
+  margin: 0 auto;
 }
 
 .nexor-stage-card__main {
@@ -2862,6 +2938,18 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     font-size: clamp(21px, 6vw, 26px);
     margin-bottom: 5px;
   }
+
+  .nexor-services-section .heading-section {
+    font-size: clamp(21px, 6vw, 26px);
+    margin-bottom: 5px;
+  }
+
+  .nexor-stage-card__intro,
+  .nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
   .nexor-stage-card {
     padding: 22px 16px 28px;
   }
@@ -2869,10 +2957,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     margin-bottom: 6px;
     font-size: 11px;
   }
-  .nexor-stage-card__intro {
-    font-size: 13px;
-    line-height: 1.5;
-  }
+
   .nexor-stage-card__main {
     gap: 20px;
     padding: 20px 0 24px;
@@ -3526,8 +3611,12 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     padding: 24px;
   }
 
-  .nexor-service-card__link {
-    display: none;
+  .nexor-service-card__arrow {
+    width: min(1.6em, 9cqw);
+  }
+
+  .nexor-service-card:nth-child(1) .nexor-service-card__arrow {
+    width: min(4em, 11cqw);
   }
 
   .nexor-service-card p {
@@ -3671,6 +3760,10 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     grid-column: 1 / -1;
     height: 500px;
     min-height: 500px;
+  }
+
+  .nexor-service-card:first-child .nexor-service-card__arrow {
+    width: min(4.25em, 14cqw);
   }
 
   .nexor-projects-section .grid.grid-cols-1 {
@@ -3879,11 +3972,25 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     min-height: 430px;
   }
   .nexor-service-card__body {
+    gap: clamp(14px, 1.1em, 18px);
     padding: 20px;
   }
   .nexor-service-card h3 {
-    font-size: 26px;
+    font-size: 20px;
   }
+
+  .nexor-service-card:nth-child(1) h3 {
+    font-size: 28px;
+  }
+
+  .nexor-service-card__arrow {
+    width: min(1.5em, 8cqw);
+  }
+
+  .nexor-service-card:nth-child(1) .nexor-service-card__arrow {
+    width: min(3.5em, 12cqw);
+  }
+
   .nexor-service-card p {
     display: none;
   }
@@ -4166,8 +4273,22 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   }
 
   .nexor-service-card__media img,
+  .nexor-service-card > a::after,
+  .nexor-service-card__arrow,
   .nexor-service-desk__drawer {
     transition: none;
+  }
+
+  .nexor-service-card > a:hover::after,
+  .nexor-service-card > a:focus-visible::after {
+    opacity: 1;
+  }
+
+  .nexor-service-card > a:hover .nexor-service-card__arrow,
+  .nexor-service-card > a:focus-visible .nexor-service-card__arrow,
+  .nexor-service-card > a:hover img,
+  .nexor-service-card > a:focus-visible img {
+    transform: none;
   }
 
   .nexor-service-desk.is-guided .nexor-service-hotspot:first-of-type {

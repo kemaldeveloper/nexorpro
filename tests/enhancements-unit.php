@@ -152,10 +152,32 @@ function get_post_meta($id, $key, $single = true)
 {
   return '';
 }
+class WP_Post {
+  public $ID;
+  public $post_status;
+  public $post_title;
+  public $post_name;
+}
 function get_page_by_path($slug)
 {
   static $id = 10;
-  return (object)array('ID' => $id++, 'post_status' => 'publish', 'post_title' => ucwords(str_replace('-', ' ', $slug)), 'post_name' => $slug);
+  $page = new WP_Post();
+  $page->ID = $id++;
+  $page->post_status = 'publish';
+  $page->post_title = ucwords(str_replace('-', ' ', $slug));
+  $page->post_name = $slug;
+  return $page;
+}
+function nexor_render_home_services_section(array $cards, array $headings = array()): string
+{
+  if (! $cards) {
+    return '';
+  }
+  $html = '<section id="main-services"><div>';
+  foreach ($cards as $card) {
+    $html .= '<article><a href="' . esc_url($card['url']) . '"><h3>' . esc_html($card['title']) . '</h3></a></article>';
+  }
+  return $html . '</div></section>';
 }
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),

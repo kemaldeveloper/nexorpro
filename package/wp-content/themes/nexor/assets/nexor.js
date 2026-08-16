@@ -292,7 +292,7 @@
               title: 'Получите дизайн-проект в подарок',
               lead: 'Оставьте номер телефона — расскажем условия акции и как получить подарок.',
             }
-          : {}
+          : {},
       );
     });
     document.querySelectorAll('button,a').forEach(el => {
@@ -398,6 +398,37 @@
       window.setTimeout(() => features?.classList.add('is-hero-in'), 520);
     });
   }
+
+  function initServiceCardsAnimations() {
+    const section = document.querySelector('#main-services');
+    if (!section) return;
+
+    const cards = [...section.querySelectorAll('.nexor-service-card')];
+    if (!cards.length) return;
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap
+      .timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: 'top 20%',
+          once: true,
+        },
+      })
+      .from(cards, {
+        opacity: 0,
+        y: index => (index === 0 ? -40 : -18),
+        duration: 0.36,
+        ease: 'power2.out',
+        stagger: 0.4,
+        delay: 0.1,
+      });
+  }
+
   function setupFaq() {
     document.querySelectorAll('#faq button').forEach(btn =>
       btn.addEventListener('click', () => {
@@ -1405,5 +1436,6 @@
     setupRevealAnimations();
     setupExitIntent();
     initStagesAnimations();
+    initServiceCardsAnimations();
   });
 })();
