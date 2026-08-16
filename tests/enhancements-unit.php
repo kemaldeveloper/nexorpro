@@ -1,8 +1,13 @@
 <?php
 define('ABSPATH', __DIR__);
+define('OBJECT', 'OBJECT');
 class WP_Error
 {
   public function __construct(public string $code = '', public string $message = '', public array $data = array()) {}
+}
+function is_wp_error($value): bool
+{
+  return $value instanceof WP_Error;
 }
 class WP_Query
 {
@@ -150,7 +155,40 @@ function get_permalink($post)
 }
 function get_post_meta($id, $key, $single = true)
 {
+  if ((int) $id >= 10) {
+    return match ($key) {
+      '_nexor_featured' => '1',
+      '_nexor_location' => 'Москва',
+      '_nexor_area_display' => '79,9 м²',
+      '_nexor_duration' => 'Под ключ',
+      '_nexor_focal_point' => 'center',
+      default => '',
+    };
+  }
+
   return '';
+}
+
+function get_post_thumbnail_id($id)
+{
+  return 501 === (int) $id ? 77 : 0;
+}
+
+function get_the_terms($id, $taxonomy)
+{
+  if ((int) $id < 10) {
+    return false;
+  }
+
+  if ('nexor_repair_type' === $taxonomy) {
+    return array((object) array('name' => 'Капитальный ремонт'));
+  }
+
+  if ('nexor_property_type' === $taxonomy) {
+    return array((object) array('name' => 'Квартира'));
+  }
+
+  return false;
 }
 class WP_Post {
   public $ID;
@@ -158,7 +196,7 @@ class WP_Post {
   public $post_title;
   public $post_name;
 }
-function get_page_by_path($slug)
+function get_page_by_path($slug, $output = OBJECT, $post_type = 'page')
 {
   static $id = 10;
   $page = new WP_Post();
@@ -168,6 +206,36 @@ function get_page_by_path($slug)
   $page->post_name = $slug;
   return $page;
 }
+function get_post($post = null)
+{
+  if ($post instanceof WP_Post) {
+    return $post;
+  }
+
+  $id = absint($post);
+  if (! $id) {
+    return null;
+  }
+
+  $item = new WP_Post();
+  $item->ID = $id;
+  $item->post_status = 'publish';
+  $item->post_title = 'Project ' . $id;
+  $item->post_name = 'project-' . $id;
+  return $item;
+}
+function get_post_field($field, $post_id)
+{
+  return '';
+}
+function get_template_directory_uri()
+{
+  return 'https://example.test/wp-content/themes/nexor';
+}
+function get_theme_file_path($path = '')
+{
+  return __DIR__ . '/../package/wp-content/themes/nexor/' . ltrim($path, '/');
+}
 function nexor_render_home_services_section(array $cards, array $headings = array()): string
 {
   if (! $cards) {
@@ -176,6 +244,17 @@ function nexor_render_home_services_section(array $cards, array $headings = arra
   $html = '<section id="main-services"><div>';
   foreach ($cards as $card) {
     $html .= '<article><a href="' . esc_url($card['url']) . '"><h3>' . esc_html($card['title']) . '</h3></a></article>';
+  }
+  return $html . '</div></section>';
+}
+function nexor_render_home_projects_section(array $cards, array $headings = array()): string
+{
+  if (! $cards) {
+    return '';
+  }
+  $html = '<section id="cases" class="nexor-projects-section"><div class="grid grid-cols-1">';
+  foreach ($cards as $card) {
+    $html .= '<a href="' . esc_url($card['url']) . '"><article><h3>' . esc_html($card['title']) . '</h3></article></a>';
   }
   return $html . '</div></section>';
 }

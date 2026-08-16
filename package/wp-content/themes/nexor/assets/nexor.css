@@ -1944,7 +1944,8 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   margin-bottom: 58px;
 }
 
-.nexor-services-section .heading-section {
+.nexor-services-section .heading-section,
+.nexor-projects-section .heading-section {
   margin: 0 0 7px;
   font-size: clamp(30px, 3.4vw, 46px);
   font-weight: 600;
@@ -1953,7 +1954,12 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   text-wrap: balance;
 }
 
-.nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
+.nexor-projects-section .heading-section {
+  color: #fff;
+}
+
+.nexor-services-section .nexor-section-heading > .nexor-services-section__intro,
+.nexor-projects-section .nexor-section-heading > .nexor-projects-section__intro {
   margin: 0;
 }
 
@@ -2018,14 +2024,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    rgba(17, 14, 12, 0.18) 34%,
-    rgba(17, 14, 12, 0.62) 64%,
-    rgba(10, 8, 7, 0.88) 84%,
-    rgba(6, 5, 4, 0.98) 100%
-  );
+  background: linear-gradient(180deg, transparent 0%, rgba(17, 14, 12, 0.18) 34%, rgba(17, 14, 12, 0.62) 64%, rgba(10, 8, 7, 0.88) 84%, rgba(6, 5, 4, 0.98) 100%);
   transition: opacity 0.7s ease;
 }
 .nexor-service-card__body {
@@ -2120,67 +2119,239 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   transform: scale(1.03);
 }
 
-/* Approved asymmetric real projects. */
+/* Realized projects — editorial overlay cards. */
 .nexor-projects-section {
-  padding: clamp(82px, 9vw, 135px) 0 !important;
-  background: #1d1d1b !important;
+  padding: clamp(82px, 9vw, 135px) 0;
+  background: #1d1d1b;
   color: #fff;
 }
-.nexor-projects-section h2 {
-  color: #fff !important;
-  font-size: clamp(40px, 5vw, 68px);
-  font-weight: 560;
-  letter-spacing: -0.05em;
-}
-.nexor-projects-section p {
-  color: rgba(255, 255, 255, 0.62) !important;
-}
-.nexor-projects-section > div > div:first-child {
-  margin-bottom: 52px !important;
-}
-.nexor-projects-section > div > div:first-child > a {
-  border-color: rgba(255, 255, 255, 0.28) !important;
-  background: transparent !important;
-  color: #fff !important;
-}
-.nexor-projects-section .grid.grid-cols-1 {
-  display: grid !important;
-  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
-  grid-template-rows: repeat(2, minmax(230px, 1fr));
-  gap: 18px !important;
-}
-.nexor-projects-section .grid.grid-cols-1 > a {
-  min-width: 0;
-  border: 0 !important;
-  border-radius: 17px !important;
-  background: #282724 !important;
-  color: #fff;
-  transform: none !important;
-}
-.nexor-projects-section .grid.grid-cols-1 > a:nth-child(1) {
-  grid-column: 1/8;
-  grid-row: 1/3;
-}
-.nexor-projects-section .grid.grid-cols-1 > a:nth-child(2),
-.nexor-projects-section .grid.grid-cols-1 > a:nth-child(3) {
-  grid-column: 8/13;
-}
-.nexor-projects-section article {
-  height: 100%;
+
+.nexor-projects-section__header {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: clamp(24px, 4vw, 48px);
+  align-items: end;
+  margin-bottom: 58px;
 }
-.nexor-projects-section article > div:first-child {
-  aspect-ratio: auto !important;
+
+.nexor-projects-section .nexor-section-heading {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0;
 }
-.nexor-projects-section article > div:last-child {
-  padding: 22px !important;
+
+.nexor-projects-section__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  white-space: nowrap;
 }
-.nexor-projects-section article h3 {
-  color: #fff !important;
+
+.nexor-projects-section__cta-arrow {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: min(3.5em, 14vw);
+  height: 1px;
+  background: var(--hero-accent);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
-.nexor-projects-section article .text-primary {
-  color: #d98860 !important;
+
+.nexor-projects-section__cta-arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--hero-accent);
+  border-right: 1px solid var(--hero-accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.nexor-projects-section__cta:hover .nexor-projects-section__cta-arrow,
+.nexor-projects-section__cta:focus-visible .nexor-projects-section__cta-arrow {
+  transform: translateX(6px);
+}
+
+.nexor-projects-editorial {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: 300px 250px;
+  gap: 10px;
+}
+
+.nexor-project-card {
+  min-width: 0;
+  min-height: 100%;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #282724;
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.24);
+}
+
+.nexor-project-card:nth-child(1) {
+  grid-column: 1 / 8;
+  grid-row: 1 / 3;
+}
+
+.nexor-project-card:nth-child(2),
+.nexor-project-card:nth-child(3) {
+  grid-column: 8 / 13;
+}
+
+.nexor-project-card > a {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-height: inherit;
+  color: #fff;
+  text-decoration: none;
+  isolation: isolate;
+  container-type: inline-size;
+}
+
+.nexor-project-card__media {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+}
+
+.nexor-project-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.nexor-project-card > a::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(17, 14, 12, 0.12) 38%, rgba(17, 14, 12, 0.58) 68%, rgba(10, 8, 7, 0.88) 100%);
+  transition: opacity 0.7s ease;
+}
+
+.nexor-project-card__icon {
+  position: absolute;
+  top: clamp(16px, 2.5cqw, 22px);
+  right: clamp(16px, 2.5cqw, 22px);
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: clamp(38px, 5.5cqw, 44px);
+  height: clamp(38px, 5.5cqw, 44px);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.92);
+  pointer-events: none;
+}
+
+.nexor-project-card__icon svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+.nexor-project-card__body {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  gap: clamp(10px, 1.1em, 16px);
+  padding: clamp(20px, 2.5cqw, 28px);
+}
+
+.nexor-project-card__badge {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.nexor-project-card h3 {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(16px, 1.25vw, 20px);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  max-width: 500px;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.42),
+    0 6px 20px rgba(0, 0, 0, 0.38);
+}
+
+.nexor-project-card--featured h3 {
+  font-size: clamp(22px, 2vw, 30px);
+}
+
+.nexor-project-card__meta {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: clamp(12px, 0.95vw, 14px);
+  line-height: 1.45;
+}
+
+.nexor-project-card__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: clamp(2px, 0.4em, 6px);
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
+}
+
+.nexor-project-card__arrow {
+  position: relative;
+  display: block;
+  flex: 0 0 auto;
+  width: min(4.5em, 12cqw);
+  height: 1px;
+  background: var(--hero-accent);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nexor-project-card__arrow::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 6px;
+  height: 6px;
+  border-top: 1px solid var(--hero-accent);
+  border-right: 1px solid var(--hero-accent);
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.nexor-project-card > a:hover::after,
+.nexor-project-card > a:focus-visible::after {
+  opacity: 0.74;
+}
+
+.nexor-project-card > a:hover img,
+.nexor-project-card > a:focus-visible img {
+  transform: scale(1.03);
+}
+
+.nexor-project-card > a:hover .nexor-project-card__arrow,
+.nexor-project-card > a:focus-visible .nexor-project-card__arrow {
+  transform: translateX(6px);
 }
 
 /* Premium glass calculator, business logic remains in nexor.js and REST. */
@@ -2480,7 +2651,8 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 }
 
 .nexor-stage-card__intro,
-.nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
+.nexor-services-section .nexor-section-heading > .nexor-services-section__intro,
+.nexor-projects-section .nexor-section-heading > .nexor-projects-section__intro {
   max-width: 620px;
   font-weight: 500;
   font-size: 15px;
@@ -2488,6 +2660,10 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   color: #656766;
   letter-spacing: normal;
   text-transform: none;
+}
+
+.nexor-projects-section .nexor-section-heading > .nexor-projects-section__intro {
+  color: rgba(255, 255, 255, 0.62);
 }
 
 .nexor-stage-card__intro {
@@ -2939,13 +3115,15 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     margin-bottom: 5px;
   }
 
-  .nexor-services-section .heading-section {
+  .nexor-services-section .heading-section,
+  .nexor-projects-section .heading-section {
     font-size: clamp(21px, 6vw, 26px);
     margin-bottom: 5px;
   }
 
   .nexor-stage-card__intro,
-  .nexor-services-section .nexor-section-heading > .nexor-services-section__intro {
+  .nexor-services-section .nexor-section-heading > .nexor-services-section__intro,
+  .nexor-projects-section .nexor-section-heading > .nexor-projects-section__intro {
     font-size: 13px;
     line-height: 1.5;
   }
@@ -3766,18 +3944,18 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     width: min(4.25em, 14cqw);
   }
 
-  .nexor-projects-section .grid.grid-cols-1 {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  .nexor-projects-editorial {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-rows: 420px 330px;
   }
 
-  .nexor-projects-section .grid.grid-cols-1 > a:nth-child(1) {
+  .nexor-project-card:nth-child(1) {
     grid-column: 1 / -1;
     grid-row: 1;
   }
 
-  .nexor-projects-section .grid.grid-cols-1 > a:nth-child(2),
-  .nexor-projects-section .grid.grid-cols-1 > a:nth-child(3) {
+  .nexor-project-card:nth-child(2),
+  .nexor-project-card:nth-child(3) {
     grid-column: auto;
     grid-row: 2;
   }
@@ -3994,22 +4172,34 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-service-card p {
     display: none;
   }
-  .nexor-projects-section > div > div:first-child {
-    margin-bottom: 34px !important;
+  .nexor-projects-section__header {
+    grid-template-columns: 1fr;
+    align-items: start;
+    margin-bottom: 34px;
   }
-  .nexor-projects-section .grid.grid-cols-1 {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
+
+  .nexor-projects-section__cta {
+    margin-top: 8px;
+  }
+
+  .nexor-projects-editorial {
+    grid-template-columns: 1fr;
     grid-template-rows: none;
-    gap: 14px !important;
+    gap: 13px;
   }
-  .nexor-projects-section .grid.grid-cols-1 > a:nth-child(n) {
+
+  .nexor-project-card:nth-child(n) {
     grid-column: auto;
     grid-row: auto;
     min-height: 400px;
   }
-  .nexor-projects-section article > div:last-child {
-    padding: 18px !important;
+
+  .nexor-project-card:nth-child(1) {
+    min-height: 430px;
+  }
+
+  .nexor-project-card__body {
+    padding: 20px;
   }
   #calculator {
     min-height: 680px;

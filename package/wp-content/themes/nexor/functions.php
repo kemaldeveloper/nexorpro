@@ -104,6 +104,26 @@ function nexor_render_home_services_section(array $cards, array $headings = arra
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_projects_section(array $cards, array $headings = array()): string
+{
+  if (! $cards) {
+    return '';
+  }
+
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'projects-section',
+    array(
+      'cards' => $cards,
+      'heading' => $headings['heading'] ?? 'Реализованные проекты',
+      'intro' => $headings['intro'] ?? 'Показываем реальные объекты с понятными сроками, бюджетами и результатом.',
+      'cta_label' => $headings['cta_label'] ?? 'Все проекты',
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 remove_action('wp_head', 'rel_canonical');
 
 add_action(

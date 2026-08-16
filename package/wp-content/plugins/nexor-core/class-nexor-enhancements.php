@@ -6,7 +6,7 @@ if (! defined('ABSPATH')) exit;
 
 final class Nexor_Enhancements
 {
-  private const VERSION = '1.7.1';
+  private const VERSION = '1.7.2';
   private const VERSION_OPTION = 'nexor_enhancements_schema_version';
   private const PRICES = 'nexor_home_prices';
   private const VIDEO = 'nexor_home_video';
@@ -17,6 +17,7 @@ final class Nexor_Enhancements
   private const STAGES = 'nexor_home_stages';
   private const POPUP = 'nexor_exit_intent';
   private const HOME_SERVICES = 'nexor_home_services';
+  private const HOME_PROJECTS = 'nexor_home_projects';
   private const SERVICE_SLUGS = array('remont-kvartir-pod-klyuch', 'capital-remont', 'design-remont', 'remont-v-novostroyke', 'cosmetic-remont', 'remont-domov-pod-klyuch');
 
   public static function init(): void
@@ -107,6 +108,42 @@ final class Nexor_Enhancements
     );
   }
 
+  private static function home_projects_seed(): array
+  {
+    return array(
+      array(
+        'id' => 'remont-kvartiry-79-9-m2-zhk-yuzhnaya-bittsa-moskva',
+        'enabled' => 1,
+        'order' => 10,
+        'project_id' => 0,
+        'title' => '',
+        'meta' => '',
+        'badge' => '',
+        'image_id' => 0,
+      ),
+      array(
+        'id' => 'remont-doma-142-m2-kp-pavlovy-ozera',
+        'enabled' => 1,
+        'order' => 20,
+        'project_id' => 0,
+        'title' => '',
+        'meta' => '',
+        'badge' => '',
+        'image_id' => 0,
+      ),
+      array(
+        'id' => 'remont-kvartiry-35-4-m2-zhk-symbol',
+        'enabled' => 1,
+        'order' => 30,
+        'project_id' => 0,
+        'title' => '',
+        'meta' => '',
+        'badge' => '',
+        'image_id' => 0,
+      ),
+    );
+  }
+
   private static function promotion_seed(): array
   {
     return array(
@@ -149,7 +186,14 @@ final class Nexor_Enhancements
         'eyebrow' => 'Направления работы',
         'heading' => 'Основные услуги',
         'rows' => self::home_services_seed(),
-      )
+      ),
+      self::HOME_PROJECTS => array(
+        'enabled' => 1,
+        'heading' => 'Реализованные проекты',
+        'intro' => 'Показываем реальные объекты с понятными сроками, бюджетами и результатом.',
+        'cta_label' => 'Все проекты',
+        'rows' => self::home_projects_seed(),
+      ),
     );
   }
 
@@ -178,6 +222,14 @@ final class Nexor_Enhancements
             $merged = $default;
           } else {
             $merged['rows'] = self::merge_home_services_rows((array) $current['rows']);
+          }
+        }
+
+        if (self::HOME_PROJECTS === $option) {
+          if (empty($current['rows'])) {
+            $merged = $default;
+          } else {
+            $merged['rows'] = self::merge_home_projects_rows((array) $current['rows']);
           }
         }
         update_option($option, $merged, false);
@@ -277,6 +329,26 @@ final class Nexor_Enhancements
     }, $by_id));
   }
 
+  private static function merge_home_projects_rows(array $rows): array
+  {
+    $by_id = array();
+    foreach ($rows as $row) {
+      if (! is_array($row) || empty($row['id'])) {
+        continue;
+      }
+      $by_id[sanitize_key($row['id'])] = $row;
+    }
+
+    $merged = array();
+    foreach (self::home_projects_seed() as $seed) {
+      $row = array_merge($seed, $by_id[$seed['id']] ?? array());
+      $row['id'] = $seed['id'];
+      $merged[] = $row;
+    }
+
+    return $merged;
+  }
+
   public static function register_settings(): void
   {
     register_setting('nexor_settings', self::PRICES, array('type' => 'array', 'sanitize_callback' => array(__CLASS__, 'sanitize_prices'), 'default' => self::defaults()[self::PRICES]));
@@ -288,6 +360,7 @@ final class Nexor_Enhancements
     register_setting('nexor_settings', self::STAGES, array('type' => 'array', 'sanitize_callback' => array(__CLASS__, 'sanitize_stages'), 'default' => self::defaults()[self::STAGES]));
     register_setting('nexor_settings', self::POPUP, array('type' => 'array', 'sanitize_callback' => array(__CLASS__, 'sanitize_popup'), 'default' => self::defaults()[self::POPUP]));
     register_setting('nexor_settings', self::HOME_SERVICES, array('type' => 'array', 'sanitize_callback' => array(__CLASS__, 'sanitize_home_services'), 'default' => self::defaults()[self::HOME_SERVICES]));
+    register_setting('nexor_settings', self::HOME_PROJECTS, array('type' => 'array', 'sanitize_callback' => array(__CLASS__, 'sanitize_home_projects'), 'default' => self::defaults()[self::HOME_PROJECTS]));
   }
 
   private static function clean_rows(array $rows, array $fields): array
@@ -392,6 +465,31 @@ final class Nexor_Enhancements
     );
   }
 
+  public static function sanitize_home_projects($input): array
+  {
+    $d = self::defaults()[self::HOME_PROJECTS];
+    $input = is_array($input) ? $input : array();
+
+    return array(
+      'enabled' => empty($input['enabled']) ? 0 : 1,
+      'heading' => sanitize_text_field($input['heading'] ?? $d['heading']),
+      'intro' => sanitize_textarea_field($input['intro'] ?? $d['intro']),
+      'cta_label' => sanitize_text_field($input['cta_label'] ?? $d['cta_label']),
+      'rows' => self::merge_home_projects_rows(
+        self::clean_rows(
+          (array) ($input['rows'] ?? array()),
+          array(
+            'project_id' => 'int',
+            'title' => 'text',
+            'meta' => 'text',
+            'badge' => 'text',
+            'image_id' => 'int',
+          )
+        )
+      ),
+    );
+  }
+
   public static function sanitize_popup($input): array
   {
     $d = self::defaults()[self::POPUP];
@@ -438,6 +536,7 @@ final class Nexor_Enhancements
   {
     self::admin_styles();
     self::render_home_services_admin();
+    self::render_home_projects_admin();
     self::render_timeline_admin();
     self::render_stages_admin();
     self::render_budget_admin();
@@ -460,13 +559,20 @@ final class Nexor_Enhancements
   {
     printf('<p><label><strong>%s</strong><br><textarea class="large-text" rows="3" name="%s[%s]">%s</textarea></label></p>', esc_html($label), esc_attr($option), esc_attr($key), esc_textarea($value[$key] ?? ''));
   }
-  private static function render_rows(string $option, array $rows, array $fields): void
+  private static function render_rows(string $option, array $rows, array $fields, array $options = array()): void
   {
+    $fixed_rows = ! empty($options['fixed_rows']);
     echo '<div class="nexor-repeater" data-option="' . esc_attr($option) . '"><table class="widefat striped"><thead><tr><th>Вкл.</th><th>ID / порядок</th>';
     foreach ($fields as $key => $field) echo '<th>' . esc_html($field[0]) . '</th>';
     echo '<th>Действия</th></tr></thead><tbody>';
-    $render = static function ($row, $index) use ($option, $fields) {
-      echo '<tr><td><input type="checkbox" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][enabled]" value="1" ' . checked(!empty($row['enabled']), true, false) . '></td><td><input class="nexor-id" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][id]" value="' . esc_attr($row['id'] ?? '') . '" placeholder="stable-id"><br><input class="small-text" type="number" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][order]" value="' . esc_attr($row['order'] ?? 10) . '"></td>';
+    $render = static function ($row, $index) use ($option, $fields, $fixed_rows) {
+      echo '<tr><td><input type="checkbox" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][enabled]" value="1" ' . checked(!empty($row['enabled']), true, false) . '></td><td>';
+      if ($fixed_rows) {
+        echo '<input type="hidden" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][id]" value="' . esc_attr($row['id'] ?? '') . '"><code>' . esc_html($row['id'] ?? '') . '</code><br>';
+      } else {
+        echo '<input class="nexor-id" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][id]" value="' . esc_attr($row['id'] ?? '') . '" placeholder="stable-id"><br>';
+      }
+      echo '<input class="small-text" type="number" name="' . esc_attr($option) . '[rows][' . esc_attr($index) . '][order]" value="' . esc_attr($row['order'] ?? 10) . '"></td>';
       foreach ($fields as $key => $field) {
         $tag = $field[1] ?? 'text';
         echo '<td>';
@@ -485,12 +591,20 @@ final class Nexor_Enhancements
         }
         echo '</td>';
       }
-      echo '<td><button type="button" class="button nexor-up">↑</button> <button type="button" class="button nexor-down">↓</button> <button type="button" class="button-link-delete nexor-remove">Удалить</button></td></tr>';
+      echo '<td><button type="button" class="button nexor-up">↑</button> <button type="button" class="button nexor-down">↓</button>';
+      if (! $fixed_rows) {
+        echo ' <button type="button" class="button-link-delete nexor-remove">Удалить</button>';
+      }
+      echo '</td></tr>';
     };
     foreach ($rows as $i => $row) $render($row, $i);
-    echo '</tbody></table><button type="button" class="button nexor-add">Добавить строку</button><template>';
-    $render(array('id' => '', 'enabled' => 0, 'order' => (count($rows) + 1) * 10), '__INDEX__');
-    echo '</template></div>';
+    echo '</tbody></table>';
+    if (! $fixed_rows) {
+      echo '<button type="button" class="button nexor-add">Добавить строку</button><template>';
+      $render(array('id' => '', 'enabled' => 0, 'order' => (count($rows) + 1) * 10), '__INDEX__');
+      echo '</template>';
+    }
+    echo '</div>';
   }
   private static function render_prices_admin(): void
   {
@@ -586,6 +700,29 @@ final class Nexor_Enhancements
       )
     );
     echo '<p class="description">Stable ID = slug страницы услуги (<code>capital-remont</code> и т.д.). Косметический ремонт на главной не выводится. Пустой заголовок берётся с привязанной страницы.</p></section>';
+  }
+
+  private static function render_home_projects_admin(): void
+  {
+    $o = self::option(self::HOME_PROJECTS);
+    echo '<section class="nexor-admin-section"><h2>Реализованные проекты (главная)</h2>';
+    self::enabled_field(self::HOME_PROJECTS, $o);
+    self::text_field(self::HOME_PROJECTS, 'heading', 'Заголовок секции', $o);
+    self::textarea_field(self::HOME_PROJECTS, 'intro', 'Описание под заголовком', $o);
+    self::text_field(self::HOME_PROJECTS, 'cta_label', 'Текст кнопки «Все проекты»', $o);
+    self::render_rows(
+      self::HOME_PROJECTS,
+      self::merge_home_projects_rows((array) $o['rows']),
+      array(
+        'project_id' => array('ID проекта (CPT)', 'number'),
+        'title'      => array('Заголовок карточки', 'text'),
+        'meta'       => array('Подпись (локация · площадь · тип · срок)', 'text'),
+        'badge'      => array('Бейдж (тип ремонта)', 'text'),
+        'image_id'   => array('Изображение', 'image'),
+      ),
+      array('fixed_rows' => true)
+    );
+    echo '<p class="description">На главной всегда три фиксированные карточки. Stable ID = slug проекта (<code>remont-kvartiry-79-9-m2-zhk-yuzhnaya-bittsa-moskva</code> и т.д.). Можно указать ID CPT <strong>Проекты</strong>. Пустые заголовок, подпись, бейдж и изображение берутся из карточки проекта.</p></section>';
   }
 
   private static function render_promotions_admin(): void
@@ -788,6 +925,281 @@ final class Nexor_Enhancements
     return nexor_render_home_services_section($cards, array(
       'eyebrow' => (string) ($o['eyebrow'] ?? ''),
       'heading' => (string) ($o['heading'] ?? ''),
+    ));
+  }
+
+  private static function home_project_post(array $row): ?WP_Post
+  {
+    $project_id = absint($row['project_id'] ?? 0);
+    if ($project_id && 'publish' === get_post_status($project_id) && 'nexor_project' === get_post_type($project_id)) {
+      $post = get_post($project_id);
+      return $post instanceof WP_Post ? $post : null;
+    }
+
+    $slug = sanitize_key($row['id'] ?? '');
+    if (! $slug) {
+      return null;
+    }
+
+    $post = get_page_by_path($slug, OBJECT, 'nexor_project');
+    return ($post instanceof WP_Post && 'publish' === $post->post_status) ? $post : null;
+  }
+
+  private static function home_project_rows(): array
+  {
+    $o = self::option(self::HOME_PROJECTS);
+    if (empty($o['enabled']) || ! trim((string) ($o['heading'] ?? ''))) {
+      return array();
+    }
+
+    $rows = array();
+    foreach ((array) ($o['rows'] ?? array()) as $row) {
+      if (empty($row['enabled'])) {
+        continue;
+      }
+
+      if (! self::home_project_post($row)) {
+        continue;
+      }
+
+      $rows[] = $row;
+    }
+
+    usort($rows, static fn($a, $b) => intval($a['order'] ?? 0) <=> intval($b['order'] ?? 0));
+
+    return array_slice(array_values($rows), 0, 3);
+  }
+
+  private static function home_project_data_by_slug(): array
+  {
+    static $by_slug = null;
+    if (null !== $by_slug) {
+      return $by_slug;
+    }
+
+    $by_slug = array();
+    $file = __DIR__ . '/project-data.json';
+    if (! is_readable($file)) {
+      return $by_slug;
+    }
+
+    foreach ((array) json_decode((string) file_get_contents($file), true) as $item) {
+      $slug = sanitize_key($item['slug'] ?? '');
+      if ($slug) {
+        $by_slug[$slug] = $item;
+      }
+    }
+
+    return $by_slug;
+  }
+
+  private static function home_project_compiled_asset(string $original): string
+  {
+    static $reverse = null;
+    if (null !== $reverse) {
+      return $reverse[$original] ?? $original;
+    }
+
+    $reverse = array();
+    $map_file = __DIR__ . '/asset-media-map.json';
+    if (is_readable($map_file)) {
+      foreach ((array) json_decode((string) file_get_contents($map_file), true) as $compiled => $source) {
+        $reverse[$source] = $compiled;
+      }
+    }
+
+    return $reverse[$original] ?? $original;
+  }
+
+  private static function home_project_theme_asset_url(string $filename): string
+  {
+    $filename = basename($filename);
+    if ('' === $filename) {
+      return '';
+    }
+
+    $candidates = array(
+      self::home_project_compiled_asset($filename),
+      $filename,
+    );
+
+    foreach (array_unique($candidates) as $candidate) {
+      if (is_readable(get_theme_file_path('assets/' . $candidate))) {
+        return get_theme_file_uri('assets/' . $candidate);
+      }
+    }
+
+    $matches = glob(get_theme_file_path('assets/' . pathinfo($filename, PATHINFO_FILENAME) . '*.webp'));
+    if ($matches) {
+      return get_theme_file_uri('assets/' . basename($matches[0]));
+    }
+
+    return '';
+  }
+
+  private static function home_project_image_from_content(int $post_id): string
+  {
+    $content = (string) get_post_field('post_content', $post_id);
+    if (! preg_match('/<img\b[^>]*\bsrc=(["\'])([^"\']+)\1/i', $content, $match)) {
+      return '';
+    }
+
+    $src = html_entity_decode($match[2], ENT_QUOTES, 'UTF-8');
+    if (str_starts_with($src, '{{THEME_URI}}')) {
+      $src = str_replace('{{THEME_URI}}', get_template_directory_uri(), $src);
+    }
+
+    return esc_url_raw($src) ?: '';
+  }
+
+  private static function home_project_image(WP_Post $post, array $row = array()): array
+  {
+    $override_id = absint($row['image_id'] ?? 0);
+    if ($override_id) {
+      $url = wp_get_attachment_image_url($override_id, 'large') ?: wp_get_attachment_url($override_id);
+      if ($url) {
+        return array(
+          'url' => $url,
+          'id' => $override_id,
+        );
+      }
+    }
+
+    $image_id = get_post_thumbnail_id($post->ID);
+    if ($image_id) {
+      $url = wp_get_attachment_image_url($image_id, 'large') ?: wp_get_attachment_url($image_id);
+      if ($url) {
+        return array(
+          'url' => $url,
+          'id' => $image_id,
+        );
+      }
+    }
+
+    $gallery = json_decode((string) get_post_meta($post->ID, '_nexor_gallery', true), true);
+    if (is_array($gallery)) {
+      foreach ($gallery as $item) {
+        $id = absint($item['id'] ?? 0);
+        if (! $id) {
+          continue;
+        }
+
+        $url = wp_get_attachment_image_url($id, 'large') ?: wp_get_attachment_url($id);
+        if ($url) {
+          return array(
+            'url' => $url,
+            'id' => $id,
+          );
+        }
+      }
+    }
+
+    $content_url = self::home_project_image_from_content($post->ID);
+    if ($content_url) {
+      return array(
+        'url' => $content_url,
+        'id' => 0,
+      );
+    }
+
+    $slug = (string) $post->post_name;
+    $hero = basename((string) (self::home_project_data_by_slug()[$slug]['hero_image'] ?? ''));
+    $theme_url = self::home_project_theme_asset_url($hero);
+    if ($theme_url) {
+      return array(
+        'url' => $theme_url,
+        'id' => 0,
+      );
+    }
+
+    return array(
+      'url' => '',
+      'id' => 0,
+    );
+  }
+
+  private static function home_project_badge(int $post_id): string
+  {
+    $terms = get_the_terms($post_id, 'nexor_repair_type');
+    if ($terms && ! is_wp_error($terms)) {
+      return (string) ($terms[0]->name ?? '');
+    }
+
+    return '';
+  }
+
+  private static function home_project_meta_line(int $post_id): string
+  {
+    $parts = array_filter(
+      array(
+        trim((string) get_post_meta($post_id, '_nexor_location', true)),
+        trim((string) (get_post_meta($post_id, '_nexor_area_display', true) ?: get_post_meta($post_id, '_nexor_area', true))),
+      )
+    );
+
+    $property = get_the_terms($post_id, 'nexor_property_type');
+    if ($property && ! is_wp_error($property)) {
+      $parts[] = (string) ($property[0]->name ?? '');
+    }
+
+    $duration = trim((string) get_post_meta($post_id, '_nexor_duration', true));
+    if ($duration) {
+      $parts[] = $duration;
+    }
+
+    return implode(' · ', $parts);
+  }
+
+  private static function home_projects_cards(): array
+  {
+    $cards = array();
+
+    foreach (self::home_project_rows() as $row) {
+      $post = self::home_project_post($row);
+      if (! $post instanceof WP_Post) {
+        continue;
+      }
+
+      $image = self::home_project_image($post, $row);
+      if ('' === $image['url']) {
+        continue;
+      }
+
+      $title = trim((string) ($row['title'] ?? ''));
+      $meta = trim((string) ($row['meta'] ?? ''));
+      $badge = trim((string) ($row['badge'] ?? ''));
+
+      $cards[] = array(
+        'url' => get_permalink($post),
+        'image' => $image['url'],
+        'image_id' => $image['id'],
+        'alt' => (string) (get_post_meta($post->ID, '_nexor_seo_title', true) ?: ($title ?: get_the_title($post))),
+        'title' => $title ?: get_the_title($post),
+        'badge' => $badge ?: self::home_project_badge($post->ID),
+        'meta' => $meta ?: self::home_project_meta_line($post->ID),
+        'focal_point' => (string) (get_post_meta($post->ID, '_nexor_focal_point', true) ?: 'center'),
+      );
+    }
+
+    return $cards;
+  }
+
+  private static function home_projects(): string
+  {
+    $o = self::option(self::HOME_PROJECTS);
+    $cards = self::home_projects_cards();
+    if (! $cards) {
+      return '';
+    }
+
+    if (! function_exists('nexor_render_home_projects_section')) {
+      return '';
+    }
+
+    return nexor_render_home_projects_section($cards, array(
+      'heading' => (string) ($o['heading'] ?? ''),
+      'intro' => (string) ($o['intro'] ?? ''),
+      'cta_label' => (string) ($o['cta_label'] ?? ''),
     ));
   }
 
@@ -1269,14 +1681,13 @@ final class Nexor_Enhancements
         $content = str_replace('<div class="nexor-home-hero__layout">', '<div class="nexor-home-hero__layout">' . $promo, $content);
       }
       $content = self::compose_home_hero($content);
-      $content = str_replace('<section id="cases" class="py-16 md:py-24 bg-card">', '<section id="cases" class="nexor-projects-section py-16 md:py-24 bg-card">', $content);
       $content = str_replace('<section class="py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', '<section id="nexor-system" class="nexor-system-section py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', $content);
       // The migrated five-step block is replaced by the interactive stages dial below.
       $content = self::drop_section($content, '<section class="py-[120px] md:py-[140px] bg-card">');
       $content = str_replace('<section class="bg-background py-[120px] md:py-[160px]">', '<section id="before-after" class="nexor-before-after-section bg-background py-[120px] md:py-[160px]">', $content);
       $content = self::insert_before($content, 'id="before-after"', self::stages_section());
-      $cases = self::pull_section($content, 'cases');
-      $content = self::insert_before($content, 'id="calculator"', self::home_services() . $cases);
+      self::pull_section($content, 'cases');
+      $content = self::insert_before($content, 'id="calculator"', self::home_services() . self::home_projects());
       $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', self::budget_section() . self::prices_section() . self::timeline_section());
       $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));
       $content = self::insert_before($content, 'id="about-company-nexor"', $cluster);
@@ -1312,7 +1723,7 @@ final class Nexor_Enhancements
   }
   public static function diagnostics(): array
   {
-    return array('schema_version' => (string)get_option(self::VERSION_OPTION, ''), 'budget_enabled' => '' !== self::budget_section(), 'prices_enabled' => count(self::enabled_rows(self::PRICES, array('service_label', 'price_label', 'duration_label'))), 'stages_enabled' => count(self::enabled_rows(self::STAGES, array('title', 'description'))), 'additional_enabled' => count(self::enabled_rows(self::ADDITIONAL, array('title', 'description', 'included_items', 'benefit'))), 'promotions_seeded' => count((array)self::option(self::PROMOTIONS)['rows']), 'promotions_enabled' => count(self::enabled_rows(self::PROMOTIONS, array('title', 'condition_text', 'cta_label', 'legal_text'))), 'video_valid' => '' !== self::video_section(), 'popup_enabled' => !empty(self::frontend_config()['exitIntent']['enabled']));
+    return array('schema_version' => (string)get_option(self::VERSION_OPTION, ''), 'budget_enabled' => '' !== self::budget_section(), 'prices_enabled' => count(self::enabled_rows(self::PRICES, array('service_label', 'price_label', 'duration_label'))), 'stages_enabled' => count(self::enabled_rows(self::STAGES, array('title', 'description'))), 'additional_enabled' => count(self::enabled_rows(self::ADDITIONAL, array('title', 'description', 'included_items', 'benefit'))), 'promotions_seeded' => count((array)self::option(self::PROMOTIONS)['rows']), 'promotions_enabled' => count(self::enabled_rows(self::PROMOTIONS, array('title', 'condition_text', 'cta_label', 'legal_text'))), 'projects_enabled' => count(self::home_project_rows()), 'video_valid' => '' !== self::video_section(), 'popup_enabled' => !empty(self::frontend_config()['exitIntent']['enabled']));
   }
 }
 
