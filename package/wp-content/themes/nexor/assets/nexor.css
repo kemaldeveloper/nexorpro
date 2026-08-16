@@ -2235,7 +2235,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   position: absolute;
   z-index: -1;
   inset: 0;
-  background: linear-gradient(180deg, transparent 0%, rgba(17, 14, 12, 0.12) 38%, rgba(17, 14, 12, 0.58) 68%, rgba(10, 8, 7, 0.88) 100%);
+  background: linear-gradient(180deg, transparent 0%, rgba(17, 14, 12, 0.18) 34%, rgba(17, 14, 12, 0.62) 64%, rgba(10, 8, 7, 0.88) 84%, rgba(6, 5, 4, 0.98) 100%);
   transition: opacity 0.7s ease;
 }
 
@@ -2266,17 +2266,18 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   display: flex;
   flex-direction: column;
   justify-content: end;
-  gap: clamp(10px, 1.1em, 16px);
-  padding: clamp(20px, 2.5cqw, 28px);
+  gap: clamp(16px, 1.35em, 24px);
+  padding: 28px;
 }
 
 .nexor-project-card__badge {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.82);
   font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.12em;
   line-height: 1.3;
   text-transform: uppercase;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
 .nexor-project-card h3 {
@@ -2299,9 +2300,11 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
 .nexor-project-card__meta {
   margin: 0;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: clamp(12px, 0.95vw, 14px);
-  line-height: 1.45;
+  max-width: 560px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  line-height: 1.5;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.35);
 }
 
 .nexor-project-card__link {
@@ -2351,7 +2354,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
 .nexor-project-card > a:hover .nexor-project-card__arrow,
 .nexor-project-card > a:focus-visible .nexor-project-card__arrow {
-  transform: translateX(6px);
+  transform: translateX(5px);
 }
 
 /* Premium glass calculator, business logic remains in nexor.js and REST. */
