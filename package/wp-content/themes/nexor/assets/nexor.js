@@ -910,6 +910,7 @@
       ],
     },
   ];
+
   const areaOptions = a =>
     a.propertyType === 'house'
       ? [
@@ -925,91 +926,311 @@
           ['90-120', '90–120 м²'],
           ['over-120', 'более 120 м²'],
         ];
+
   function setupCalculator() {
-    const old = document.querySelector('#calculator');
-    if (!old) return;
-    const section = document.createElement('section');
-    section.id = 'calculator';
-    section.className = 'section-padding bg-background';
-    section.innerHTML = '<div class="container-nexor"><div class="nexor-calculator"></div></div>';
-    old.replaceWith(section);
-    const root = section.querySelector('.nexor-calculator');
+    const section = document.querySelector('#calculator');
+    if (!section) return;
+    let root = section.querySelector('.nexor-calculator');
+    if (!root) {
+      section.className = 'section-padding bg-background';
+      section.innerHTML = '<div class="container-nexor"><div class="nexor-calculator"></div></div>';
+      root = section.querySelector('.nexor-calculator');
+    }
+
     let step = -1;
     const answers = { priorities: [] };
-    const render = () => {
-      if (step < 0) {
-        root.innerHTML =
-          '<p class="text-sm text-muted-foreground mb-3">Расчёт стоимости</p><h2 class="heading-section mb-5">Рассчитайте ориентировочную стоимость ремонта</h2><p class="text-body text-muted-foreground mb-7">Ответьте на 7 коротких вопросов и получите ориентир по бюджету.</p><button type="button" class="nexor-calculator__button" data-next>Рассчитать стоимость</button>';
-        root.querySelector('[data-next]').onclick = () => {
-          step = 0;
-          render();
-        };
+    let transitioning = false;
+    let stepTween = null;
+
+    const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasGsap = () => typeof gsap !== 'undefined';
+
+    const killTween = () => {
+      if (stepTween) {
+        stepTween.kill();
+        stepTween = null;
+      }
+    };
+
+    const animateStageIn = (stage, dir = 1) => {
+      if (!stage || reducedMotion() || !hasGsap()) return;
+      gsap.killTweensOf(stage);
+      gsap.set(stage, { opacity: 1, y: 0 });
+      gsap.fromTo(stage, { opacity: 0, y: dir > 0 ? 14 : -14 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out' });
+      const options = stage.querySelectorAll('.nexor-calculator__option');
+      if (options.length) {
+        gsap.from(options, { opacity: 0, y: 10, duration: 0.26, stagger: 0.04, ease: 'power2.out', delay: 0.08 });
+      }
+      const result = stage.querySelector('.nexor-calculator__result');
+      if (result) {
+        gsap.from(result, { opacity: 0, scale: 0.96, duration: 0.36, ease: 'power2.out', delay: 0.06 });
+      }
+    };
+
+    const animateStageOut = (stage, dir = 1, onComplete) => {
+      if (!stage || reducedMotion() || !hasGsap()) {
+        onComplete();
         return;
       }
-      const s = quizSteps[step];
-      const options = s.dynamic ? areaOptions(answers) : s.options;
-      root.innerHTML = `<p>Шаг ${step + 1} из 7</p><div class="nexor-calculator__progress"><span style="width:${((step + 1) / 7) * 100}%"></span></div><h2 class="heading-card">${s.title}</h2><div class="nexor-calculator__options ${s.multiple ? 'nexor-calculator__priorities' : ''}">${options.map(o => `<button type="button" class="nexor-calculator__option ${(s.multiple ? answers.priorities.includes(o[0]) : answers[s.key] === o[0]) ? 'is-selected' : ''}" data-value="${o[0]}" aria-pressed="${s.multiple && answers.priorities.includes(o[0]) ? 'true' : 'false'}"><strong>${o[1]}</strong></button>`).join('')}</div>${s.multiple ? '<p class="nexor-calculator__hint" data-priority-hint>Выберите ещё два приоритета</p>' : ''}<div class="nexor-calculator__nav"><button type="button" class="nexor-calculator__button nexor-calculator__back" data-back>Назад</button>${s.multiple ? '<button type="button" class="nexor-calculator__button" data-result disabled>Показать расчёт</button>' : ''}</div>`;
-      root.querySelector('[data-back]').onclick = () => {
-        step = Math.max(-1, step - 1);
-        render();
-      };
-      const result = root.querySelector('[data-result]'),
-        hint = root.querySelector('[data-priority-hint]');
-      const syncPriorities = () => {
-        root.querySelectorAll('[data-value]').forEach(btn => {
-          const selected = answers.priorities.includes(btn.dataset.value);
-          btn.classList.toggle('is-selected', selected);
-          btn.setAttribute('aria-pressed', String(selected));
+      killTween();
+      stepTween = gsap.to(stage, {
+        opacity: 0,
+        y: dir > 0 ? -12 : 12,
+        duration: 0.2,
+        ease: 'power2.in',
+        onComplete: () => {
+          stepTween = null;
+          onComplete();
+        },
+      });
+    };
+
+    const withStageTransition = (stage, dir, apply, { interrupt = false } = {}) => {
+      if (transitioning && !interrupt) return;
+      if (transitioning && interrupt) {
+        killTween();
+        transitioning = false;
+      }
+      if (stage && !reducedMotion() && hasGsap()) {
+        transitioning = true;
+        animateStageOut(stage, dir, () => {
+          apply();
+          transitioning = false;
         });
-        if (result) result.disabled = answers.priorities.length !== 2;
+        return;
+      }
+      apply();
+    };
+
+    const swapRoot = (html, dir, onMounted, { animate = true } = {}) => {
+      const stage = root.querySelector('.nexor-calculator__stage');
+      const finish = () => {
+        killTween();
+        transitioning = false;
+        root.innerHTML = html;
+        delete root.dataset.quizMode;
+        onMounted?.();
+        if (animate) animateStageIn(root.querySelector('.nexor-calculator__stage'), dir);
+      };
+      if (!animate || !stage || reducedMotion() || !hasGsap()) {
+        finish();
+        return;
+      }
+      withStageTransition(stage, dir, finish, { interrupt: true });
+    };
+
+    const buildIntroHtml = () =>
+      '<div class="nexor-calculator__stage" aria-live="polite"><p class="text-sm text-muted-foreground mb-3">Расчёт стоимости</p><h2 class="heading-section mb-5">Рассчитайте ориентировочную стоимость ремонта</h2><p class="text-body text-muted-foreground mb-7">Ответьте на 7 коротких вопросов и получите ориентир по бюджету.</p><button type="button" class="nexor-calculator__button" data-next>Рассчитать стоимость</button></div>';
+
+    const buildStageBody = (s, options) => {
+      const selected = value => (s.multiple ? answers.priorities.includes(value) : answers[s.key] === value);
+      const optionButtons = options
+        .map(
+          o =>
+            `<button type="button" class="nexor-calculator__option${selected(o[0]) ? ' is-selected' : ''}" data-value="${o[0]}" aria-pressed="${s.multiple && selected(o[0]) ? 'true' : 'false'}"><strong>${o[1]}</strong></button>`,
+        )
+        .join('');
+      return `<h2 class="heading-card">${s.title}</h2><div class="nexor-calculator__options${s.multiple ? ' nexor-calculator__priorities' : ''}">${optionButtons}</div>${s.multiple ? '<p class="nexor-calculator__hint" data-priority-hint>Выберите ещё два приоритета</p>' : ''}`;
+    };
+
+    const buildNavHtml = s =>
+      `<button type="button" class="nexor-calculator__button nexor-calculator__back" data-back>Назад</button>${s.multiple ? '<button type="button" class="nexor-calculator__button" data-result disabled>Показать расчёт</button>' : ''}`;
+
+    const calcAssetsUri = () => {
+      const base = cfg.themeUri || '';
+      return base ? `${base}/assets` : '/wp-content/themes/nexor/assets';
+    };
+
+    const calcIcon = name => {
+      const icons = {
+        check:
+          '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="m8.5 12.2 2.2 2.2 5.3-5.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+        gift:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg>',
+        calendar:
+          '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 4v3M16 4v3M4 10h16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>',
+        arrow:
+          '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
+      };
+      return icons[name] || '';
+    };
+
+    const buildResultHtml = formatted =>
+      `<div class="nexor-calculator__head"><p class="nexor-calculator__status"><span class="nexor-calculator__status-icon">${calcIcon('check')}</span>Расчёт готов</p><p class="nexor-calculator__step-label">Шаг 7 из 7</p><div class="nexor-calculator__progress" role="progressbar" aria-valuenow="7" aria-valuemin="1" aria-valuemax="7"><span style="width:100%"></span></div></div><div class="nexor-calculator__stage" aria-live="polite"><div class="nexor-calculator__result-layout"><div class="nexor-calculator__result-main"><h2 class="nexor-calculator__result-title">Ориентировочная стоимость ремонта</h2><div class="nexor-calculator__result">${formatted}</div><p class="nexor-calculator__result-note">Расчёт сформирован на основе ваших ответов. Точную стоимость определим после замера объекта и уточнения состава работ.</p><div class="nexor-calculator__result-actions"><button type="button" class="nexor-calculator__button nexor-calculator__button--lead" data-lead>Записаться на бесплатный замер<span class="nexor-calculator__button-arrow">${calcIcon('arrow')}</span></button><button type="button" class="nexor-calculator__button nexor-calculator__back" data-restart>Рассчитать ещё раз</button></div><p class="nexor-calculator__result-footnote"><span class="nexor-calculator__result-footnote-icon">${calcIcon('calendar')}</span>Инженер приедет на объект, проведёт замер и подготовит подробную смету</p></div><aside class="nexor-calculator__result-gift" aria-label="Практический гид в подарок"><p class="nexor-calculator__gift-head"><span class="nexor-calculator__gift-icon">${calcIcon('gift')}</span>Практический гид в подарок</p><p class="nexor-calculator__gift-copy">После замера вы получите наш гид «Ремонт без сюрпризов» — о том, что важно проверить до начала ремонта, чтобы избежать лишних расходов и ошибок.</p><div class="nexor-calculator__gift-media"><img src="${esc(calcAssetsUri())}/calculator-guide-booklet.webp" alt="Гид «Ремонт без сюрпризов»" loading="lazy" decoding="async" width="280" height="214"></div></aside></div></div><div class="nexor-calculator__nav nexor-calculator__nav--result"><button type="button" class="nexor-calculator__button nexor-calculator__back" data-back>← Назад</button></div>`;
+
+    const bindResultHandlers = data => {
+      root.querySelector('[data-lead]').onclick = () =>
+        openForm(
+          'Запись на замер',
+          JSON.stringify({ ...answers, range: data.formatted, source: 'calculator' }),
+          {},
+          { title: 'Записаться на бесплатный замер', lead: 'Оставьте номер — инженер свяжется с вами и согласует удобное время замера.' },
+        );
+      root.querySelector('[data-restart]').onclick = () => {
+        if (transitioning) return;
+        root.classList.remove('is-result');
+        step = -1;
+        Object.keys(answers).forEach(k => delete answers[k]);
+        answers.priorities = [];
+        render(-1);
+      };
+      root.querySelector('[data-back]').onclick = () => {
+        if (transitioning) return;
+        root.classList.remove('is-result');
+        render(-1);
+      };
+    };
+
+    const updateProgress = (head, stepIndex) => {
+      const label = head.querySelector('.nexor-calculator__step-label');
+      const bar = head.querySelector('.nexor-calculator__progress');
+      const fill = head.querySelector('.nexor-calculator__progress span');
+      if (label) label.textContent = `Шаг ${stepIndex + 1} из 7`;
+      if (fill) fill.style.width = `${((stepIndex + 1) / 7) * 100}%`;
+      if (bar) {
+        bar.setAttribute('aria-valuenow', String(stepIndex + 1));
+        bar.setAttribute('aria-valuemin', '1');
+        bar.setAttribute('aria-valuemax', '7');
+      }
+    };
+
+    const bindStepHandlers = s => {
+      const stage = root.querySelector('.nexor-calculator__stage');
+      const nav = root.querySelector('.nexor-calculator__nav');
+      if (!stage || !nav) return;
+
+      nav.querySelector('[data-back]').onclick = () => {
+        if (transitioning) return;
+        step = Math.max(-1, step - 1);
+        render(-1);
+      };
+
+      const resultBtn = nav.querySelector('[data-result]');
+      const hint = stage.querySelector('[data-priority-hint]');
+
+      const syncPriorities = () => {
+        stage.querySelectorAll('[data-value]').forEach(btn => {
+          const isSelected = answers.priorities.includes(btn.dataset.value);
+          btn.classList.toggle('is-selected', isSelected);
+          btn.setAttribute('aria-pressed', String(isSelected));
+        });
+        if (resultBtn) resultBtn.disabled = answers.priorities.length !== 2;
         if (hint) {
           const left = 2 - answers.priorities.length;
           hint.textContent = left > 0 ? `Выберите ещё ${left === 1 ? 'один приоритет' : 'два приоритета'}` : 'Готово — можно показать расчёт';
         }
       };
-      root.querySelectorAll('[data-value]').forEach(
-        btn =>
-          (btn.onclick = () => {
-            if (s.multiple) {
-              const v = btn.dataset.value,
-                i = answers.priorities.indexOf(v);
-              if (i >= 0) answers.priorities.splice(i, 1);
-              else if (answers.priorities.length < 2) answers.priorities.push(v);
-              syncPriorities();
-            } else {
-              answers[s.key] = btn.dataset.value;
-              step++;
-              render();
-            }
-          }),
-      );
-      if (result)
-        result.onclick = () => {
-          if (answers.priorities.length === 2) calculate();
+
+      stage.querySelectorAll('[data-value]').forEach(btn => {
+        btn.onclick = () => {
+          if (transitioning) return;
+          if (s.multiple) {
+            const value = btn.dataset.value;
+            const index = answers.priorities.indexOf(value);
+            if (index >= 0) answers.priorities.splice(index, 1);
+            else if (answers.priorities.length < 2) answers.priorities.push(value);
+            syncPriorities();
+            return;
+          }
+          answers[s.key] = btn.dataset.value;
+          step++;
+          render(1);
         };
+      });
+
+      if (resultBtn) {
+        resultBtn.onclick = () => {
+          if (transitioning || answers.priorities.length !== 2) return;
+          calculate();
+        };
+      }
+
       syncPriorities();
     };
+
+    const renderIntro = dir => {
+      swapRoot(buildIntroHtml(), dir, () => {
+        root.querySelector('[data-next]').onclick = () => {
+          if (transitioning) return;
+          step = 0;
+          render(1);
+        };
+      });
+    };
+
+    const renderQuizStep = dir => {
+      const s = quizSteps[step];
+      const options = s.dynamic ? areaOptions(answers) : s.options;
+      const stageBody = buildStageBody(s, options);
+      const navHtml = buildNavHtml(s);
+      const inQuizMode = root.dataset.quizMode === 'step';
+      const stage = root.querySelector('.nexor-calculator__stage');
+      const nav = root.querySelector('.nexor-calculator__nav');
+      const head = root.querySelector('.nexor-calculator__head');
+
+      const apply = () => {
+        if (inQuizMode && stage && nav && head) {
+          updateProgress(head, step);
+          stage.innerHTML = stageBody;
+          nav.innerHTML = navHtml;
+          bindStepHandlers(s);
+          animateStageIn(stage, dir);
+          return;
+        }
+
+        killTween();
+        root.dataset.quizMode = 'step';
+        root.innerHTML = `<div class="nexor-calculator__head"><p class="nexor-calculator__step-label">Шаг ${step + 1} из 7</p><div class="nexor-calculator__progress" role="progressbar" aria-valuenow="${step + 1}" aria-valuemin="1" aria-valuemax="7"><span style="width:${((step + 1) / 7) * 100}%"></span></div></div><div class="nexor-calculator__stage" aria-live="polite">${stageBody}</div><div class="nexor-calculator__nav">${navHtml}</div>`;
+        bindStepHandlers(s);
+        animateStageIn(root.querySelector('.nexor-calculator__stage'), dir);
+      };
+
+      if (inQuizMode && stage) {
+        withStageTransition(stage, dir, apply);
+        return;
+      }
+
+      if (stage && root.dataset.quizMode !== 'step') {
+        withStageTransition(stage, dir, apply);
+        return;
+      }
+
+      apply();
+    };
+
+    const render = (dir = 1) => {
+      if (step < 0) renderIntro(dir);
+      else renderQuizStep(dir);
+    };
+
     const calculate = async () => {
-      root.innerHTML = '<p class="text-center py-12">Считаем ориентировочную стоимость…</p>';
+      if (transitioning) return;
+      swapRoot('<div class="nexor-calculator__stage" aria-live="polite"><p class="text-center py-12">Считаем ориентировочную стоимость…</p></div>', 1, null, { animate: false });
       try {
         const res = await fetch(cfg.restUrl + 'calculate', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': cfg.nonce }, body: JSON.stringify(answers) });
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || 'Не удалось выполнить расчёт');
-        root.innerHTML = `<h2 class="heading-card">Ориентировочная стоимость ремонта</h2><div class="nexor-calculator__result">${data.formatted}</div><p class="text-muted-foreground">Финальную стоимость определим после осмотра объекта и уточнения состава работ.</p><div class="mt-6"><button type="button" class="nexor-calculator__button" data-lead>Уточнить стоимость</button> <button type="button" class="nexor-calculator__button nexor-calculator__back" data-restart>Рассчитать ещё раз</button></div>`;
-        root.querySelector('[data-lead]').onclick = () => openForm('Калькулятор', JSON.stringify({ ...answers, range: data.formatted }));
-        root.querySelector('[data-restart]').onclick = () => {
-          step = -1;
-          Object.keys(answers).forEach(k => delete answers[k]);
-          answers.priorities = [];
-          render();
-        };
+        swapRoot(buildResultHtml(data.formatted), 1, () => {
+          root.classList.add('is-result');
+          bindResultHandlers(data);
+        });
       } catch (e) {
-        root.innerHTML = '<p class="is-error">Не удалось рассчитать стоимость. Попробуйте ещё раз.</p><button type="button" class="nexor-calculator__button" data-retry>Повторить</button>';
-        root.querySelector('[data-retry]').onclick = render;
+        swapRoot(
+          '<div class="nexor-calculator__stage" aria-live="polite"><p class="is-error">Не удалось рассчитать стоимость. Попробуйте ещё раз.</p><button type="button" class="nexor-calculator__button" data-retry>Повторить</button></div>',
+          1,
+          () => {
+            root.querySelector('[data-retry]').onclick = () => {
+              if (transitioning) return;
+              render(0);
+            };
+          },
+        );
       }
     };
+
     render();
   }
+
   function setupVideoFacades() {
     document.querySelectorAll('.nexor-video-facade[data-video-url]').forEach(button =>
       button.addEventListener('click', () => {

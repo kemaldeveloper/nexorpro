@@ -1203,6 +1203,15 @@ final class Nexor_Enhancements
     ));
   }
 
+  private static function home_calculator(): string
+  {
+    if (! function_exists('nexor_render_home_calculator_section')) {
+      return '';
+    }
+
+    return nexor_render_home_calculator_section();
+  }
+
   private static function timeline_section(): string
   {
     $o = self::option(self::TIMELINE);
@@ -1687,6 +1696,13 @@ final class Nexor_Enhancements
       $content = str_replace('<section class="bg-background py-[120px] md:py-[160px]">', '<section id="before-after" class="nexor-before-after-section bg-background py-[120px] md:py-[160px]">', $content);
       $content = self::insert_before($content, 'id="before-after"', self::stages_section());
       self::pull_section($content, 'cases');
+      $calculator = self::home_calculator();
+      if ('' !== $calculator && str_contains($content, 'id="calculator"')) {
+        $replaced = preg_replace('/<section\b[^>]*\bid="calculator"[^>]*>.*?<\/section>/s', $calculator, $content, 1);
+        $content = is_string($replaced) ? $replaced : $content;
+      } elseif ('' !== $calculator) {
+        $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $calculator);
+      }
       $content = self::insert_before($content, 'id="calculator"', self::home_services() . self::home_projects());
       $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', self::budget_section() . self::prices_section() . self::timeline_section());
       $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));

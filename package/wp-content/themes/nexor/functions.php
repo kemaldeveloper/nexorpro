@@ -124,6 +124,22 @@ function nexor_render_home_projects_section(array $cards, array $headings = arra
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_calculator_section(array $copy = array()): string
+{
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'calculator-section',
+    array(
+      'eyebrow' => $copy['eyebrow'] ?? 'Расчёт стоимости',
+      'heading' => $copy['heading'] ?? 'Рассчитайте ориентировочную стоимость ремонта',
+      'intro' => $copy['intro'] ?? 'Ответьте на 7 коротких вопросов и получите ориентир по бюджету.',
+      'cta_label' => $copy['cta_label'] ?? 'Рассчитать стоимость',
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 remove_action('wp_head', 'rel_canonical');
 
 add_action(
@@ -202,6 +218,7 @@ add_action(
         'vkUrl'        => $contacts['vk_url'],
         'navigation' => nexor_navigation_payload(),
         'enhancements' => $enhancements,
+        'themeUri' => get_template_directory_uri(),
       )
     );
   }

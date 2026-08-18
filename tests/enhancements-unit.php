@@ -258,6 +258,10 @@ function nexor_render_home_projects_section(array $cards, array $headings = arra
   }
   return $html . '</div></section>';
 }
+function nexor_render_home_calculator_section(array $copy = array()): string
+{
+  return '<section id="calculator" class="section-padding bg-background"><div class="container-nexor"><div class="nexor-calculator"></div></div></section>';
+}
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
@@ -313,6 +317,10 @@ assert_true($order === $sorted = call_user_func(function ($v) {
   sort($s);
   return $s;
 }, $order), 'home sections follow approved order');
+assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($html, 'id="calculator"') === 1, 'homepage calculator is rendered once from the template part');
+$missing_calc_source = '<main><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
+$missing_calc_html = Nexor_Enhancements::inject_frontend_content($missing_calc_source);
+assert_true(str_contains($missing_calc_html, 'id="calculator"') && strpos($missing_calc_html, 'id="calculator"') < strpos($missing_calc_html, 'Ремонт без неприятных сюрпризов'), 'calculator is injected when missing from migrated HTML');
 assert_true(!str_contains($html, 'id="video"'), 'disabled video leaves no blank section');
 assert_true(str_contains($html, 'Что входит:') && str_contains($html, 'Экономите время и избегаете лишних расходов.'), 'additional-services card keeps the customer structure and benefit');
 assert_true(str_contains($html, 'Помощь с выбором цветов и фактур.') && !str_contains($html, '<li></li>'), 'additional-services line splitting preserves Cyrillic UTF-8 text');

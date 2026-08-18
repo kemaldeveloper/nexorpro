@@ -2,7 +2,8 @@
 
 Документация для AI-агентов и разработчиков, работающих с репозиторием **nexorpro** — нативного WordPress-сайта [nexorpro.ru](https://nexorpro.ru) (компания Nexor, ремонт квартир и домов под ключ в Москве и МО).
 
-**Текущая версия:** `1.6.0` (см. `VERSION`, `package.json`, `style.css`).
+**Текущая версия релиза:** `1.6.0` (`VERSION`, `package.json`, `style.css`, `NEXOR_THEME_VERSION`).  
+**Схема enhancements:** `1.7.2` (`Nexor_Enhancements::VERSION`) — не путать с версией релиза.
 
 ---
 
@@ -16,7 +17,7 @@
 - CPT «Проекты» с галереями;
 - Schema.org, sitemap, robots.
 
-Контент страниц хранится как **HTML-разметка** (миграция из React), а динамические блоки (цены, бонусы, popup, секции главной) генерируются PHP-плагином и встраиваются в HTML через фильтры.
+Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы, смета) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
 
 ---
 
@@ -29,9 +30,10 @@
 │  Тема nexor          │  Плагин nexor-core                   │
 │  ─────────────────   │  ─────────────────                   │
 │  Шаблоны PHP         │  CPT: nexor_project, nexor_lead       │
-│  Статический HTML    │  REST: /nexor/v1/lead, /calculate     │
-│  nexor.css / nexor.js│  Настройки, SEO, Telegram, Schema     │
-│  Ассеты (webp, CSS)  │  Nexor_Enhancements (секции главной)  │
+│  template-parts/     │  REST: /nexor/v1/lead, /calculate     │
+│  Статический HTML    │  Настройки, SEO, Telegram, Schema     │
+│  nexor.css / nexor.js│  Nexor_Enhancements (секции главной)  │
+│  GSAP vendor         │                                       │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -39,9 +41,9 @@
 
 | Компонент | Путь | За что отвечает |
 |-----------|------|-----------------|
-| **Тема** | `package/wp-content/themes/nexor/` | Шаблоны, рендер мигрированного HTML, SEO в `<head>`, навигация, фронтенд JS/CSS |
-| **Плагин** | `package/wp-content/plugins/nexor-core/` | Бизнес-логика: заявки, калькулятор, проекты, админка, инъекция секций |
-| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации) |
+| **Тема** | `package/wp-content/themes/nexor/` | Шаблоны, `template-parts/`, рендер мигрированного HTML, SEO в `<head>`, навигация, фронтенд JS/CSS, GSAP |
+| **Плагин** | `package/wp-content/plugins/nexor-core/` | Бизнес-логика: заявки, калькулятор (REST), проекты, админка, инъекция секций |
+| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, услуги, проекты и калькулятор главной сюда больше не входят |
 | **Деплой** | `package/deploy/` | Docker Swarm stack, wp-config, Traefik, php.ini |
 | **Тесты** | `tests/` | PHP unit + Chromium CDP аудиты production/local |
 | **Инструменты** | `tools/` | Сборка контента из React dist, генерация project-data |
@@ -64,8 +66,13 @@ nexorpro/
 │   ├── deploy/               ← production-конфигурация
 │   └── wp-content/
 │       ├── themes/nexor/
-│       │   ├── assets/       ← nexor.js, nexor.css, index-*.css, webp
-│       │   ├── content/      ← *.html + metadata.json
+│       │   ├── assets/       ← nexor.js, nexor.css, index-*.css, webp, vendor/gsap
+│       │   ├── content/      ← *.html + metadata.json (seed)
+│       │   ├── template-parts/
+│       │   │   ├── site-header.php
+│       │   │   ├── home-services-section.php
+│       │   │   ├── home-projects-section.php
+│       │   │   └── home-calculator-section.php
 │       │   ├── functions.php
 │       │   ├── header.php, footer.php, index.php, page.php, ...
 │       │   └── style.css
@@ -134,24 +141,46 @@ docker compose exec wordpress wp --allow-root <command>
 Страницы рендерятся через `nexor_render_migrated_content()` в `functions.php`:
 
 1. Берётся `post_content` (HTML из редактора WP или seed);
-2. Применяется фильтр `nexor_content_replacements` (телефон, email, соцсети из настроек);
-3. Применяется фильтр `nexor_migrated_content` (инъекция секций из `Nexor_Enhancements`);
-4. Подставляются `{{THEME_URI}}` и `url(/assets/...)` → пути темы.
+2. Вырезается встроенный `<header>` (`nexor_strip_embedded_header`) — шапка рендерится из `template-parts/site-header.php`;
+3. Применяется фильтр `nexor_content_replacements` (телефон, email, соцсети из настроек);
+4. Применяется фильтр `nexor_migrated_content` (инъекция секций из `Nexor_Enhancements`);
+5. Подставляются `{{THEME_URI}}` и `url(/assets/...)` → пути темы.
 
-**Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков.
+**Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-### 2. Nexor_Enhancements (динамические секции)
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+
+### 2. Template parts главной
+
+Вынесенные секции рендерятся темой, плагин только собирает данные и вставляет HTML:
+
+| Секция | Якорь | Template part | Рендер-хелпер темы | Данные |
+|--------|-------|---------------|--------------------|--------|
+| Шапка сайта | — | `site-header.php` | `header.php` → `get_template_part` | `nexor_contact_settings()`, `nexor_navigation_payload()` |
+| Основные услуги | `#main-services` | `home-services-section.php` | `nexor_render_home_services_section()` | option `nexor_home_services` |
+| Реализованные проекты | `#cases` | `home-projects-section.php` | `nexor_render_home_projects_section()` | option `nexor_home_projects` + CPT |
+| Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
+
+Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
+
+### 3. Nexor_Enhancements (динамические секции)
 
 Класс `Nexor_Enhancements` в `class-nexor-enhancements.php`:
 
-- Хранит настройки в отдельных WP options (`nexor_home_prices`, `nexor_promotions`, …);
-- На главной **вставляет** секции: услуги, сроки, смета, цены, видео, доп. услуги, бонусы;
+- Хранит настройки в отдельных WP options (`nexor_home_prices`, `nexor_promotions`, `nexor_home_services`, `nexor_home_projects`, `nexor_home_stages`, …);
+- На главной **вставляет** секции в порядке (unit-тест проверяет): услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании;
+- Собирает hero (`compose_home_hero()`, `hero_promotion()`);
+- Секция этапов (`#stages`) — интерактивная карточка с круговым ползунком (GSAP Draggable + InertiaPlugin). Старый блок «Как мы делаем ремонт предсказуемым» (`nexor-process-section` / `#work-stages`) и мигрированные пять шагов **удалены** и вырезаются при рендере;
 - На страницах услуг добавляет hero-shell, trust-блок, мета «Структура услуги»;
 - На страницах проектов — блок «Связанные услуги».
 
-Пустая или невалидная секция **полностью скрывается** (вместе с пунктом меню).
+Пустая или невалидная секция **полностью скрывается** (вместе с пунктом меню). Косметический ремонт (`cosmetic-remont`) на главной в карточках услуг не показывается.
 
-### 3. REST API
+Порядок секций на главной (якоря):
+
+`#main-services` → `#cases` → `#calculator` → `#budget-control` → `#prices` → `#repair-timeline` → система Nexor → `#stages` → `#before-after` → `#additional-services` → `#promotions` → `#about-company-nexor` → `#faq`.
+
+### 4. REST API
 
 | Endpoint | Метод | Назначение |
 |----------|-------|------------|
@@ -162,7 +191,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 Защита: WP REST nonce, проверка Origin, rate limit 5 запросов / 15 мин / IP, honeypot-поле `website`.
 
-### 4. Custom Post Types
+### 5. Custom Post Types
 
 | CPT | Slug rewrite | Описание |
 |-----|--------------|----------|
@@ -171,7 +200,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 Таксономии `nexor_repair_type`, `nexor_property_type` — только для админки, публичные архивы редиректятся на `/projects/`.
 
-### 5. Страницы услуг (фиксированные slug)
+### 6. Страницы услуг (фиксированные slug)
 
 **Не менять slug** этих страниц:
 
@@ -184,23 +213,24 @@ docker compose exec wordpress wp --allow-root <command>
 
 Мета-поля услуг: `_nexor_service_summary`, `_nexor_service_composition`, `_nexor_service_faq` (формат `Вопрос | Ответ`), `_nexor_service_related_project_ids` и др.
 
-### 6. Фронтенд JS (`nexor.js`)
+### 7. Фронтенд JS (`nexor.js`)
 
-Vanilla JS (~1100 строк), без bundler. Отвечает за:
+Vanilla JS (~1400 строк), без bundler. GSAP подключается отдельно из `assets/vendor/gsap/minified/` (`gsap`, `ScrollTrigger`, `Draggable`, `InertiaPlugin`). Отвечает за:
 
-- desktop/mobile навигацию и поиск;
-- калькулятор (7 шагов, POST на REST);
+- desktop/mobile навигацию и поиск (меню берётся из `NexorSettings.navigation`);
+- калькулятор: гидрирует `#calculator .nexor-calculator` (7 шагов, POST на REST);
 - модальные формы заявок с контекстом (бонус, доп. услуга, цена);
 - popup с задержкой (`exitIntent` из настроек);
-- слайдер ДО/ПОСЛЕ, countdown бонусов, IntersectionObserver-анимации;
+- слайдер ДО/ПОСЛЕ, countdown бонусов, IntersectionObserver / reveal-анимации;
+- карточку этапов: круговой ползунок, пагинация, клавиатура, `prefers-reduced-motion`;
 - accessibility: focus trap, Escape, `prefers-reduced-motion`.
 
 При изменении API настроек обновляйте и PHP (`frontend_config()`), и JS.
 
-### 7. Стили
+### 8. Стили
 
 - `assets/index-*.css` — скомпилированный Tailwind/design-system из миграции (hash в имени файла);
-- `assets/nexor.css` — дополнения темы (секции enhancements, service pages 1.6);
+- `assets/nexor.css` — дополнения темы (enhancements, service pages, template-parts главной);
 - `style.css` — только метаданные темы для WordPress.
 
 ---
@@ -209,12 +239,18 @@ Vanilla JS (~1100 строк), без bundler. Отвечает за:
 
 | Задача | Где править |
 |--------|-------------|
+| Шапка сайта | `template-parts/site-header.php` + `nexor_contact_settings()` / меню WP |
+| Карточки услуг на главной | `template-parts/home-services-section.php` + option `nexor_home_services` |
+| Карточки проектов на главной | `template-parts/home-projects-section.php` + option `nexor_home_projects` |
+| Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
+| Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
 | Вёрстка/стили секций enhancements | `class-nexor-enhancements.php` (HTML) + `nexor.css` |
-| Поведение калькулятора, форм, popup | `nexor.js` + REST в `nexor-core.php` |
+| Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
+| Формы заявок, popup | `nexor.js` + REST `/lead` в `nexor-core.php` |
 | SEO title/description/canonical | мета `_nexor_seo_*` или `page_seo_defaults()` в плагине |
 | Контакты, ставки калькулятора | **Настройки → Nexor** (`nexor_settings` option) |
-| Блоки главной (цены, бонусы, popup) | **Настройки → Nexor** (секции enhancements) |
-| Hero/статический HTML главной | контент страницы «Главная» в WP или `content/home.html` |
+| Блоки главной (цены, бонусы, popup, услуги, проекты) | **Настройки → Nexor** (секции enhancements) |
+| Hero и оставшийся статический HTML главной | контент страницы «Главная» в WP или `content/home.html` + `compose_home_hero()` |
 | Новый проект | **Проекты** в админке + медиафайлы |
 | Импорт HTML из React-сборки | `tools/build-content.mjs` → `content/*.html` → `wp nexor seed` |
 | Данные проектов (bulk) | `tools/generate-project-data.mjs` → `project-data.json` → `wp nexor migrate-projects` |
@@ -231,7 +267,7 @@ npm run test:unit
 php tests/enhancements-unit.php
 ```
 
-Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах.
+Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах, инъекцию калькулятора из template-part.
 
 ### Production-аудиты (Chromium CDP)
 
@@ -281,7 +317,7 @@ Chat ID также можно задать в **Настройки → Nexor** (
 
 - Минимальный diff; не трогать несвязанный код.
 - Сохранять slug услуг, URL проектов, SEO-метаданные существующих страниц.
-- При правках HTML главной — сохранять якоря (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`).
+- При правках HTML главной и template-parts — сохранять якоря (`#calculator`, `#cases`, `#main-services`, `#about-company-nexor`, `#faq`, `#stages`).
 - Использовать существующие CSS-классы (`container-nexor`, `heading-section`, `nexor-*`).
 - Соблюдать семантичность вёрстки (см. ниже).
 - В CSS — пустая строка между правилами/селекторами (см. ниже).
@@ -351,7 +387,7 @@ HTML — не только визуал. Разметка должна отра�
 - Секции страницы — `<section>` / `<aside>` с понятным заголовком или `aria-label`; декоративные обёртки — `<div>`.
 - Таймеры, статус и live-области помечать ARIA (`role="timer"`, `aria-live` и т.п.) без дублирования скрытого мусорного текста в заголовках.
 - Не класть блочный маркетинговый текст, CTA и метаданные внутрь заголовков «чтобы стили совпали» — стилизовать соседние элементы через CSS/grid.
-- При правках hero и enhancements (`home.html`, `compose_home_hero()`, `hero_promotion()`) сохранять эту семантику, даже если референс рисует всё одним визуальным блоком.
+- При правках hero и enhancements (`home.html`, `compose_home_hero()`, `hero_promotion()`, template-parts главной) сохранять эту семантику, даже если референс рисует всё одним визуальным блоком.
 
 ### Не делать
 
@@ -373,7 +409,7 @@ HTML — не только визуал. Разметка должна отра�
 - `package.json` → `version`
 - `style.css` → `Version`
 - `NEXOR_THEME_VERSION` в `functions.php`
-- `Nexor_Enhancements::VERSION` в `class-nexor-enhancements.php`
+- `Nexor_Enhancements::VERSION` в `class-nexor-enhancements.php` — это **схема options** (сейчас `1.7.2`), её можно поднимать отдельно от релиза темы
 - `Nexor_Core::VERSION` в `nexor-core.php` (может отставать — это версия плагина WP)
 
 ---
@@ -382,11 +418,16 @@ HTML — не только визуал. Разметка должна отра�
 
 ### Добавить секцию на главную
 
-1. Option + sanitize + render-метод в `class-nexor-enhancements.php`
-2. Вставка в `inject_frontend_content()` в нужном месте (сохранить порядок секций — unit-тест проверяет)
-3. Стили в `nexor.css`, интерактив в `nexor.js` при необходимости
-4. Поля админки в `render_*_admin()`
-5. Обновить `enhancements-unit.php` и при необходимости audit-скрипт
+Editorial-секции вроде услуг/проектов/калькулятора:
+
+1. Template-part `template-parts/home-{name}-section.php`
+2. Хелпер `nexor_render_home_{name}_section()` в `functions.php`
+3. Сбор данных + вызов из `inject_frontend_content()` (сохранить порядок — unit-тест проверяет)
+4. Стили в `nexor.css`, интерактив в `nexor.js` при необходимости
+5. Если секция управляется из админки — option + sanitize + `render_*_admin()`
+6. Обновить `enhancements-unit.php` (в тестах заглушить рендер-хелпер) и при необходимости audit-скрипт
+
+Секции только из options (смета, цены, этапы, бонусы) — по-прежнему HTML в `class-nexor-enhancements.php` без template-part.
 
 ### Изменить страницу услуги
 

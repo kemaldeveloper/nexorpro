@@ -277,7 +277,6 @@ main {
   font-size: 38px;
 }
 .nexor-calculator {
-  max-width: 960px;
   margin: auto;
   padding: clamp(24px, 5vw, 56px);
   background: #fff;
@@ -297,10 +296,11 @@ main {
   z-index: 1;
 }
 #calculator .nexor-calculator {
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.78);
+  border-color: rgba(255, 255, 255, 0.62);
   box-shadow: 0 22px 60px rgba(24, 18, 14, 0.28);
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 .nexor-calculator__progress {
   height: 7px;
@@ -313,7 +313,25 @@ main {
   height: 100%;
   display: block;
   background: hsl(var(--primary));
-  transition: width 0.25s;
+  transition: width 0.32s ease;
+}
+
+.nexor-calculator__head {
+  margin-bottom: 4px;
+}
+
+.nexor-calculator__step-label {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #6b6b6b;
+}
+
+.nexor-calculator__stage {
+  position: relative;
+}
+
+.nexor-calculator__stage[hidden] {
+  display: none;
 }
 .nexor-calculator__options {
   display: grid;
@@ -2374,15 +2392,15 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   pointer-events: none;
 }
 #calculator .nexor-calculator {
-  width: min(100%, 930px);
   min-height: 430px;
   margin: 0;
   padding: clamp(30px, 5vw, 62px);
-  border: 1px solid rgba(255, 255, 255, 0.42);
+  border: 1px solid rgba(255, 255, 255, 0.45);
   border-radius: 24px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(244, 238, 232, 0.79));
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(244, 238, 232, 0.58));
   box-shadow: 0 32px 90px rgba(15, 11, 9, 0.32);
-  backdrop-filter: blur(18px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 #calculator .heading-section {
   max-width: 760px;
@@ -2399,11 +2417,184 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 .nexor-calculator__option {
   min-height: 64px;
   border-width: 1px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.68);
 }
 .nexor-calculator__progress {
   height: 5px;
   background: rgba(74, 54, 42, 0.13);
+}
+
+#calculator .nexor-calculator.is-result {
+  width: min(100%, 1060px);
+}
+
+.nexor-calculator__status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #3d342f;
+}
+
+.nexor-calculator__status-icon {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #744532;
+}
+
+.nexor-calculator__status-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.nexor-calculator__result-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(240px, 0.92fr);
+  gap: clamp(24px, 4vw, 44px);
+  align-items: start;
+}
+
+.nexor-calculator__result-title {
+  margin: 0 0 10px;
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+#calculator .nexor-calculator.is-result .nexor-calculator__result {
+  margin: 0 0 16px;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+}
+
+.nexor-calculator__result-note {
+  margin: 0 0 22px;
+  max-width: 34rem;
+  color: #665e58;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.nexor-calculator__result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.nexor-calculator__button--lead {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nexor-calculator__button-arrow {
+  display: inline-grid;
+  place-items: center;
+}
+
+.nexor-calculator__button-arrow svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nexor-calculator__result-actions .nexor-calculator__back {
+  background: transparent;
+  border: 1px solid rgba(74, 54, 42, 0.24);
+  color: #3d342f;
+}
+
+.nexor-calculator__result-footnote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 18px 0 0;
+  max-width: 34rem;
+  color: #7a726c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.nexor-calculator__result-footnote-icon {
+  flex: 0 0 auto;
+  margin-top: 0;
+  color: #744532;
+}
+
+.nexor-calculator__result-footnote-icon svg {
+  width: 28px;
+  height: 28px;
+}
+
+.nexor-calculator__result-gift {
+  padding-left: clamp(18px, 3vw, 34px);
+  border-left: 1px solid rgba(74, 54, 42, 0.14);
+}
+
+.nexor-calculator__gift-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  font-size: clamp(18px, 2vw, 22px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.nexor-calculator__gift-icon {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(139, 125, 107, 0.22);
+  background: #ebe4df;
+  color: #8b7d6b;
+  box-shadow: none;
+}
+
+.nexor-calculator__gift-icon svg {
+  width: 25px;
+  height: 25px;
+}
+
+.nexor-calculator__gift-copy {
+  margin: 0 0 16px;
+  color: #665e58;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.nexor-calculator__gift-media {
+  display: flex;
+  justify-content: center;
+}
+
+.nexor-calculator__gift-media img {
+  width: min(100%, 14.375rem);
+  height: auto;
+}
+
+.nexor-calculator__nav--result {
+  margin-top: 24px;
+  justify-content: flex-start;
+}
+
+.nexor-calculator__nav--result .nexor-calculator__back {
+  min-height: auto;
+  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  color: #665e58;
+  font-weight: 500;
 }
 
 /* Estimate control and responsive accordions. */
@@ -4219,6 +4410,60 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-calculator__options {
     grid-template-columns: 1fr;
   }
+
+  .nexor-calculator__nav {
+    gap: 8px;
+  }
+
+  .nexor-calculator__nav .nexor-calculator__button {
+    flex: 1 1 0;
+    min-width: 0;
+    min-height: 44px;
+    padding: 11px 10px;
+    font-size: 14px;
+    line-height: 1.15;
+  }
+
+  .nexor-calculator__result-layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  #calculator .nexor-calculator.is-result .nexor-calculator__result {
+    font-size: 25px;
+  }
+
+  .nexor-calculator__result-gift {
+    padding-left: 0;
+    padding-top: 24px;
+    border-left: 0;
+    border-top: 1px solid rgba(74, 54, 42, 0.14);
+  }
+
+  .nexor-calculator__result-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .nexor-calculator__result-actions .nexor-calculator__button {
+    width: 100%;
+    justify-content: center;
+    min-height: 44px;
+    padding: 11px 12px;
+    font-size: 14px;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .nexor-calculator__result-actions .nexor-calculator__button--lead {
+    gap: 8px;
+  }
+
+  .nexor-calculator__result-actions .nexor-calculator__button-arrow svg {
+    width: 16px;
+    height: 16px;
+  }
+
   .nexor-budget-section .nexor-section-heading,
   .nexor-timeline-section .nexor-section-heading {
     margin-bottom: 34px;
