@@ -17,7 +17,7 @@
 - CPT «Проекты» с галереями;
 - Schema.org, sitemap, robots.
 
-Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы, смета) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
+Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
 
 ---
 
@@ -72,7 +72,8 @@ nexorpro/
 │       │   │   ├── site-header.php
 │       │   │   ├── home-services-section.php
 │       │   │   ├── home-projects-section.php
-│       │   │   └── home-calculator-section.php
+│       │   │   ├── home-calculator-section.php
+│       │   │   └── home-budget-section.php
 │       │   ├── functions.php
 │       │   ├── header.php, footer.php, index.php, page.php, ...
 │       │   └── style.css
@@ -148,7 +149,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -160,6 +161,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Основные услуги | `#main-services` | `home-services-section.php` | `nexor_render_home_services_section()` | option `nexor_home_services` |
 | Реализованные проекты | `#cases` | `home-projects-section.php` | `nexor_render_home_projects_section()` | option `nexor_home_projects` + CPT |
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
+| Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
 
 Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
 
@@ -243,6 +245,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Карточки услуг на главной | `template-parts/home-services-section.php` + option `nexor_home_services` |
 | Карточки проектов на главной | `template-parts/home-projects-section.php` + option `nexor_home_projects` |
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
+| Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
 | Вёрстка/стили секций enhancements | `class-nexor-enhancements.php` (HTML) + `nexor.css` |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
@@ -347,6 +350,14 @@ Chat ID также можно задать в **Настройки → Nexor** (
 }
 ```
 
+### CSS: без избыточных свойств
+
+Не задавай свойства, которые **ничего не меняют** — они только шумят в diff и вводят в заблуждение.
+
+- Не дублируй значения по умолчанию: `grid-row: 1; grid-column: 1` у первого ребёнка grid, `flex-shrink: 0` там, где shrink и так не сработает, `overflow: visible` без причины и т.п.
+- Явное grid/flex-позиционирование пиши **только** когда оно реально переопределяет auto-placement (например, `stat-note` во 2-й колонке, а не под цифрой).
+- Перед коммитом проверяй: если убрать свойство в DevTools и визуально/поведенчески ничего не меняется — свойство не добавляй и убирай существующее.
+
 ### CSS: `.container-nexor`
 
 `.container-nexor` — только ограничивающий контейнер:
@@ -427,7 +438,7 @@ Editorial-секции вроде услуг/проектов/калькулят
 5. Если секция управляется из админки — option + sanitize + `render_*_admin()`
 6. Обновить `enhancements-unit.php` (в тестах заглушить рендер-хелпер) и при необходимости audit-скрипт
 
-Секции только из options (смета, цены, этапы, бонусы) — по-прежнему HTML в `class-nexor-enhancements.php` без template-part.
+Секции только из options (цены, этапы, бонусы) — по-прежнему HTML в `class-nexor-enhancements.php` без template-part.
 
 ### Изменить страницу услуги
 

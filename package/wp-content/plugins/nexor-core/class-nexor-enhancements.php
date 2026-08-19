@@ -162,10 +162,10 @@ final class Nexor_Enhancements
       self::VIDEO => array('enabled' => 0, 'heading' => 'Видеоматериал', 'text' => '', 'source_type' => 'url', 'attachment_id' => 0, 'url' => '', 'poster_id' => 0, 'transcript' => '', 'caption_attachment_id' => 0),
       self::ADDITIONAL => array('enabled' => 1, 'heading' => 'Дополнительная помощь, которая экономит ваше время', 'intro' => 'Не ограничиваемся только ремонтом. При необходимости поможем с подбором материалов, дизайном, мебелью и другими вопросами, чтобы вам не пришлось искать отдельных специалистов.', 'rows' => self::additional_seed()),
       self::PROMOTIONS => array('enabled' => 1, 'heading' => 'Бонусы для клиентов', 'disclaimer' => 'Бонусы не суммируются и не комбинируются.', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'Временное предложение до 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => self::promotion_seed()),
-      self::BUDGET => array('enabled' => 1, 'heading' => 'Как мы держим смету', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'rows' => array(
-        array('id' => 'detailed-measurement', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально на замере', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно'),
-        array('id' => 'fixed-contract', 'enabled' => 1, 'order' => 20, 'title' => 'Фиксируем стоимость и объём', 'description' => 'В договоре до старта работ'),
-        array('id' => 'written-approval', 'enabled' => 1, 'order' => 30, 'title' => 'Любые изменения', 'description' => 'Только по вашему письменному согласию'),
+      self::BUDGET => array('enabled' => 1, 'heading' => 'Как нам это удаётся?', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'metric_note' => 'За последние реализованные проекты', 'rows' => array(
+        array('id' => 'detailed-measurement', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно.'),
+        array('id' => 'fixed-contract', 'enabled' => 1, 'order' => 20, 'title' => 'Фиксируем стоимость и объём', 'description' => 'В договоре до старта работ — никаких устных договорённостей.'),
+        array('id' => 'written-approval', 'enabled' => 1, 'order' => 30, 'title' => 'Любые изменения — только с согласия', 'description' => 'Только по вашему письменному согласию. Вы контролируете бюджет.'),
       )),
       self::TIMELINE => array('enabled' => 1, 'heading' => 'Реальные сроки ремонта без обещаний «за 30 дней»', 'disclaimer' => 'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.', 'rows' => array(
         array('id' => 'up-to-50', 'enabled' => 1, 'order' => 10, 'area' => 'До 50 м²', 'new_build' => 'от 45 дней', 'capital' => '60–90 дней', 'designer' => '90–120 дней'),
@@ -420,7 +420,7 @@ final class Nexor_Enhancements
   {
     $d = self::defaults()[self::BUDGET];
     $input = is_array($input) ? $input : array();
-    return array('enabled' => empty($input['enabled']) ? 0 : 1, 'heading' => sanitize_text_field($input['heading'] ?? $d['heading']), 'metric' => sanitize_text_field($input['metric'] ?? $d['metric']), 'metric_label' => sanitize_textarea_field($input['metric_label'] ?? $d['metric_label']), 'rows' => self::clean_rows((array)($input['rows'] ?? array()), array('title' => 'text', 'description' => 'textarea')));
+    return array('enabled' => empty($input['enabled']) ? 0 : 1, 'heading' => sanitize_text_field($input['heading'] ?? $d['heading']), 'metric' => sanitize_text_field($input['metric'] ?? $d['metric']), 'metric_label' => sanitize_textarea_field($input['metric_label'] ?? $d['metric_label']), 'metric_note' => sanitize_textarea_field($input['metric_note'] ?? $d['metric_note']), 'rows' => self::clean_rows((array)($input['rows'] ?? array()), array('title' => 'text', 'description' => 'textarea')));
   }
 
   public static function sanitize_timeline($input): array
@@ -646,9 +646,10 @@ final class Nexor_Enhancements
     $o = self::option(self::BUDGET);
     echo '<section class="nexor-admin-section"><h2>Как мы держим смету</h2>';
     self::enabled_field(self::BUDGET, $o);
-    self::text_field(self::BUDGET, 'heading', 'Заголовок', $o);
+    self::text_field(self::BUDGET, 'heading', 'Заголовок списка', $o);
     self::text_field(self::BUDGET, 'metric', 'Показатель', $o);
     self::textarea_field(self::BUDGET, 'metric_label', 'Подпись к показателю', $o);
+    self::textarea_field(self::BUDGET, 'metric_note', 'Подпись под показателем', $o);
     self::render_rows(self::BUDGET, (array)$o['rows'], array('title' => array('Заголовок', 'text'), 'description' => array('Описание', 'textarea')));
     echo '</section>';
   }
@@ -1248,18 +1249,30 @@ final class Nexor_Enhancements
   {
     $o = self::option(self::BUDGET);
     $rows = self::enabled_rows(self::BUDGET, array('title', 'description'));
-    if (! $rows || ! trim((string) $o['metric']) || ! trim((string) $o['metric_label'])) return '';
-    $items = '';
+    if (! $rows || ! trim((string) $o['metric']) || ! trim((string) $o['metric_label'])) {
+      return '';
+    }
+
+    $items = array();
     foreach ($rows as $i => $row) {
-      $items .= sprintf(
-        '<li class="nexor-budget__item"><button type="button" class="nexor-budget__toggle" aria-expanded="%1$s"><span class="nexor-budget__icon" aria-hidden="true">%2$02d</span><span>%3$s</span><span class="nexor-budget__plus" aria-hidden="true">+</span></button><p>%4$s</p></li>',
-        0 === $i ? 'true' : 'false',
-        $i + 1,
-        esc_html($row['title']),
-        esc_html($row['description'])
+      $items[] = array(
+        'title' => (string) $row['title'],
+        'description' => (string) $row['description'],
+        'index' => $i + 1,
       );
     }
-    return '<section id="budget-control" class="nexor-budget-section"><div class="container-nexor"><div class="nexor-section-heading nexor-reveal"><p>Фиксируем до старта</p><h2 class="heading-section">' . esc_html($o['heading']) . '</h2></div><div class="nexor-budget__grid"><div class="nexor-budget__metric nexor-reveal"><strong>' . esc_html($o['metric']) . '</strong><p>' . esc_html($o['metric_label']) . '</p></div><ol class="nexor-budget__list nexor-reveal">' . $items . '</ol></div></div></section>';
+
+    if (! function_exists('nexor_render_home_budget_section')) {
+      return '';
+    }
+
+    return nexor_render_home_budget_section(array(
+      'heading' => (string) ($o['heading'] ?? ''),
+      'metric' => (string) ($o['metric'] ?? ''),
+      'metric_label' => (string) ($o['metric_label'] ?? ''),
+      'metric_note' => (string) ($o['metric_note'] ?? ''),
+      'rows' => $items,
+    ));
   }
 
   private static function stage_image_url(array $row): string
@@ -1704,7 +1717,13 @@ final class Nexor_Enhancements
         $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $calculator);
       }
       $content = self::insert_before($content, 'id="calculator"', self::home_services() . self::home_projects());
-      $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', self::budget_section() . self::prices_section() . self::timeline_section());
+      $budget = self::budget_section();
+      if ('' !== $budget && str_contains($content, 'id="budget-control"')) {
+        $replaced = preg_replace('/<section\b[^>]*\bid="budget-control"[^>]*>.*?<\/section>/s', $budget, $content, 1);
+        $content = is_string($replaced) ? $replaced : $content;
+      }
+      $before_surprise = ('' !== $budget && ! str_contains($content, 'id="budget-control"') ? $budget : '') . self::prices_section() . self::timeline_section();
+      $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $before_surprise);
       $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));
       $content = self::insert_before($content, 'id="about-company-nexor"', $cluster);
     } elseif (is_page(self::SERVICE_SLUGS)) {

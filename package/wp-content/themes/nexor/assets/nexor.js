@@ -447,16 +447,6 @@
       }),
     );
   }
-  function setupBudgetAccordions() {
-    document.querySelectorAll('.nexor-budget__toggle').forEach(button =>
-      button.addEventListener('click', () => {
-        if (!matchMedia('(max-width: 767px)').matches) return;
-        const open = button.getAttribute('aria-expanded') === 'true';
-        document.querySelectorAll('.nexor-budget__toggle').forEach(item => item.setAttribute('aria-expanded', 'false'));
-        button.setAttribute('aria-expanded', String(!open));
-      }),
-    );
-  }
   function setupTimeline() {
     document.querySelectorAll('.nexor-timeline-section').forEach(section =>
       section.querySelectorAll('[data-timeline-mode]').forEach(button =>
@@ -1642,7 +1632,6 @@
     setupNavigation();
     setupForms();
     setupFaq();
-    setupBudgetAccordions();
     setupTimeline();
     setupSystemBlueprint();
     setupProjectFilters();

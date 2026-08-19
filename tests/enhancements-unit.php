@@ -262,12 +262,21 @@ function nexor_render_home_calculator_section(array $copy = array()): string
 {
   return '<section id="calculator" class="section-padding bg-background"><div class="container-nexor"><div class="nexor-calculator"></div></div></section>';
 }
+function nexor_render_home_budget_section(array $copy = array()): string
+{
+  $rows = $copy['rows'] ?? array();
+  if (! $rows) {
+    return '';
+  }
+
+  return '<section id="budget-control" class="nexor-budget-section"><div class="nexor-budget__list"></div></section>';
+}
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
   'nexor_additional_services' => array('enabled' => 1, 'heading' => 'Дополнительная помощь, которая экономит ваше время', 'intro' => 'Не ограничиваемся только ремонтом.', 'rows' => array(array('id' => 'extra-1', 'enabled' => 1, 'order' => 10, 'title' => 'Подбор материалов', 'subtitle' => 'Поможем выбрать материалы без переплат', 'description' => 'Подберем материалы с учетом вашего бюджета.', 'included_items' => "Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.", 'benefit' => 'Экономите время и избегаете лишних расходов.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''))),
   'nexor_promotions' => array('enabled' => 1, 'heading' => 'Акции', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'До 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => array(array('id' => 'promo-1', 'enabled' => 1, 'order' => 10, 'title' => 'Акция', 'summary' => '', 'threshold_amount' => 0, 'condition_text' => 'Условие', 'cta_label' => 'Выбрать', 'legal_text' => 'Правила'), array('id' => 'full-design-project-from-5000000', 'enabled' => 1, 'order' => 50, 'title' => 'Дизайн-проект в подарок', 'summary' => '', 'threshold_amount' => 5000000, 'condition_text' => 'При ремонте под ключ', 'cta_label' => 'Получить дизайн-проект', 'legal_text' => 'До 31 августа'))),
-  'nexor_budget_control' => array('enabled' => 1, 'heading' => 'Как мы держим смету', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'rows' => array(array('id' => 'budget-1', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально на замере', 'description' => 'Закладываем все работы'))),
+  'nexor_budget_control' => array('enabled' => 1, 'heading' => 'Как нам это удаётся?', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'metric_note' => 'За последние реализованные проекты', 'rows' => array(array('id' => 'budget-1', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно.'))),
   'nexor_home_timeline' => array('enabled' => 1, 'heading' => 'Реальные сроки ремонта без обещаний «за 30 дней»', 'disclaimer' => 'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.', 'rows' => array(array('id' => 'timeline-1', 'enabled' => 1, 'order' => 10, 'area' => 'До 50 м²', 'new_build' => 'от 45 дней', 'capital' => '60–90 дней', 'designer' => '90–120 дней'))),
   'nexor_exit_intent' => array('enabled' => 0),
   'nexor_home_stages' => array('enabled' => 1, 'eyebrow' => '5 этапов работы Nexor', 'heading' => 'Как мы делаем ремонт предсказуемым', 'intro' => 'Фиксированный бюджет, понятные сроки и полная прозрачность на каждом этапе.', 'rows' => array(array('id' => 'consultation', 'enabled' => 1, 'order' => 10, 'title' => 'Консультация', 'description' => 'Обсуждаем задачи и бюджет.', 'image_id' => 0))),
@@ -318,6 +327,7 @@ assert_true($order === $sorted = call_user_func(function ($v) {
   return $s;
 }, $order), 'home sections follow approved order');
 assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($html, 'id="calculator"') === 1, 'homepage calculator is rendered once from the template part');
+assert_true(str_contains($html, 'class="nexor-budget-section"') && substr_count($html, 'id="budget-control"') === 1, 'homepage budget is rendered once from the template part');
 $missing_calc_source = '<main><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
 $missing_calc_html = Nexor_Enhancements::inject_frontend_content($missing_calc_source);
 assert_true(str_contains($missing_calc_html, 'id="calculator"') && strpos($missing_calc_html, 'id="calculator"') < strpos($missing_calc_html, 'Ремонт без неприятных сюрпризов'), 'calculator is injected when missing from migrated HTML');

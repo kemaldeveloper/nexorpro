@@ -4,13 +4,14 @@ require '/var/www/html/wp-load.php';
 
 $budget = array(
 	'enabled' => 1,
-	'heading' => 'Как мы держим смету',
+	'heading' => 'Как нам это удаётся?',
 	'metric' => '0%',
 	'metric_label' => 'отклонение итоговой сметы от первоначальной',
+	'metric_note' => 'За последние реализованные проекты',
 	'rows' => array(
-		array( 'id'=>'detailed-measurement', 'enabled'=>1, 'order'=>10, 'title'=>'Считаем детально на замере', 'description'=>'Закладываем работы, которые другие забывают и потом выставляют дополнительно' ),
-		array( 'id'=>'fixed-contract', 'enabled'=>1, 'order'=>20, 'title'=>'Фиксируем стоимость и объём', 'description'=>'В договоре до старта работ' ),
-		array( 'id'=>'written-approval', 'enabled'=>1, 'order'=>30, 'title'=>'Любые изменения', 'description'=>'Только по вашему письменному согласию' ),
+		array( 'id'=>'detailed-measurement', 'enabled'=>1, 'order'=>10, 'title'=>'Считаем детально', 'description'=>'Закладываем работы, которые другие забывают и потом выставляют дополнительно.' ),
+		array( 'id'=>'fixed-contract', 'enabled'=>1, 'order'=>20, 'title'=>'Фиксируем стоимость и объём', 'description'=>'В договоре до старта работ — никаких устных договорённостей.' ),
+		array( 'id'=>'written-approval', 'enabled'=>1, 'order'=>30, 'title'=>'Любые изменения — только с согласия', 'description'=>'Только по вашему письменному согласию. Вы контролируете бюджет.' ),
 	),
 );
 $promotions = array(

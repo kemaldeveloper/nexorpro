@@ -908,89 +908,6 @@ header button:has(.lucide-menu),
   text-transform: lowercase;
 }
 
-.nexor-budget-section {
-  padding: clamp(72px, 9vw, 120px) 0;
-  background: #f4efe8;
-  color: #29231f;
-}
-.nexor-budget-section .heading-section {
-  max-width: 760px;
-  margin: 0 0 clamp(34px, 5vw, 64px);
-  font-size: clamp(38px, 5vw, 68px);
-  line-height: 1.06;
-  letter-spacing: -0.035em;
-}
-.nexor-budget__grid {
-  display: grid;
-  grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
-  gap: clamp(36px, 7vw, 112px);
-  align-items: stretch;
-}
-.nexor-budget__metric {
-  min-height: 350px;
-  padding: clamp(34px, 4vw, 56px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background: #744532;
-  color: #fff;
-  border-radius: 18px;
-  box-shadow: 0 18px 44px rgba(70, 45, 33, 0.14);
-}
-.nexor-budget__metric strong {
-  font-size: clamp(88px, 11vw, 160px);
-  line-height: 0.82;
-  letter-spacing: -0.07em;
-  font-weight: 700;
-}
-.nexor-budget__metric p {
-  max-width: 320px;
-  margin: 30px 0 0;
-  font-size: clamp(17px, 1.5vw, 21px);
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.9);
-}
-.nexor-budget__list {
-  display: grid;
-  align-content: center;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.nexor-budget__list li {
-  display: grid;
-  grid-template-columns: 46px minmax(0, 1fr);
-  gap: 20px;
-  padding: 28px 0;
-  border-bottom: 1px solid rgba(41, 35, 31, 0.16);
-}
-.nexor-budget__list li:first-child {
-  border-top: 1px solid rgba(41, 35, 31, 0.16);
-}
-.nexor-budget__icon {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  border: 1px solid #9e6049;
-  border-radius: 50%;
-  color: #744532;
-  font-size: 15px;
-  font-weight: 700;
-}
-.nexor-budget__list h3 {
-  margin: 0 0 8px;
-  font-size: clamp(20px, 2vw, 28px);
-  line-height: 1.2;
-}
-.nexor-budget__list p {
-  margin: 0;
-  max-width: 680px;
-  color: #665e58;
-  font-size: 16px;
-  line-height: 1.55;
-}
 .nexor-promotions__disclaimer {
   display: inline-block;
   margin: 0 0 4px;
@@ -1223,12 +1140,10 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   .nexor-search-header .nexor-search input {
     width: 100%;
   }
-  .nexor-budget-section {
-    padding: 64px 0;
-  }
   .nexor-timeline-section {
     padding: 60px 0;
   }
+
   .nexor-timeline-section .heading-section {
     font-size: 34px;
   }
@@ -1303,29 +1218,11 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
   .nexor-timeline__note {
     font-size: 14px;
   }
-  .nexor-budget__grid {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-  .nexor-budget__metric {
-    min-height: 270px;
-    padding: 34px;
-  }
-  .nexor-budget__metric strong {
-    font-size: 104px;
-  }
-  .nexor-budget__list li {
-    grid-template-columns: 40px minmax(0, 1fr);
-    gap: 15px;
-    padding: 22px 0;
-  }
-  .nexor-budget__icon {
-    width: 38px;
-    height: 38px;
-  }
+
   #promotions .nexor-card-grid {
     grid-template-columns: 1fr;
   }
+
   #promotions {
     padding-top: 34px;
   }
@@ -2597,70 +2494,151 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   font-weight: 500;
 }
 
-/* Estimate control and responsive accordions. */
+/* Estimate control section. */
 .nexor-budget-section {
-  padding: clamp(90px, 10vw, 150px) 0;
-  background: #eee9e1;
-}
-.nexor-budget-section .nexor-section-heading {
-  margin-bottom: 58px;
-}
-.nexor-budget-section .heading-section {
-  max-width: 860px;
-  margin: 0;
-  font-size: clamp(42px, 5.2vw, 72px);
-  font-weight: 560;
-}
-.nexor-budget__grid {
-  grid-template-columns: minmax(300px, 0.76fr) minmax(0, 1.24fr);
-  gap: clamp(50px, 8vw, 130px);
-}
-.nexor-budget__metric {
-  min-height: 430px;
-  padding: 48px;
-  border-radius: 22px;
-  background: linear-gradient(150deg, #261f1b, #8b492d);
-  box-shadow: var(--nx-shadow);
-}
-.nexor-budget__metric strong {
-  font-weight: 560;
-}
-.nexor-budget__list {
-  align-content: stretch;
-}
-.nexor-budget__item {
-  display: grid !important;
-  grid-template-columns: 1fr !important;
-  padding: 0 !important;
-  border: 0 !important;
-}
-.nexor-budget__toggle {
-  display: grid;
-  grid-template-columns: 52px 1fr auto;
-  gap: 18px;
-  align-items: center;
   width: 100%;
-  padding: 27px 0;
-  border: 0;
-  border-top: 1px solid var(--nx-line);
-  background: transparent;
+  max-width: none;
+  padding: clamp(96px, 10vw, 100px) 0;
+  background: #f3f0eb;
   color: var(--nx-ink);
-  text-align: left;
-  font-size: clamp(20px, 2vw, 28px);
-  font-weight: 560;
-  cursor: default;
+  overflow: visible;
 }
-.nexor-budget__item:last-child .nexor-budget__toggle {
-  border-bottom: 1px solid var(--nx-line);
+
+.nexor-budget__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(40px, 6vw, 96px);
+  align-items: start;
+  width: 100%;
+  max-width: none;
+  margin-inline: auto;
 }
-.nexor-budget__item > p {
-  margin: -12px 0 23px 70px;
-  max-width: 650px;
+
+.nexor-budget__metric {
+  display: flex;
+  column-gap: clamp(18px, 2.4vw, 36px);
+  row-gap: clamp(14px, 1.6vw, 20px);
+  align-items: flex-end;
+  align-self: center;
+  min-width: 0;
+}
+
+.nexor-budget__figure {
+  display: flex;
+  align-items: flex-end;
+  font-size: clamp(150px, 15vw, 400px);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.nexor-budget__value,
+.nexor-budget__suffix,
+.nexor-budget__index {
+  font-weight: 300;
+  background: linear-gradient(180deg, #e0b59d 0%, #b67a5d 24%, #834c36 58%, #a86548 82%, #c88d6f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.nexor-budget__value {
+  display: inline-block;
+  line-height: 0.73;
+}
+
+.nexor-budget__suffix {
+  display: inline-block;
+  font-size: 0.36em;
+  line-height: 1;
+}
+
+.nexor-budget__stat-label {
+  align-self: center;
+  margin: 0;
+  min-width: 0;
+  font-size: clamp(18px, 1.55vw, 24px);
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.015em;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.nexor-budget__stat-label::after {
+  content: '';
+  display: block;
+  width: 40px;
+  height: 1px;
+  background: var(--hero-accent);
+}
+
+.nexor-budget__stat-note {
+  grid-row: 2;
+  grid-column: 1;
+  align-self: start;
+  margin: 0;
+  min-width: 0;
+  color: #6d665f;
+  font-size: clamp(14px, 1.05vw, 16px);
+  line-height: 1.45;
+}
+
+.nexor-budget__content {
+  min-width: 0;
+}
+
+.nexor-budget__heading {
+  margin: 0 0 clamp(28px, 3.2vw, 40px);
+  font-size: clamp(26px, 2.2vw, 32px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+}
+
+.nexor-budget__list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nexor-budget__item {
+  display: grid;
+  grid-template-columns: clamp(72px, 6.8vw, 104px) minmax(0, 1fr);
+  gap: clamp(18px, 2vw, 30px);
+  align-items: start;
+  padding: clamp(24px, 2.5vw, 34px) 0;
+}
+
+.nexor-budget__item + .nexor-budget__item {
+  border-top: 1px solid rgba(45, 39, 34, 0.14);
+}
+
+.nexor-budget__index {
+  display: block;
+  font-size: clamp(52px, 4.9vw, 76px);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+  padding-block: 0.08em;
+}
+
+.nexor-budget__item-copy h3 {
+  margin: 0.12em 0 10px;
+  font-size: clamp(18px, 1.45vw, 21px);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.nexor-budget__item-copy p {
+  margin: 0;
+  min-width: 0;
   color: #655f58;
-  line-height: 1.6;
-}
-.nexor-budget__plus {
-  display: none;
+  font-size: clamp(15px, 1.05vw, 16px);
+  line-height: 1.55;
 }
 
 /* Timeline: full table desktop, one selected repair type on mobile. */
@@ -4016,7 +3994,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-home-hero__layout {
     display: flex;
     flex-direction: column;
-    /* align-items: center; */
     gap: 24px;
     min-height: 0;
     padding-top: 140px;
@@ -4038,7 +4015,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-home-hero__copy {
     grid-area: auto;
     width: auto;
-    /* max-width: 28ch; */
     justify-self: center;
   }
 
@@ -4093,7 +4069,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
   .nexor-home-hero__features {
     order: 3;
-    /* width: 100%; */
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0;
     padding-top: 20px;
@@ -4154,18 +4129,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     grid-row: 2;
   }
 
-  .nexor-budget__grid {
-    gap: 50px;
-  }
-
-  .nexor-budget__metric {
-    min-height: 360px;
-  }
-
-  .nexor-additional-section .nexor-section-heading {
-    grid-template-columns: 1fr;
-  }
-
   .nexor-additional-section .nexor-section-heading > p {
     grid-column: auto;
   }
@@ -4209,6 +4172,11 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
   .nexor-home-hero__feature strong {
     font-size: 14px;
+  }
+
+  .nexor-budget__metric {
+    flex-wrap: wrap;
+    row-gap: 14px;
   }
 }
 
@@ -4302,24 +4270,20 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   }
 
   .nexor-home-hero__num {
-    /* grid-column: 2; */
     font-size: 44px;
     -webkit-text-stroke-width: 1px;
   }
 
-  .nexor-home-hero__feature > div {
-    /* grid-column: 3; */
-  }
   .nexor-services-section,
   .nexor-projects-section,
-  .nexor-budget-section,
   .nexor-timeline-section,
   .nexor-system-section,
   .nexor-before-after-section,
   .nexor-additional-section,
   .nexor-promotions-section {
-    padding: 72px 0 !important;
+    padding-block: 72px !important;
   }
+
   .nexor-services-section .nexor-section-heading,
   .nexor-promotions-section .nexor-section-heading {
     display: block;
@@ -4464,56 +4428,58 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     height: 16px;
   }
 
-  .nexor-budget-section .nexor-section-heading,
+  .nexor-budget__layout {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .nexor-budget__metric {
+    flex-wrap: wrap;
+    column-gap: 14px;
+    row-gap: 12px;
+  }
+
+  .nexor-budget__figure {
+    font-size: clamp(132px, 34vw, 176px);
+  }
+
+  .nexor-budget__stat-label {
+    max-width: none;
+    font-size: 18px;
+  }
+
+  .nexor-budget__heading {
+    margin-bottom: 18px;
+    font-size: 22px;
+  }
+
+  .nexor-budget__item {
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 12px;
+    padding: 18px 0;
+  }
+
+  .nexor-budget__index {
+    font-size: 38px;
+    line-height: 1;
+  }
+
+  .nexor-budget__item-copy h3 {
+    font-size: 16px;
+  }
+
+  .nexor-budget__item-copy p {
+    font-size: 14px;
+  }
+
   .nexor-timeline-section .nexor-section-heading {
     margin-bottom: 34px;
   }
-  .nexor-budget-section .heading-section,
+
   .nexor-timeline-section .heading-section {
     font-size: 36px;
   }
-  .nexor-budget__grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  .nexor-budget__metric {
-    min-height: 265px;
-    padding: 30px;
-  }
-  .nexor-budget__metric strong {
-    font-size: 96px;
-  }
-  .nexor-budget__metric p {
-    margin-top: 20px;
-  }
-  .nexor-budget__toggle {
-    grid-template-columns: 40px 1fr auto;
-    gap: 12px;
-    padding: 18px 0;
-    font-size: 18px;
-    cursor: pointer;
-  }
-  .nexor-budget__icon {
-    width: 36px;
-    height: 36px;
-  }
-  .nexor-budget__plus {
-    display: block;
-    transition: transform 0.2s;
-  }
-  .nexor-budget__toggle[aria-expanded='true'] .nexor-budget__plus {
-    transform: rotate(45deg);
-  }
-  .nexor-js .nexor-budget__item > p {
-    display: none;
-  }
-  .nexor-js .nexor-budget__toggle[aria-expanded='true'] + p {
-    display: block;
-  }
-  .nexor-budget__item > p {
-    margin: -3px 0 19px 52px;
-    font-size: 14px;
-  }
+
   .nexor-timeline__filters {
     display: flex;
     gap: 7px;
@@ -4521,6 +4487,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     overflow-x: auto;
     padding-bottom: 4px;
   }
+
   .nexor-timeline__filters button {
     flex: 0 0 auto;
     padding: 10px 12px;

@@ -322,10 +322,10 @@ try {
   });
   await capture({
     filename: '05-budget-control.png',
-    title: 'Как мы держим смету',
+    title: 'Как нам это удаётся?',
     url: home,
     viewport: desktopBudget,
-    target: { selector: '#budget-control .nexor-section-heading', top: 38, midpage: true },
+    target: { selector: '#budget-control .nexor-budget__heading', top: 38, midpage: true },
   });
   await capture({
     filename: '06-work-stages-interactive.png',

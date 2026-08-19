@@ -217,7 +217,7 @@ try {
       stageSelected:stage?.querySelector('[role="tab"][aria-selected="true"]')?.textContent.trim()||'',
       timelineRows:timeline?.querySelectorAll('tbody tr').length||0,
       timelineVisibleCells:activeCells.length,
-      budgetToggles:document.querySelectorAll('.nexor-budget__toggle').length,
+      budgetItems:document.querySelectorAll('.nexor-budget__item').length,
       menuTrigger:!!trigger,
       menuOpen:!!menu&&!menu.hidden,
       popupSuppressed:document.querySelector('.nexor-exit')?.hidden===true,

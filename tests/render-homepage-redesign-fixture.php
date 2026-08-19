@@ -80,10 +80,10 @@ $GLOBALS['options'] = array(
 	'nexor_home_video' => array( 'enabled'=>0 ),
 	'nexor_additional_services' => array( 'enabled'=>1, 'heading'=>'Дополнительная помощь, которая экономит ваше время', 'intro'=>'Не ограничиваемся только ремонтом. При необходимости поможем с подбором материалов, дизайном, мебелью и другими вопросами, чтобы вам не пришлось искать отдельных специалистов.', 'rows'=>$additional ),
 	'nexor_promotions' => array( 'enabled'=>1, 'heading'=>'Бонусы для клиентов', 'disclaimer'=>'Бонусы не суммируются и не комбинируются.', 'featured_enabled'=>1, 'featured_id'=>'full-design-project-from-5000000', 'featured_eyebrow'=>'Временное предложение до 31 августа', 'featured_deadline'=>'2026-08-31T23:59:59+03:00', 'rows'=>$promotions ),
-	'nexor_budget_control' => array( 'enabled'=>1, 'heading'=>'Как мы держим смету', 'metric'=>'0%', 'metric_label'=>'отклонение итоговой сметы от первоначальной', 'rows'=>array(
-		array( 'id'=>'detailed-measurement', 'enabled'=>1, 'order'=>10, 'title'=>'Считаем детально на замере', 'description'=>'Закладываем работы, которые другие забывают и потом выставляют дополнительно' ),
-		array( 'id'=>'fixed-contract', 'enabled'=>1, 'order'=>20, 'title'=>'Фиксируем стоимость и объём', 'description'=>'В договоре до старта работ' ),
-		array( 'id'=>'written-approval', 'enabled'=>1, 'order'=>30, 'title'=>'Любые изменения', 'description'=>'Только по вашему письменному согласию' ),
+	'nexor_budget_control' => array( 'enabled'=>1, 'heading'=>'Как нам это удаётся?', 'metric'=>'0%', 'metric_label'=>'отклонение итоговой сметы от первоначальной', 'metric_note'=>'За последние реализованные проекты', 'rows'=>array(
+		array( 'id'=>'detailed-measurement', 'enabled'=>1, 'order'=>10, 'title'=>'Считаем детально', 'description'=>'Закладываем работы, которые другие забывают и потом выставляют дополнительно.' ),
+		array( 'id'=>'fixed-contract', 'enabled'=>1, 'order'=>20, 'title'=>'Фиксируем стоимость и объём', 'description'=>'В договоре до старта работ — никаких устных договорённостей.' ),
+		array( 'id'=>'written-approval', 'enabled'=>1, 'order'=>30, 'title'=>'Любые изменения — только с согласия', 'description'=>'Только по вашему письменному согласию. Вы контролируете бюджет.' ),
 	) ),
 	'nexor_home_timeline' => array( 'enabled'=>1, 'heading'=>'Реальные сроки ремонта без обещаний «за 30 дней»', 'disclaimer'=>'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.', 'rows'=>array(
 		array( 'id'=>'up-to-50', 'enabled'=>1, 'order'=>10, 'area'=>'До 50 м²', 'new_build'=>'от 45 дней', 'capital'=>'60–90 дней', 'designer'=>'90–120 дней' ),
