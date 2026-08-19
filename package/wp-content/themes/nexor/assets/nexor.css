@@ -822,64 +822,8 @@ header button:has(.lucide-menu),
 .nexor-before-after[role='slider'] {
   cursor: ew-resize;
 }
-.nexor-timeline-section {
-  padding: clamp(72px, 9vw, 120px) 0;
-  background: #fafaf8;
-}
-.nexor-timeline-section .heading-section {
-  max-width: 900px;
-  margin: 0 0 clamp(32px, 5vw, 56px);
-  font-size: clamp(34px, 4.6vw, 62px);
-  line-height: 1.08;
-  letter-spacing: -0.035em;
-  text-wrap: balance;
-}
-.nexor-timeline__wrap {
-  overflow-x: auto;
-  border: 1px solid #e1ddd8;
-  border-radius: 18px;
-  background: #fff;
-  box-shadow: 0 12px 36px rgba(45, 37, 31, 0.05);
-}
-.nexor-timeline {
-  width: 100%;
-  min-width: 820px;
-  border-collapse: collapse;
-  color: #25211e;
-}
-.nexor-timeline th,
-.nexor-timeline td {
-  padding: clamp(20px, 2.3vw, 32px);
-  border-bottom: 1px solid #e9e5e1;
-  text-align: left;
-  vertical-align: middle;
-  font-size: clamp(17px, 1.55vw, 23px);
-  line-height: 1.28;
-}
-.nexor-timeline thead th {
-  font-weight: 700;
-  background: #fbfaf8;
-}
-.nexor-timeline tbody th {
-  width: 21%;
-  font-weight: 400;
-}
-.nexor-timeline tbody td {
-  font-weight: 400;
-}
-.nexor-timeline tbody tr:last-child th,
-.nexor-timeline tbody tr:last-child td {
-  border-bottom: 0;
-}
-.nexor-timeline__note {
-  max-width: 1040px;
-  margin: 26px 0 0;
-  padding-left: 18px;
-  border-left: 3px solid hsl(var(--primary));
-  color: #655e58;
-  font-size: 15px;
-  line-height: 1.65;
-}
+
+/* Timeline legacy rules moved to homepage editorial block below. */
 
 /* Homepage hero base tokens — layout lives with .nexor-home editorial block below. */
 .nexor-hero-countdown {
@@ -1144,77 +1088,6 @@ main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
     padding: 60px 0;
   }
 
-  .nexor-timeline-section .heading-section {
-    font-size: 34px;
-  }
-  .nexor-timeline__wrap {
-    overflow: visible;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-  .nexor-timeline {
-    min-width: 0;
-    border-collapse: separate;
-    border-spacing: 0 14px;
-    background: transparent;
-  }
-  .nexor-timeline thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  .nexor-timeline tbody,
-  .nexor-timeline tr,
-  .nexor-timeline th,
-  .nexor-timeline td {
-    display: block;
-    width: 100%;
-  }
-  .nexor-timeline tr {
-    overflow: hidden;
-    border: 1px solid #e1ddd8;
-    border-radius: 15px;
-    background: #fff;
-    box-shadow: 0 8px 22px rgba(45, 37, 31, 0.04);
-  }
-  .nexor-timeline tbody th {
-    width: 100%;
-    padding: 18px 20px;
-    border-bottom: 1px solid #e9e5e1;
-    background: #fbfaf8;
-    font-size: 20px;
-    font-weight: 400;
-  }
-  .nexor-timeline tbody td {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 14px;
-    padding: 15px 20px;
-    border-bottom: 1px solid #eeeae6;
-    font-size: 17px;
-    text-align: right;
-  }
-  .nexor-timeline tbody td::before {
-    content: attr(data-label);
-    text-align: left;
-    color: #6a625c;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .nexor-timeline tbody tr:last-child th,
-  .nexor-timeline tbody tr:last-child td {
-    border-bottom: 1px solid #eeeae6;
-  }
-  .nexor-timeline tbody td:last-child {
-    border-bottom: 0;
-  }
   .nexor-timeline__note {
     font-size: 14px;
   }
@@ -2643,34 +2516,146 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
 /* Timeline: full table desktop, one selected repair type on mobile. */
 .nexor-timeline-section {
+  --timeline-accent: #94674e;
+  --timeline-line: #ebe7e3;
+  --timeline-border: #e6e2de;
+  --timeline-ink: #1c1a18;
+  --timeline-muted: #6d665f;
   padding: clamp(88px, 10vw, 145px) 0;
-  background: #f8f6f2;
+  background: #faf8f6;
 }
+
+.nexor-timeline__layout {
+  display: flex;
+  flex-direction: column;
+}
+
 .nexor-timeline-section .nexor-section-heading {
-  margin-bottom: 50px;
+  margin-bottom: 40px;
+  text-align: left;
 }
+
+.nexor-timeline-section .nexor-section-heading::after {
+  content: '';
+  display: block;
+  width: 52px;
+  height: 2px;
+  margin-top: 20px;
+  border-radius: 1px;
+  background: var(--timeline-accent);
+}
+
 .nexor-timeline-section .heading-section {
-  max-width: 980px;
-  margin: 0;
-  font-size: clamp(40px, 5vw, 68px);
-  font-weight: 560;
+  margin: 0 0 7px;
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  text-wrap: balance;
+  color: var(--nx-ink);
 }
+
 .nexor-timeline__filters {
   display: none;
 }
+
 .nexor-timeline__wrap {
-  border-radius: 20px;
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
+  background: transparent;
   box-shadow: none;
 }
-.nexor-timeline th,
-.nexor-timeline td {
-  font-weight: 400;
+
+.nexor-timeline {
+  width: 100%;
+  min-width: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  color: var(--timeline-ink);
 }
+
+.nexor-timeline thead th,
+.nexor-timeline tbody th,
+.nexor-timeline tbody td {
+  border-bottom: 1px solid var(--timeline-line);
+}
+
+.nexor-timeline tbody th {
+  border-left: 1px solid var(--timeline-border);
+}
+
+.nexor-timeline tbody td:last-child {
+  border-right: 1px solid var(--timeline-border);
+}
+
+.nexor-timeline tbody tr:last-child th,
+.nexor-timeline tbody tr:last-child td {
+  border-bottom: 1px solid var(--timeline-border);
+}
+
+.nexor-timeline tbody tr:last-child th {
+  border-bottom-left-radius: 16px;
+}
+
+.nexor-timeline tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 16px;
+}
+
 .nexor-timeline thead th {
-  font-weight: 650;
+  padding: 22px 28px 22px 24px;
+  background: transparent;
+  color: var(--timeline-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+  text-align: left;
+  text-transform: uppercase;
+  vertical-align: middle;
 }
+
+.nexor-timeline thead th:first-child {
+  width: 26%;
+  padding: 22px 20px 22px 28px;
+}
+
+.nexor-timeline tbody th {
+  width: 26%;
+  padding: 22px 20px 22px 28px;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.nexor-timeline tbody td {
+  padding: 22px 28px 22px 24px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: left;
+  vertical-align: middle;
+}
+
 .nexor-timeline__note {
-  margin-top: 30px;
+  max-width: min(100%, 760px);
+  margin-top: 28px;
+  padding-left: 16px;
+  border-left: 2px solid var(--timeline-accent);
+  color: var(--timeline-muted);
+  font-size: 14px;
+  line-height: 1.55;
+  color: #656363;
+}
+
+.nexor-timeline__note p {
+  margin: 0;
+}
+
+.nexor-timeline__note p + p {
+  margin-top: 0.35em;
 }
 
 /* Blueprint system built from the existing editable page block. */
@@ -3283,6 +3268,11 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 /* Phones: keep the bulk of the card inside one screen. */
 @media (max-width: 640px) {
   .nexor-stages-section .heading-section {
+    font-size: clamp(21px, 6vw, 26px);
+    margin-bottom: 5px;
+  }
+
+  .nexor-timeline-section .heading-section {
     font-size: clamp(21px, 6vw, 26px);
     margin-bottom: 5px;
   }
@@ -4436,7 +4426,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-budget__metric {
     flex-wrap: wrap;
     column-gap: 14px;
-    row-gap: 12px;
+    row-gap: 20px;
   }
 
   .nexor-budget__figure {
@@ -4476,16 +4466,12 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     margin-bottom: 34px;
   }
 
-  .nexor-timeline-section .heading-section {
-    font-size: 36px;
-  }
-
   .nexor-timeline__filters {
     display: flex;
     gap: 7px;
     margin: 0 0 20px;
     overflow-x: auto;
-    padding-bottom: 4px;
+    padding-bottom: 14px;
   }
 
   .nexor-timeline__filters button {
@@ -4502,24 +4488,84 @@ header > div a[aria-label*='ВКонтакте'] svg path {
     background: #8e4323;
     color: #fff;
   }
-  .nexor-timeline tr {
-    border-radius: 12px;
+
+  .nexor-timeline__wrap {
+    overflow: hidden;
+    border: 1px solid var(--timeline-border);
+    border-radius: 16px;
+    background: #fff;
   }
+
+  .nexor-timeline {
+    table-layout: fixed;
+    border-collapse: collapse;
+  }
+
+  .nexor-timeline thead th,
+  .nexor-timeline tbody th,
   .nexor-timeline tbody td {
-    display: block !important;
+    padding: 14px 10px;
+    border-bottom: 1px solid var(--timeline-line);
+  }
+
+  .nexor-timeline tbody th {
+    border-left: 0;
+  }
+
+  .nexor-timeline tbody td:last-child {
+    border-right: 0;
+  }
+
+  .nexor-timeline tbody tr:last-child th,
+  .nexor-timeline tbody tr:last-child td {
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .nexor-timeline thead th {
+    background: #f5f2ed;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    line-height: 1.35;
+    /* white-space: nowrap; */
+  }
+
+  .nexor-timeline thead th:first-child {
+    width: 42%;
+    padding: 14px 10px;
     text-align: left;
   }
-  .nexor-timeline tbody td::before {
-    display: block;
-    margin-bottom: 4px;
+
+  .nexor-timeline thead th[data-timeline-column] {
+    text-align: right;
   }
+
+  .nexor-timeline tbody th {
+    width: 42%;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    background: #fff;
+  }
+
+  .nexor-timeline tbody td {
+    font-size: 15px;
+    font-weight: 400;
+    text-align: right;
+    color: var(--timeline-ink);
+    background: #fff;
+  }
+
+  .nexor-js .nexor-timeline thead th[data-timeline-column],
   .nexor-js .nexor-timeline tbody td {
-    display: none !important;
+    display: none;
   }
-  .nexor-js .nexor-timeline-section[data-timeline-active='new-build'] td[data-timeline-column='new-build'],
-  .nexor-js .nexor-timeline-section[data-timeline-active='capital'] td[data-timeline-column='capital'],
-  .nexor-js .nexor-timeline-section[data-timeline-active='designer'] td[data-timeline-column='designer'] {
-    display: block !important;
+
+  .nexor-js .nexor-timeline-section[data-timeline-active='new-build'] [data-timeline-column='new-build'],
+  .nexor-js .nexor-timeline-section[data-timeline-active='capital'] [data-timeline-column='capital'],
+  .nexor-js .nexor-timeline-section[data-timeline-active='designer'] [data-timeline-column='designer'] {
+    display: table-cell;
   }
   .nexor-system-section .text-center {
     margin-bottom: 34px !important;
@@ -4636,6 +4682,38 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   }
 }
 
+@media (max-width: 380px) {
+  .nexor-timeline thead th,
+  .nexor-timeline tbody th,
+  .nexor-timeline tbody td {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-inline: 8px;
+  }
+
+  .nexor-timeline thead th:first-child,
+  .nexor-timeline tbody th {
+    width: 40%;
+  }
+
+  .nexor-timeline thead th:first-child {
+    padding: 12px 8px;
+  }
+
+  .nexor-timeline thead th {
+    font-size: 9px;
+    letter-spacing: 0.06em;
+  }
+
+  .nexor-timeline tbody th {
+    font-size: 15px;
+  }
+
+  .nexor-timeline tbody td {
+    font-size: 14px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .nexor-js .nexor-reveal {
     opacity: 1;
@@ -4706,95 +4784,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 @media (max-width: 767px) {
   .nexor-service-card__body {
     padding: 20px;
-  }
-}
-@media (min-width: 768px) and (max-width: 800px) {
-  .nexor-timeline__wrap {
-    overflow: visible;
-    border: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-  .nexor-timeline {
-    min-width: 0;
-    border-collapse: separate;
-    border-spacing: 0 12px;
-    background: transparent;
-  }
-  .nexor-timeline thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-  .nexor-timeline tbody,
-  .nexor-timeline tr,
-  .nexor-timeline th,
-  .nexor-timeline td {
-    display: block;
-    width: 100%;
-  }
-  .nexor-timeline tr {
-    overflow: hidden;
-    border: 1px solid #e1ddd8;
-    border-radius: 12px;
-    background: #fff;
-  }
-  .nexor-timeline tbody th {
-    width: 100%;
-    padding: 18px 20px;
-    border-bottom: 1px solid #e9e5e1;
-    background: #fbfaf8;
-    font-size: 20px;
-    font-weight: 400;
-  }
-  .nexor-timeline tbody td {
-    display: block !important;
-    padding: 15px 20px;
-    border-bottom: 0;
-    text-align: left;
-  }
-  .nexor-timeline tbody td::before {
-    display: block;
-    margin-bottom: 4px;
-    content: attr(data-label);
-    color: #6a625c;
-    font-size: 14px;
-    font-weight: 500;
-  }
-  .nexor-timeline__filters {
-    display: flex;
-    gap: 7px;
-    margin: 0 0 20px;
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-  .nexor-timeline__filters button {
-    flex: 0 0 auto;
-    padding: 10px 12px;
-    border: 1px solid #d8d0c7;
-    border-radius: 999px;
-    background: transparent;
-    color: #39342f;
-    font-size: 12px;
-  }
-  .nexor-timeline__filters button[aria-pressed='true'] {
-    border-color: #8e4323;
-    background: #8e4323;
-    color: #fff;
-  }
-  .nexor-js .nexor-timeline tbody td {
-    display: none !important;
-  }
-  .nexor-js .nexor-timeline-section[data-timeline-active='new-build'] td[data-timeline-column='new-build'],
-  .nexor-js .nexor-timeline-section[data-timeline-active='capital'] td[data-timeline-column='capital'],
-  .nexor-js .nexor-timeline-section[data-timeline-active='designer'] td[data-timeline-column='designer'] {
-    display: block !important;
   }
 }
 

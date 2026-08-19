@@ -1217,20 +1217,31 @@ final class Nexor_Enhancements
   {
     $o = self::option(self::TIMELINE);
     $rows = self::enabled_rows(self::TIMELINE, array('area', 'new_build', 'capital', 'designer'));
-    if (! $rows || ! trim((string) $o['heading']) || ! trim((string) $o['disclaimer'])) return '';
-    $body = '';
+    if (! $rows || ! trim((string) $o['heading']) || ! trim((string) $o['disclaimer'])) {
+      return '';
+    }
+
+    if (! function_exists('nexor_render_home_timeline_section')) {
+      return '';
+    }
+
+    $items = array();
     foreach ($rows as $row) {
-      $body .= sprintf(
-        '<tr><th scope="row">%s</th><td data-timeline-column="new-build" data-label="Новостройка">%s</td><td data-timeline-column="capital" data-label="Капитальный ремонт">%s</td><td data-timeline-column="designer" data-label="Дизайнерский ремонт">%s</td></tr>',
-        esc_html($row['area']),
-        esc_html($row['new_build']),
-        esc_html($row['capital']),
-        esc_html($row['designer'])
+      $items[] = array(
+        'area' => (string) $row['area'],
+        'new_build' => (string) $row['new_build'],
+        'capital' => (string) $row['capital'],
+        'designer' => (string) $row['designer'],
       );
     }
-    $filters = '<div class="nexor-timeline__filters" aria-label="Показать сроки по типу ремонта"><button type="button" data-timeline-mode="new-build" aria-pressed="true">Новостройка</button><button type="button" data-timeline-mode="capital" aria-pressed="false">Капитальный</button><button type="button" data-timeline-mode="designer" aria-pressed="false">Дизайнерский</button></div>';
-    return '<section id="repair-timeline" class="nexor-timeline-section nexor-reveal" data-timeline-active="new-build"><div class="container-nexor"><div class="nexor-section-heading"><p>Сроки по договору</p><h2 class="heading-section">' . esc_html($o['heading']) . '</h2></div>' . $filters . '<div class="nexor-timeline__wrap"><table class="nexor-timeline" aria-describedby="repair-timeline-note"><thead><tr><th scope="col">Площадь объекта</th><th scope="col">Новостройка</th><th scope="col">Капитальный ремонт</th><th scope="col">Дизайнерский ремонт</th></tr></thead><tbody>' . $body . '</tbody></table></div><p id="repair-timeline-note" class="nexor-timeline__note">' . esc_html($o['disclaimer']) . '</p></div></section>';
+
+    return nexor_render_home_timeline_section(array(
+      'heading' => (string) ($o['heading'] ?? ''),
+      'disclaimer' => (string) ($o['disclaimer'] ?? ''),
+      'rows' => $items,
+    ));
   }
+
   private static function prices_section(): string
   {
     $o = self::option(self::PRICES);

@@ -162,6 +162,26 @@ function nexor_render_home_budget_section(array $copy = array()): string
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_timeline_section(array $copy = array()): string
+{
+  $rows = $copy['rows'] ?? array();
+  if (! $rows) {
+    return '';
+  }
+
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'timeline-section',
+    array(
+      'heading' => $copy['heading'] ?? '',
+      'disclaimer' => $copy['disclaimer'] ?? '',
+      'rows' => $rows,
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 remove_action('wp_head', 'rel_canonical');
 
 add_action(

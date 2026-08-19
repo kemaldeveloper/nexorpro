@@ -162,6 +162,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Реализованные проекты | `#cases` | `home-projects-section.php` | `nexor_render_home_projects_section()` | option `nexor_home_projects` + CPT |
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
 | Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
+| Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
 
 Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
 
@@ -246,6 +247,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Карточки проектов на главной | `template-parts/home-projects-section.php` + option `nexor_home_projects` |
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
+| Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
 | Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
 | Вёрстка/стили секций enhancements | `class-nexor-enhancements.php` (HTML) + `nexor.css` |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
@@ -322,12 +324,24 @@ Chat ID также можно задать в **Настройки → Nexor** (
 - Сохранять slug услуг, URL проектов, SEO-метаданные существующих страниц.
 - При правках HTML главной и template-parts — сохранять якоря (`#calculator`, `#cases`, `#main-services`, `#about-company-nexor`, `#faq`, `#stages`).
 - Использовать существующие CSS-классы (`container-nexor`, `heading-section`, `nexor-*`).
+- Работать на уровне senior-верстальщика: семантика, валидность, responsive (см. «Требования к вёрстке» ниже).
 - Соблюдать семантичность вёрстки (см. ниже).
+- Верстка должна проходить [W3C Markup Validation](https://validator.w3.org/) без ошибок (warnings — по возможности).
+- Все новые/изменённые блоки должны быть responsive: проверять минимум 390px и 1440px (см. «CSS: responsive» ниже).
 - В CSS — пустая строка между правилами/селекторами (см. ниже).
 - Санитизировать пользовательский ввод через WP API (`sanitize_text_field`, `esc_html`, …).
 - Проверять `npm run test:unit` после изменений в `class-nexor-enhancements.php`.
 - Сверяться с `docs/ADMIN-GUIDE.md` при изменении админ-полей.
 - Обновлять `docs/CHANGELOG.md` и `VERSION` при релизных изменениях (если задача это подразумевает).
+
+### Требования к вёрстке
+
+Любая правка HTML/CSS в теме и плагине должна соответствовать уровню senior-верстальщика:
+
+1. **Семантика** — теги отражают смысл контента (`h1`–`h6` по иерархии, `button`/`a` по назначению, `ul`/`ol`/`li` для списков, `section`/`aside`/`nav` вместо «голых» `div`). Подробности — «Семантичность вёрстки» ниже.
+2. **Валидность W3C** — итоговый HTML не должен содержать ошибок [W3C Markup Validator](https://validator.w3.org/) (незакрытые теги, дублирующиеся `id`, некорректная вложенность, недопустимые атрибуты). Перед PR прогонять изменённый шаблон/страницу через валидатор, если правка ощутимо меняет разметку.
+3. **Responsive** — любой новый или изменённый блок обязан корректно адаптироваться под все брейкпоинты проекта (мобильные ~390px, планшет ~768px, десктоп ~1440px и промежуточные значения), без горизонтального скролла и наложения контента.
+4. **Без фиксированных размеров** — по возможности не задавать фиксированные `width`/`height`/`min-height`/`max-height` в px для контентных блоков и карточек: это ломает адаптацию под мобильные экраны. Размер должен определяться контентом, flex/grid, `clamp()`, `%`, `svh`/`dvh`. Подробности — «CSS: responsive — без фиксированных размеров» ниже.
 
 ### CSS: отступы между селекторами
 
@@ -391,6 +405,7 @@ Chat ID также можно задать в **Настройки → Nexor** (
 
 HTML — не только визуал. Разметка должна отражать смысл контента для SEO, a11y и поддержки.
 
+- Разметка должна быть валидной по [W3C Markup Validator](https://validator.w3.org/): без незакрытых тегов, дублей `id`, неверной вложенности (например, блочный элемент внутри `<p>`/`<button>`) и недопустимых атрибутов.
 - Один `<h1>` на страницу; подзаголовок — отдельный элемент (`<p>`, `<p class="…__sub">`), **не** внутри `<h1>`.
 - Иерархия заголовков без пропусков уровней (`h1` → `h2` → `h3`); не использовать заголовки только ради стиля.
 - Кнопки действий — `<button type="button">`; навигация и переходы — `<a href="…">`. Не подменять одно другим ради CSS.
@@ -476,5 +491,7 @@ docker compose exec wordpress wp nexor enhancements-diagnostic --allow-root
 - [ ] `npm run check:js` — без синтax-ошибок
 - [ ] Slug услуг и URL не изменены
 - [ ] Нет секретов в diff
-- [ ] При UI-изменениях — responsive (1440 / 390) учтён
+- [ ] При UI-изменениях — responsive (1440 / 768 / 390) учтён
+- [ ] HTML семантичен и без ошибок W3C Validator
+- [ ] Нет новых фиксированных `width`/`height` в px для секций и карточек
 - [ ] CHANGELOG обновлён (для user-facing изменений)

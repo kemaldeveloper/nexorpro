@@ -271,6 +271,15 @@ function nexor_render_home_budget_section(array $copy = array()): string
 
   return '<section id="budget-control" class="nexor-budget-section"><div class="nexor-budget__list"></div></section>';
 }
+function nexor_render_home_timeline_section(array $copy = array()): string
+{
+  $rows = $copy['rows'] ?? array();
+  if (! $rows) {
+    return '';
+  }
+
+  return '<section id="repair-timeline" class="nexor-timeline-section nexor-reveal" data-timeline-active="new-build"><table class="nexor-timeline"></table></section>';
+}
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
