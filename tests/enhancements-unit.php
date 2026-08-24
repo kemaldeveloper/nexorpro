@@ -280,6 +280,10 @@ function nexor_render_home_timeline_section(array $copy = array()): string
 
   return '<section id="repair-timeline" class="nexor-timeline-section nexor-reveal" data-timeline-active="new-build"><table class="nexor-timeline"></table></section>';
 }
+function nexor_render_home_about_section(array $copy = array()): string
+{
+  return '<section id="about-company-nexor" class="nexor-about-section"><h2>Nexor — не бригада</h2><ul class="nexor-about__stats"><li><span class="nexor-about__stat-value">340+</span><span class="nexor-about__stat-label">Объектов сдано</span></li></ul></section>';
+}
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
@@ -337,6 +341,15 @@ assert_true($order === $sorted = call_user_func(function ($v) {
 }, $order), 'home sections follow approved order');
 assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($html, 'id="calculator"') === 1, 'homepage calculator is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-budget-section"') && substr_count($html, 'id="budget-control"') === 1, 'homepage budget is rendered once from the template part');
+assert_true(str_contains($html, 'class="nexor-about-section"') && substr_count($html, 'id="about-company-nexor"') === 1, 'homepage about is rendered once from the template part');
+assert_true(str_contains($html, '340+') && str_contains($html, 'Объектов сдано') && !str_contains($html, 'py-20 mt-8 bg-foreground'), 'about section includes company stats and drops the legacy stats strip');
+$legacy_about_source = '<main><section id="about-company-nexor" class="py-[140px] lg:py-[180px] bg-card"><h2>OLD ABOUT</h2></section><section class="py-20 mt-8 bg-foreground"><div class="container-nexor"><div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6"><div class="text-center"><div class="text-5xl md:text-6xl font-bold text-primary mb-3">340+</div><div class="text-sm font-medium text-white/80 uppercase tracking-wide">Объектов сдано</div></div></div></div></section><section id="faq"></section></main>';
+$legacy_about_html = Nexor_Enhancements::inject_frontend_content($legacy_about_source);
+assert_true(str_contains($legacy_about_html, 'class="nexor-about-section"') && !str_contains($legacy_about_html, 'OLD ABOUT') && substr_count($legacy_about_html, 'id="about-company-nexor"') === 1, 'migrated about markup is replaced by the template part');
+assert_true(!str_contains($legacy_about_html, 'py-20 mt-8 bg-foreground') && strpos($legacy_about_html, 'Объектов сдано') > strpos($legacy_about_html, 'id="about-company-nexor"') && strpos($legacy_about_html, 'Объектов сдано') < strpos($legacy_about_html, 'id="faq"'), 'legacy company stats strip is merged into about and removed as a separate section');
+$missing_about_source = '<main><section id="faq"></section></main>';
+$missing_about_html = Nexor_Enhancements::inject_frontend_content($missing_about_source);
+assert_true(str_contains($missing_about_html, 'id="about-company-nexor"') && strpos($missing_about_html, 'id="about-company-nexor"') < strpos($missing_about_html, 'id="faq"'), 'about is injected before FAQ when missing from migrated HTML');
 $missing_calc_source = '<main><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
 $missing_calc_html = Nexor_Enhancements::inject_frontend_content($missing_calc_source);
 assert_true(str_contains($missing_calc_html, 'id="calculator"') && strpos($missing_calc_html, 'id="calculator"') < strpos($missing_calc_html, 'Ремонт без неприятных сюрпризов'), 'calculator is injected when missing from migrated HTML');

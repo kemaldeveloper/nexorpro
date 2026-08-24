@@ -149,7 +149,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -163,6 +163,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
 | Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
 | Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
+| О компании | `#about-company-nexor` | `home-about-section.php` | `nexor_render_home_about_section()` | статичный текст + метрики (340+, 8 лет, 40+, 98%) |
 
 Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
 
@@ -248,6 +249,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
+| Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
 | Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
 | Вёрстка/стили секций enhancements | `class-nexor-enhancements.php` (HTML) + `nexor.css` |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
@@ -272,7 +274,7 @@ npm run test:unit
 php tests/enhancements-unit.php
 ```
 
-Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах, инъекцию калькулятора из template-part.
+Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах, инъекцию калькулятора и блока «О компании» из template-part.
 
 ### Production-аудиты (Chromium CDP)
 

@@ -812,6 +812,18 @@ final class Nexor_Enhancements
     if (str_contains($inner, '<section')) return $content;
     return substr($content, 0, $at) . substr($content, $end + strlen('</section>'));
   }
+
+  private static function drop_legacy_company_stats(string $content): string
+  {
+    $content = self::drop_section($content, '<section class="py-20 mt-8 bg-foreground">');
+    $replaced = preg_replace(
+      '/<section\b(?![^>]*\bid=")[^>]*>\s*<div class="container-nexor">\s*<div class="grid grid-cols-2[^"]*md:grid-cols-4[^"]*">[\s\S]*?Объектов сдано[\s\S]*?<\/section>/u',
+      '',
+      $content,
+      1
+    );
+    return is_string($replaced) ? $replaced : $content;
+  }
   private static function pull_section(string &$content, string $id): string
   {
     $pattern = '/<section\b[^>]*\bid="' . preg_quote($id, '/') . '"[^>]*>.*?<\/section>/s';
@@ -1240,6 +1252,15 @@ final class Nexor_Enhancements
       'disclaimer' => (string) ($o['disclaimer'] ?? ''),
       'rows' => $items,
     ));
+  }
+
+  private static function home_about(): string
+  {
+    if (! function_exists('nexor_render_home_about_section')) {
+      return '';
+    }
+
+    return nexor_render_home_about_section();
   }
 
   private static function prices_section(): string
@@ -1735,6 +1756,14 @@ final class Nexor_Enhancements
       }
       $before_surprise = ('' !== $budget && ! str_contains($content, 'id="budget-control"') ? $budget : '') . self::prices_section() . self::timeline_section();
       $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $before_surprise);
+      $content = self::drop_legacy_company_stats($content);
+      $about = self::home_about();
+      if ('' !== $about && str_contains($content, 'id="about-company-nexor"')) {
+        $replaced = preg_replace('/<section\b[^>]*\bid="about-company-nexor"[^>]*>.*?<\/section>/s', $about, $content, 1);
+        $content = is_string($replaced) ? $replaced : $content;
+      } elseif ('' !== $about) {
+        $content = self::insert_before($content, 'id="faq"', $about);
+      }
       $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));
       $content = self::insert_before($content, 'id="about-company-nexor"', $cluster);
     } elseif (is_page(self::SERVICE_SLUGS)) {

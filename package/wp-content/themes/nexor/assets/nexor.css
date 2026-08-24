@@ -41,6 +41,13 @@ main {
   padding-left: 24px;
 }
 
+.title {
+  font-weight: 600;
+  font-size: clamp(30px, 3.4vw, 46px);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
 .nexor-lock {
   overflow: hidden;
 }
@@ -452,20 +459,7 @@ main {
   stroke-width: 2;
   stroke-linecap: round;
 }
-/* The imported static markup retained the React entrance-animation start state.
-   Keep the about section visible even when the page is opened directly by hash. */
-#about-company-nexor > .container-nexor > .grid > .opacity-0 {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-#about-company-nexor > .container-nexor > .grid > * {
-  min-width: 0;
-}
-@media (min-width: 1024px) {
-  #about-company-nexor > .container-nexor > .grid {
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) !important;
-  }
-}
+
 @media (min-width: 1024px) {
   #faq .grid {
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) !important;
@@ -474,6 +468,7 @@ main {
     min-width: 0;
   }
 }
+
 @media (min-width: 1024px) {
   [class~='lg:grid-cols-[40%_60%]'] {
     grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) !important;
@@ -482,6 +477,7 @@ main {
     min-width: 0;
   }
 }
+
 .nexor-mobile-menu > .nexor-search {
   margin-bottom: 20px;
 }
@@ -874,9 +870,7 @@ main > section:has(.cursor-ew-resize) {
   outline: 3px solid hsl(var(--primary));
   outline-offset: 3px;
 }
-main > section.bg-foreground:has(+ #faq) .text-5xl.font-bold {
-  color: #fff !important;
-}
+
 #promotions .nexor-card {
   border-top: 4px solid hsl(var(--primary));
 }
@@ -2658,6 +2652,162 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   margin-top: 0.35em;
 }
 
+.nexor-about-section {
+  isolation: isolate;
+  padding: 50px 0 70px;
+  color: #fff;
+  background-color: #141414;
+  background-image: url('nexor-about-section.jpg');
+  background-size: cover;
+  background-position: right center;
+  background-repeat: no-repeat;
+}
+
+.nexor-about__layout {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(36px, 4.2vw, 68px);
+  max-width: min(100%, 58rem);
+}
+
+.nexor-about__header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.nexor-about__eyebrow {
+  color: var(--hero-accent);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  line-height: 1.3;
+  text-transform: uppercase;
+  margin-bottom: 30px;
+}
+
+.nexor-about-section .heading-section {
+  margin: 0;
+  max-width: 400px;
+  color: #fff;
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+
+.nexor-about__sub {
+  margin: 0;
+  color: var(--hero-accent);
+  font-size: clamp(16px, 1.45vw, 22px);
+  font-weight: 400;
+  line-height: 1.35;
+  max-width: 400px;
+}
+
+.nexor-about__points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.4vw, 36px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nexor-about__point {
+  min-width: 0;
+}
+
+.nexor-about__point h3 {
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: clamp(15px, 1.15vw, 18px);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
+.nexor-about__point h3::before {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  margin-bottom: 18px;
+  background: var(--hero-accent);
+}
+
+.nexor-about__point p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: clamp(13px, 0.95vw, 15px);
+  line-height: 1.55;
+}
+
+.nexor-about__stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 28px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nexor-about__stat {
+  min-width: 0;
+}
+
+.nexor-about__stat-value {
+  color: #fff;
+  font-size: clamp(36px, 4vw, 56px);
+  font-weight: 300;
+  line-height: 1;
+}
+
+.nexor-about__stat-value::after {
+  content: '';
+  display: block;
+  width: 28px;
+  height: 1px;
+  background: var(--hero-accent);
+}
+
+.nexor-about__stat-label {
+  color: var(--hero-accent);
+  font-size: clamp(13px, 1.05vw, 15px);
+  line-height: 1.3;
+}
+
+.nexor-about__stat-note {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 1023px) {
+  .nexor-about-section {
+    background-image: linear-gradient(180deg, rgba(16, 16, 16, 0.78) 0%, rgba(16, 16, 16, 0.55) 100%), url('nexor-about-section.webp');
+    background-position:
+      center,
+      78% center;
+  }
+
+  .nexor-about__layout {
+    max-width: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .nexor-about__points {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .nexor-about__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 /* Blueprint system built from the existing editable page block. */
 .nexor-system-section {
   position: relative;
@@ -3270,6 +3420,10 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   .nexor-stages-section .heading-section {
     font-size: clamp(21px, 6vw, 26px);
     margin-bottom: 5px;
+  }
+
+  .nexor-about-section .heading-section {
+    font-size: clamp(21px, 6vw, 26px);
   }
 
   .nexor-timeline-section .heading-section {

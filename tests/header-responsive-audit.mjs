@@ -47,8 +47,8 @@ for (const width of [390, 768, 1024, 1280, 1366, 1440, 1600, 1920, 2048]) {
     const services=document.querySelector('header nav[aria-label="Main"] button');
     const logo=document.querySelector('header .container-nexor a[href="/"]');
     const headerRow=document.querySelector('header .container-nexor>div');
-    const aboutGrid=document.querySelector('#about-company-nexor>.container-nexor>.grid');
-    const aboutText=aboutGrid?.lastElementChild;
+    const aboutGrid=document.querySelector('#about-company-nexor .nexor-about__layout');
+    const aboutText=document.querySelector('#about-company-nexor .nexor-about__header');
     const overflow=[...document.querySelectorAll('body *')].map(element=>{const r=element.getBoundingClientRect();return{tag:element.tagName,className:String(element.className||'').slice(0,100),left:Math.round(r.left),right:Math.round(r.right),width:Math.round(r.width)}}).filter(item=>item.left < -1 || item.right > innerWidth + 1).sort((a,b)=>(b.right-innerWidth)-(a.right-innerWidth)).slice(0,8);
     return {viewport:innerWidth,scrollWidth:document.documentElement.scrollWidth,logo:rect(logo),services:rect(services),search:rect(search),phone:rect(phone),desktopNav:rect(desktopNav),row:rect(headerRow),logoGap:logo&&services?Math.round(services.getBoundingClientRect().left-logo.getBoundingClientRect().right):null,searchGap:search&&phone?Math.round(phone.getBoundingClientRect().left-search.getBoundingClientRect().right):null,about:aboutText?{grid:rect(aboutGrid),text:rect(aboutText),minWidth:getComputedStyle(aboutText).minWidth,transform:getComputedStyle(aboutText).transform,columns:getComputedStyle(aboutGrid).gridTemplateColumns,gap:getComputedStyle(aboutGrid).columnGap}:null,overflow};
   })()`));

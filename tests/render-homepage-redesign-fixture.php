@@ -59,6 +59,17 @@ function get_theme_file_uri( $path = '' ) {
 	global $theme_path;
 	return 'file://' . $theme_path . '/' . ltrim( $path, '/' );
 }
+function get_template_directory_uri() {
+	global $theme_path;
+	return 'file://' . $theme_path;
+}
+function nexor_render_home_about_section( array $copy = array() ): string {
+	global $theme_path;
+	$args = $copy;
+	ob_start();
+	include $theme_path . '/template-parts/home-about-section.php';
+	return (string) ob_get_clean();
+}
 
 $additional = array(
 	array( 'id'=>'material-selection', 'enabled'=>1, 'order'=>10, 'title'=>'Подбор материалов', 'subtitle'=>'Поможем выбрать материалы без переплат', 'description'=>'Подберем материалы с учетом вашего бюджета, подскажем, где действительно стоит вложиться, а где можно сэкономить без потери качества.', 'included_items'=>"Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.\nКонсультация по напольным покрытиям, дверям, сантехнике и другим материалам.\nПомощь с выбором проверенных производителей.", 'benefit'=>'Экономите время и избегаете лишних расходов.' ),
