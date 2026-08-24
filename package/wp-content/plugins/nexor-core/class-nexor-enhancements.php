@@ -1263,6 +1263,15 @@ final class Nexor_Enhancements
     return nexor_render_home_about_section();
   }
 
+  private static function home_faq(): string
+  {
+    if (! function_exists('nexor_render_home_faq_section')) {
+      return '';
+    }
+
+    return nexor_render_home_faq_section();
+  }
+
   private static function home_hero(): string
   {
     if (! function_exists('nexor_render_home_hero_section')) {
@@ -1650,9 +1659,23 @@ final class Nexor_Enhancements
         $content = is_string($replaced) ? $replaced : $content;
       } elseif ('' !== $about) {
         $content = self::insert_before($content, 'id="faq"', $about);
+        if (! str_contains($content, 'id="about-company-nexor"')) {
+          $content = self::insert_before($content, 'Запишитесь на профессиональный замер', $about);
+        }
       }
       $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));
       $content = self::insert_before($content, 'id="about-company-nexor"', $cluster);
+      $faq = self::home_faq();
+      if ('' !== $faq && str_contains($content, 'id="faq"')) {
+        $replaced = preg_replace('/<section\b[^>]*\bid="faq"[^>]*>.*?<\/section>/s', $faq, $content, 1);
+        $content = is_string($replaced) ? $replaced : $content;
+      } elseif ('' !== $faq) {
+        $content = self::insert_before($content, 'Запишитесь на профессиональный замер', $faq);
+        if (! str_contains($content, 'id="faq"')) {
+          $replaced = preg_replace('/<\/main>/', $faq . '</main>', $content, 1);
+          $content = is_string($replaced) ? $replaced : $content;
+        }
+      }
     } elseif (is_page(self::SERVICE_SLUGS)) {
       $content = self::service_page_shell($content);
       $block = self::service_details(get_queried_object_id());

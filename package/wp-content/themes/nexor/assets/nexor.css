@@ -2806,6 +2806,202 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   }
 }
 
+.nexor-faq-section {
+  padding: clamp(4.5rem, 8vw, 9rem) 0 clamp(4rem, 6vw, 6rem);
+  background: #faf8f6;
+}
+
+.nexor-faq__layout {
+  display: grid;
+  gap: clamp(2.5rem, 4vw, 4rem);
+}
+
+.nexor-faq__header .heading-section {
+  margin: 0 0 1.5rem;
+}
+
+.nexor-faq__intro {
+  margin: 0;
+  max-width: 36rem;
+  color: #656363;
+  font-size: clamp(16px, 1.15vw, 18px);
+  line-height: 1.7;
+}
+
+.nexor-faq__list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nexor-faq__item {
+  border: 1px solid var(--nx-line);
+  border-radius: 12px;
+  background: var(--nx-white);
+  box-shadow: 0 8px 24px rgba(40, 30, 23, 0.04);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.nexor-faq__item:hover {
+  box-shadow: 0 14px 36px rgba(40, 30, 23, 0.08);
+}
+
+.nexor-faq__item:has(.nexor-faq__trigger[aria-expanded='true']) {
+  border-color: rgba(147, 70, 35, 0.3);
+  box-shadow:
+    0 14px 36px rgba(40, 30, 23, 0.08),
+    0 0 0 1px rgba(147, 70, 35, 0.1);
+}
+
+.nexor-faq__trigger {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+  margin: 0;
+  padding: 20px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nexor-faq__trigger:focus-visible {
+  outline: 2px solid var(--nx-accent);
+  outline-offset: -2px;
+}
+
+.nexor-faq__marker {
+  flex: 0 0 4px;
+  width: 4px;
+  height: 24px;
+  border-radius: 999px;
+  background: transparent;
+  transition: background-color 0.2s ease;
+}
+
+.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__marker {
+  background: var(--nx-accent);
+}
+
+.nexor-faq__question {
+  flex: 1;
+  min-width: 0;
+  color: var(--nx-ink);
+  font-size: clamp(15px, 1.05vw, 17px);
+  font-weight: 600;
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__question {
+  color: var(--nx-accent);
+}
+
+.nexor-faq__toggle {
+  position: relative;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #ece7df;
+  color: #656363;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.nexor-faq__toggle::before,
+.nexor-faq__toggle::after {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 10px;
+  height: 2px;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.nexor-faq__toggle::after {
+  width: 2px;
+  height: 10px;
+}
+
+.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__toggle {
+  background: var(--nx-accent);
+  color: var(--nx-white);
+}
+
+.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__toggle::after {
+  transform: translate(-50%, -50%) scaleY(0);
+}
+
+.nexor-faq__answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.2s ease;
+}
+
+.nexor-faq__trigger[aria-expanded='true'] + .nexor-faq__answer {
+  grid-template-rows: 1fr;
+}
+
+.nexor-faq__panel {
+  overflow: hidden;
+  min-height: 0;
+}
+
+.nexor-faq__panel p {
+  margin: 0;
+  padding: 0 20px 20px 40px;
+  color: #656363;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+@media (min-width: 1024px) {
+  .nexor-faq__layout {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    align-items: start;
+    gap: 4rem;
+  }
+
+  .nexor-faq__header {
+    position: sticky;
+    top: 8rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .nexor-faq__trigger {
+    padding: 17px;
+  }
+
+  .nexor-faq__question {
+    font-size: 15px;
+  }
+
+  .nexor-faq__panel p {
+    padding: 0 17px 17px 37px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nexor-faq__item,
+  .nexor-faq__marker,
+  .nexor-faq__question,
+  .nexor-faq__toggle,
+  .nexor-faq__toggle::after,
+  .nexor-faq__answer {
+    transition: none;
+  }
+}
+
 /* Blueprint system built from the existing editable page block. */
 .nexor-system-section {
   position: relative;

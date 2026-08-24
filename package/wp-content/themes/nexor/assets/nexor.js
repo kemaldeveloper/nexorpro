@@ -430,10 +430,20 @@
   }
 
   function setupFaq() {
-    document.querySelectorAll('#faq button').forEach(btn =>
+    document.querySelectorAll('.nexor-faq-section').forEach(section => {
+      const triggers = [...section.querySelectorAll('.nexor-faq__trigger')];
+      triggers.forEach(btn =>
+        btn.addEventListener('click', () => {
+          const willOpen = btn.getAttribute('aria-expanded') !== 'true';
+          triggers.forEach(other => other.setAttribute('aria-expanded', 'false'));
+          if (willOpen) btn.setAttribute('aria-expanded', 'true');
+        }),
+      );
+    });
+    document.querySelectorAll('#faq button').forEach(btn => {
+      if (btn.classList.contains('nexor-faq__trigger')) return;
       btn.addEventListener('click', () => {
-        const card = btn.parentElement,
-          answer = btn.nextElementSibling;
+        const answer = btn.nextElementSibling;
         if (!answer) return;
         const open = !answer.classList.contains('max-h-0');
         document.querySelectorAll('#faq button + div').forEach(x => {
@@ -444,8 +454,8 @@
           answer.classList.remove('max-h-0');
           answer.classList.add('max-h-96');
         }
-      }),
-    );
+      });
+    });
   }
   function setupTimeline() {
     document.querySelectorAll('.nexor-timeline-section').forEach(section =>

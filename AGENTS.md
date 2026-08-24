@@ -74,7 +74,9 @@ nexorpro/
 │       │   │   ├── home-services-section.php
 │       │   │   ├── home-projects-section.php
 │       │   │   ├── home-calculator-section.php
-│       │   │   └── home-budget-section.php
+│       │   │   ├── home-budget-section.php
+│       │   │   ├── home-about-section.php
+│       │   │   └── home-faq-section.php
 │       │   ├── functions.php
 │       │   ├── header.php, footer.php, index.php, page.php, ...
 │       │   └── style.css
@@ -150,7 +152,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -166,6 +168,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
 | Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
 | О компании | `#about-company-nexor` | `home-about-section.php` | `nexor_render_home_about_section()` | статичный текст + метрики (340+, 8 лет, 40+, 98%) |
+| FAQ | `#faq` | `home-faq-section.php` | `nexor_render_home_faq_section()` | статичные вопросы и ответы |
 
 Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
 
@@ -174,7 +177,7 @@ docker compose exec wordpress wp --allow-root <command>
 Класс `Nexor_Enhancements` в `class-nexor-enhancements.php`:
 
 - Хранит настройки в отдельных WP options (`nexor_home_prices`, `nexor_promotions`, `nexor_home_services`, `nexor_home_projects`, `nexor_home_stages`, …);
-- На главной **вставляет** секции в порядке (unit-тест проверяет): hero → услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании;
+- На главной **вставляет** секции в порядке (unit-тест проверяет): hero → услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании → FAQ;
 - Hero рендерится из template-part (`home_hero()`, `hero_promotion()`); устаревший hero из `post_content` вырезается при рендере;
 - Секция этапов (`#stages`) — интерактивная карточка с круговым ползунком (GSAP Draggable + InertiaPlugin). Старый блок «Как мы делаем ремонт предсказуемым» (`nexor-process-section` / `#work-stages`) и мигрированные пять шагов **удалены** и вырезаются при рендере;
 - На страницах услуг добавляет hero-shell, trust-блок, мета «Структура услуги»;
@@ -235,9 +238,11 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 
 ### 8. Стили
 
-- `assets/index-*.css` — скомпилированный Tailwind/design-system из миграции (hash в имени файла);
-- `assets/nexor.css` — дополнения темы (enhancements, service pages, template-parts главной);
+- `assets/index-DfWs8OlI.css` (`index-*.css`) — **замороженный** бандл Tailwind/design-system из миграции. Источник готовых утилит (`flex`, `gap-4`, `bg-card`, `heading-section`, токены `--primary` / `--card` и т.д.). Не расширяется: нет `tailwind.config`, JIT и исходников.
+- `assets/nexor.css` — кастом темы: то, чего в бандле нет (композиция секции, состояния, уникальный layout).
 - `style.css` — только метаданные темы для WordPress.
+
+Стилизация — **микс**: сначала утилиты из бандла на HTML, затем точечный CSS в `nexor.css`. Подробности — «CSS: Tailwind-бандл vs nexor.css».
 
 ---
 
@@ -253,8 +258,9 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
 | Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
+| FAQ главной (`#faq`) | `template-parts/home-faq-section.php` |
 | Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
-| Вёрстка/стили секций enhancements | `class-nexor-enhancements.php` (HTML) + `nexor.css` |
+| Вёрстка/стили секций enhancements | HTML: утилиты из `index-DfWs8OlI.css` + `nexor-*`; кастом — `nexor.css` (бандл не трогать) |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
 | Формы заявок, popup | `nexor.js` + REST `/lead` в `nexor-core.php` |
 | SEO title/description/canonical | мета `_nexor_seo_*` или `page_seo_defaults()` в плагине |
@@ -328,7 +334,7 @@ Chat ID также можно задать в **Настройки → Nexor** (
 - Минимальный diff; не трогать несвязанный код.
 - Сохранять slug услуг, URL проектов, SEO-метаданные существующих страниц.
 - При правках HTML главной и template-parts — сохранять якоря (`#calculator`, `#cases`, `#main-services`, `#about-company-nexor`, `#faq`, `#stages`).
-- Использовать существующие CSS-классы (`container-nexor`, `heading-section`, `nexor-*`).
+- Использовать существующие CSS-классы: сначала утилиты из `assets/index-DfWs8OlI.css`, затем `container-nexor` / `heading-section` / `nexor-*` (см. «CSS: Tailwind-бандл vs nexor.css»).
 - Работать на уровне senior-верстальщика: семантика, валидность, responsive (см. «Требования к вёрстке» ниже).
 - Соблюдать семантичность вёрстки (см. ниже).
 - Верстка должна проходить [W3C Markup Validation](https://validator.w3.org/) без ошибок (warnings — по возможности).
@@ -347,6 +353,35 @@ Chat ID также можно задать в **Настройки → Nexor** (
 2. **Валидность W3C** — итоговый HTML не должен содержать ошибок [W3C Markup Validator](https://validator.w3.org/) (незакрытые теги, дублирующиеся `id`, некорректная вложенность, недопустимые атрибуты). Перед PR прогонять изменённый шаблон/страницу через валидатор, если правка ощутимо меняет разметку.
 3. **Responsive** — любой новый или изменённый блок обязан корректно адаптироваться под все брейкпоинты проекта (мобильные ~390px, планшет ~768px, десктоп ~1440px и промежуточные значения), без горизонтального скролла и наложения контента.
 4. **Без фиксированных размеров** — по возможности не задавать фиксированные `width`/`height`/`min-height`/`max-height` в px для контентных блоков и карточек: это ломает адаптацию под мобильные экраны. Размер должен определяться контентом, flex/grid, `clamp()`, `%`, `svh`/`dvh`. Подробности — «CSS: responsive — без фиксированных размеров» ниже.
+
+### CSS: Tailwind-бандл vs nexor.css
+
+Стилизация — микс готовых утилит и точечного кастома. Бандл `assets/index-DfWs8OlI.css` (`index-*.css`) уже содержит design tokens и набор Tailwind-классов из React-миграции. **Это финальный артефакт:** его нельзя дополнять вручную, пересобирать или имитировать «ещё одну утилиту» правкой файла.
+
+**Порядок работы:**
+
+1. Нужный эффект уже есть в бандле — вешай класс на HTML (`flex`, `grid`, `gap-4`, `items-center`, `bg-card`, `text-muted-foreground`, `rounded-xl`, `heading-section`, `section-padding`, `shadow-soft` / `shadow-elevated`, `md:grid-cols-2`, `lg:sticky` и т.д.). Перед выдумыванием нового CSS **grepни** `index-DfWs8OlI.css` (ищи `.flex{`, `.bg-card{`, `.gap-4{`).
+2. Класса в бандле нет — не изобретай Tailwind-имя вроде `w-[347px]` / `gap-7`: его нет в CSS, он ничего не сделает. Пиши правило в `nexor.css` на семантический `nexor-*` селектор.
+3. В `nexor.css` оставляй то, чего утилитами не выразить: композиция секции, `[aria-expanded]`, кастомный аккордеон, `clamp()`, уникальная сетка, фоны, то, что бандл не покрывает.
+
+**Не дублируй бандл.** Если на элементе уже `flex gap-4`, не пиши в `nexor.css` те же `display: flex; gap: 1rem`. Не копируй `hsl(var(--primary))` в новый класс, если хватает `text-primary` / `bg-primary`.
+
+**Не трогай бандл.** Не дописывай селекторы в `index-*.css`, не «подкручивай» утилиты, не заводи второй Tailwind. Hash в имени файла — часть релиза; переименовывать/дробить файл без задачи на пересборку нельзя.
+
+```html
+<section id="faq" class="nexor-faq-section section-padding bg-background">
+  <div class="container-nexor">
+    <div class="nexor-faq__layout">
+      <h2 class="heading-section">Частые вопросы о ремонте</h2>
+      <ul class="nexor-faq__list flex flex-col gap-3">
+        <li class="nexor-faq__item bg-card rounded-xl border border-border">…</li>
+      </ul>
+    </div>
+  </div>
+</section>
+```
+
+Здесь `section-padding`, `bg-background`, `heading-section`, `flex`, `gap-3`, `bg-card`, `rounded-xl`, `border-border` — из бандла; `nexor-faq-*` в `nexor.css` — только layout колонок и состояние аккордеона.
 
 ### CSS: отступы между селекторами
 
@@ -424,6 +459,7 @@ HTML — не только визуал. Разметка должна отра�
 
 - Не коммитить секреты (`.env`, `wp-config.php`, токены Telegram).
 - Не превращать `.container-nexor` в layout-обёртку секции (grid/flex/gap/padding/min-height) — только ширина и центрирование; layout — во внутренней обёртке.
+- Не править и не дополнять `assets/index-*.css` вручную; не дублировать в `nexor.css` утилиты, которые уже есть в бандле.
 - Не менять формулу калькулятора без явного запроса (ставки в настройках — OK).
 - Не включать акции/popup на production без согласования (`enabled=0` по умолчанию для popup и prices/video).
 - Не перезаписывать SEO существующих страниц при повторной активации плагина.
@@ -454,7 +490,7 @@ Editorial-секции вроде услуг/проектов/калькулят
 1. Template-part `template-parts/home-{name}-section.php`
 2. Хелпер `nexor_render_home_{name}_section()` в `functions.php`
 3. Сбор данных + вызов из `inject_frontend_content()` (сохранить порядок — unit-тест проверяет)
-4. Стили в `nexor.css`, интерактив в `nexor.js` при необходимости
+4. Стили: утилиты из `index-DfWs8OlI.css` на HTML, кастом только в `nexor.css`; интерактив в `nexor.js` при необходимости
 5. Если секция управляется из админки — option + sanitize + `render_*_admin()`
 6. Обновить `enhancements-unit.php` (в тестах заглушить рендер-хелпер) и при необходимости audit-скрипт
 
@@ -499,4 +535,5 @@ docker compose exec wordpress wp nexor enhancements-diagnostic --allow-root
 - [ ] При UI-изменениях — responsive (1440 / 768 / 390) учтён
 - [ ] HTML семантичен и без ошибок W3C Validator
 - [ ] Нет новых фиксированных `width`/`height` в px для секций и карточек
+- [ ] Новые стили: утилиты из `index-DfWs8OlI.css`, если есть; бандл не правился; в `nexor.css` нет дублей этих утилит
 - [ ] CHANGELOG обновлён (для user-facing изменений)
