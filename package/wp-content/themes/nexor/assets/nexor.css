@@ -2384,8 +2384,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 .nexor-budget__metric {
   display: flex;
   column-gap: clamp(18px, 2.4vw, 36px);
-  row-gap: clamp(14px, 1.6vw, 20px);
-  align-items: flex-end;
+  row-gap: clamp(14px, 2.8vw, 40px);
   align-self: center;
   min-width: 0;
 }
@@ -2393,7 +2392,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 .nexor-budget__figure {
   display: flex;
   align-items: flex-end;
-  font-size: clamp(150px, 15vw, 400px);
+  font-size: clamp(150px, 27.8vw, 400px);
   line-height: 1;
   flex-shrink: 0;
 }
@@ -2401,7 +2400,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 .nexor-budget__value,
 .nexor-budget__suffix,
 .nexor-budget__index {
-  font-weight: 300;
+  font-weight: 400;
   background: linear-gradient(180deg, #e0b59d 0%, #b67a5d 24%, #834c36 58%, #a86548 82%, #c88d6f 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -2421,7 +2420,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 }
 
 .nexor-budget__stat-label {
-  align-self: center;
   margin: 0;
   min-width: 0;
   font-size: clamp(18px, 1.55vw, 24px);

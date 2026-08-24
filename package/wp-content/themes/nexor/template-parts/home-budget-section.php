@@ -24,7 +24,7 @@ if (preg_match('/^(.+?)([%‰]+)$/', $metric, $matches)) {
 <section id="budget-control" class="nexor-budget-section">
   <div class="container-nexor">
     <div class="nexor-budget__layout nexor-reveal">
-      <div class="nexor-budget__metric">
+      <div class="nexor-budget__metric flex-col">
         <div class="nexor-budget__figure" aria-hidden="true">
           <span class="nexor-budget__value"><?php echo esc_html($metric_value); ?></span>
           <?php if ('' !== $metric_suffix) : ?>
