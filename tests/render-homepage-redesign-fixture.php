@@ -63,6 +63,13 @@ function get_template_directory_uri() {
 	global $theme_path;
 	return 'file://' . $theme_path;
 }
+function nexor_render_home_hero_section( array $copy = array() ): string {
+	global $theme_path;
+	$args = $copy;
+	ob_start();
+	include $theme_path . '/template-parts/home-hero-section.php';
+	return (string) ob_get_clean();
+}
 function nexor_render_home_about_section( array $copy = array() ): string {
 	global $theme_path;
 	$args = $copy;

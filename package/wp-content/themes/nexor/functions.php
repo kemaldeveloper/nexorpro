@@ -85,6 +85,32 @@ function nexor_navigation_payload(): array
   return array('primary' => $primary, 'mobile' => $mobile, 'sectionLinks' => $section_links);
 }
 
+function nexor_render_home_hero_section(array $copy = array()): string
+{
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'hero-section',
+    array(
+      'heading' => $copy['heading'] ?? 'Ремонт квартир и домов под ключ',
+      'sub' => $copy['sub'] ?? 'в Москве и Московской области',
+      'eyebrow' => $copy['eyebrow'] ?? 'Работаем по фиксированной смете',
+      'lead' => $copy['lead'] ?? 'Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.',
+      'calculate_label' => $copy['calculate_label'] ?? 'Рассчитать стоимость',
+      'calculate_url' => $copy['calculate_url'] ?? '#calculator',
+      'projects_label' => $copy['projects_label'] ?? 'Реализованные проекты',
+      'projects_url' => $copy['projects_url'] ?? home_url('/projects/'),
+      'promo' => $copy['promo'] ?? '',
+      'features' => $copy['features'] ?? array(
+        array('num' => '01', 'title' => 'Фиксированная смета', 'text' => 'Без скрытых работ'),
+        array('num' => '02', 'title' => 'Поэтапная оплата', 'text' => 'Платите за результат'),
+        array('num' => '03', 'title' => 'Гарантия 3 года', 'text' => 'На выполненные работы'),
+      ),
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 function nexor_render_home_services_section(array $cards, array $headings = array()): string
 {
   if (! $cards) {
@@ -195,11 +221,11 @@ function nexor_render_home_about_section(array $copy = array()): string
       'points' => $copy['points'] ?? array(
         array(
           'title' => 'Проблема не в ремонте, а в хаосе без системы.',
-          'text' => 'Когда нет системы, смета плывёт, сроки срываются, а ответственность растворяется между бригадами и посредниками. Ремонт превращается в постоянный стресс для владельца.',
+          'text' => 'Большинство проблем в ремонте возникает не из-за самих работ, а из за отсуствия системы. Когда каждый отвечает только за свою часть, появляются срывы сроков, непредвиденные расходы и постоянная необходимость все контролировать самостоятельно.',
         ),
         array(
           'title' => 'В Nexor процесс выстроен иначе.',
-          'text' => 'Работаем без посредников: в штате свои мастера, прорабы и технический контроль. Более 8 лет выполняем капитальный и дизайнерский ремонт квартир и домов в Москве и области.',
+          'text' => 'В штате работают собственные мастера, прорабы и технический контроль. Один проект ведёт одна команда — от первого замера до сдачи объекта. Более 8 лет мы применяем этот подход при капитальном и дизайнерском ремонте квартир и частных домов в Москве и Московской области.',
         ),
         array(
           'title' => 'Для клиента это понятный процесс без постоянного контроля.',

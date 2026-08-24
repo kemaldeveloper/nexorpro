@@ -236,6 +236,11 @@ function get_theme_file_path($path = '')
 {
   return __DIR__ . '/../package/wp-content/themes/nexor/' . ltrim($path, '/');
 }
+function nexor_render_home_hero_section(array $copy = array()): string
+{
+  $promo = $copy['promo'] ?? '';
+  return '<section class="nexor-home-hero"><div class="container-nexor"><div class="nexor-home-hero__layout">' . $promo . '<div class="nexor-home-hero__main"></div><div class="nexor-home-hero__aside"></div><div class="nexor-home-hero__features">Гарантия 3 года</div></div></div></section>';
+}
 function nexor_render_home_services_section(array $cards, array $headings = array()): string
 {
   if (! $cards) {
@@ -333,12 +338,13 @@ Nexor_Enhancements::search_policy($empty);
 assert_true($empty->values['post__in'] === array(0), 'empty search cannot return all content');
 $source = '<main><section id="calculator"></section><section id="cases"><h2 class="heading-section text-foreground mb-5">Реализованные проекты</h2></section><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
 $html = Nexor_Enhancements::inject_frontend_content($source);
-$order = array_map(fn($needle) => strpos($html, $needle), array('id="main-services"', 'id="cases"', 'id="calculator"', 'id="budget-control"', 'id="prices"', 'id="repair-timeline"', 'Ремонт без неприятных сюрпризов', 'id="additional-services"', 'id="promotions"', 'id="about-company-nexor"'));
+$order = array_map(fn($needle) => strpos($html, $needle), array('class="nexor-home-hero"', 'id="main-services"', 'id="cases"', 'id="calculator"', 'id="budget-control"', 'id="prices"', 'id="repair-timeline"', 'Ремонт без неприятных сюрпризов', 'id="additional-services"', 'id="promotions"', 'id="about-company-nexor"'));
 assert_true($order === $sorted = call_user_func(function ($v) {
   $s = $v;
   sort($s);
   return $s;
 }, $order), 'home sections follow approved order');
+assert_true(str_contains($html, 'class="nexor-home-hero"') && substr_count($html, '<section class="nexor-home-hero">') === 1, 'homepage hero is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($html, 'id="calculator"') === 1, 'homepage calculator is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-budget-section"') && substr_count($html, 'id="budget-control"') === 1, 'homepage budget is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-about-section"') && substr_count($html, 'id="about-company-nexor"') === 1, 'homepage about is rendered once from the template part');

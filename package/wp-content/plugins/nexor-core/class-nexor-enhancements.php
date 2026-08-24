@@ -1263,6 +1263,47 @@ final class Nexor_Enhancements
     return nexor_render_home_about_section();
   }
 
+  private static function home_hero(): string
+  {
+    if (! function_exists('nexor_render_home_hero_section')) {
+      return '';
+    }
+
+    return nexor_render_home_hero_section(array(
+      'promo' => self::hero_promotion(),
+      'projects_url' => home_url('/projects/'),
+    ));
+  }
+
+  private static function drop_home_hero(string $content): string
+  {
+    $patterns = array(
+      '/<section\b[^>]*class="[^"]*\bnexor-home-hero\b[^"]*"[^>]*>.*?<\/section>/s',
+      '/<section class="relative min-h-\[85vh\] flex items-center pt-16 md:pt-20">.*?<\/section>/s',
+    );
+    foreach ($patterns as $pattern) {
+      $replaced = preg_replace($pattern, '', $content, 1);
+      if (is_string($replaced)) {
+        $content = $replaced;
+      }
+    }
+    return $content;
+  }
+
+  private static function inject_home_hero(string $content): string
+  {
+    $hero = self::home_hero();
+    if ('' === $hero) {
+      return $content;
+    }
+    $content = self::drop_home_hero($content);
+    if (preg_match('/<main\b[^>]*>/', $content, $match, PREG_OFFSET_CAPTURE)) {
+      $at = $match[0][1] + strlen($match[0][0]);
+      return substr($content, 0, $at) . $hero . substr($content, $at);
+    }
+    return $hero . $content;
+  }
+
   private static function prices_section(): string
   {
     $o = self::option(self::PRICES);
@@ -1435,133 +1476,6 @@ final class Nexor_Enhancements
     );
   }
 
-  private static function home_hero_features(): string
-  {
-    $items = array(
-      array('01', 'Фиксированная смета', 'Без скрытых работ'),
-      array('02', 'Поэтапная оплата', 'Платите за результат'),
-      array('03', 'Гарантия 3 года', 'На выполненные работы'),
-    );
-    $html = '';
-    foreach ($items as $item) {
-      $html .= sprintf(
-        '<div class="nexor-home-hero__feature"><span class="nexor-home-hero__num" aria-hidden="true">%1$s</span><div><strong>%2$s</strong><span>%3$s</span></div></div>',
-        esc_html($item[0]),
-        esc_html($item[1]),
-        esc_html($item[2])
-      );
-    }
-    return '<div class="nexor-home-hero__features" aria-label="Преимущества Nexor">' . $html . '</div>';
-  }
-
-  private static function home_hero_main(string $actions = ''): string
-  {
-    if (! $actions) {
-      $projects_url = esc_url(home_url('/projects/'));
-      $actions      = '<div class="nexor-home-hero__actions"><a href="#calculator" class="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&amp;_svg]:pointer-events-none [&amp;_svg]:size-4 [&amp;_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-calculator mr-2.5 h-5 w-5"><rect width="16" height="20" x="4" y="2" rx="2"></rect><line x1="8" x2="16" y1="6" y2="6"></line><line x1="16" x2="16" y1="14" y2="18"></line><path d="M16 10h.01"></path><path d="M12 10h.01"></path><path d="M8 10h.01"></path><path d="M12 14h.01"></path><path d="M8 14h.01"></path><path d="M12 18h.01"></path><path d="M8 18h.01"></path></svg>Рассчитать стоимость</a><a href="' . $projects_url . '" class="group inline-flex items-center justify-center gap-2 font-medium text-base">Реализованные проекты<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 group-hover:translate-x-1 transition-transform duration-200"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></a></div>';
-    }
-    return '<div class="nexor-home-hero__main"><div class="nexor-home-hero__copy"><h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1><p class="nexor-home-hero__sub">в Москве и Московской области</p></div><div class="nexor-home-hero__aside"><p class="nexor-home-hero__eyebrow">Работаем по фиксированной смете</p><p class="nexor-home-hero__lead">Фиксируем стоимость в договоре, заранее обозначаем честный диапазон бюджета и берём на себя весь процесс — от подготовки до сдачи объекта.</p>' . $actions . '</div></div>' . self::home_hero_features();
-  }
-
-  private static function replace_balanced_div(string $content, string $open_tag, string $replacement): string
-  {
-    $start = strpos($content, $open_tag);
-    if (false === $start) return $content;
-    $pos = $start;
-    $depth = 0;
-    $length = strlen($content);
-    while ($pos < $length) {
-      $next_open = strpos($content, '<div', $pos);
-      $next_close = strpos($content, '</div>', $pos);
-      if (false === $next_close) break;
-      if (false !== $next_open && $next_open < $next_close) {
-        $depth++;
-        $gt = strpos($content, '>', $next_open);
-        $pos = false === $gt ? $next_open + 4 : $gt + 1;
-        continue;
-      }
-      $depth--;
-      $pos = $next_close + 6;
-      if (0 === $depth) {
-        return substr($content, 0, $start) . $replacement . substr($content, $pos);
-      }
-    }
-    return $content;
-  }
-
-  private static function compose_home_hero(string $content): string
-  {
-    if (str_contains($content, 'nexor-home-hero__main')) {
-      if (! str_contains($content, 'nexor-home-hero__copy')) {
-        $content = preg_replace(
-          '/<h1 class="heading-hero text-white">\s*Ремонт квартир и домов под ключ\s*(?:<span class="nexor-home-hero__sub">([^<]*)<\/span>)?\s*<\/h1>(?:\s*<p class="nexor-home-hero__sub">([^<]*)<\/p>)?/u',
-          '<div class="nexor-home-hero__copy"><h1 class="heading-hero text-white">Ремонт квартир и домов под ключ</h1><p class="nexor-home-hero__sub">' . 'в Москве и Московской области' . '</p></div>',
-          $content,
-          1
-        ) ?? $content;
-      }
-      $content = self::hero_calculate_cta_to_anchor($content);
-      $content = self::hero_projects_cta_to_page($content);
-      return $content;
-    }
-
-    return self::replace_balanced_div($content, '<div class="max-w-3xl">', self::home_hero_main(''));
-  }
-
-  private static function hero_calculate_cta_to_anchor(string $content): string
-  {
-    if (! str_contains($content, 'Рассчитать стоимость')) {
-      return $content;
-    }
-    if (preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\']#calculator["\'][^>]*>[\s\S]*?Рассчитать стоимость/u', $content)) {
-      return $content;
-    }
-    $content = preg_replace(
-      '/(<div class="nexor-home-hero__actions">[\s\S]*?)<button\b([^>]*)>([\s\S]*?Рассчитать стоимость[\s\S]*?)<\/button>/u',
-      '$1<a href="#calculator"$2>$3</a>',
-      $content,
-      1
-    ) ?? $content;
-    $content = preg_replace(
-      '/(<a href="#calculator")([^>]*?)\stype="button"/u',
-      '$1$2',
-      $content,
-      1
-    ) ?? $content;
-    // Legacy hero without actions wrapper: first calculate button near hero CTAs.
-    if (! preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\']#calculator["\']/u', $content)) {
-      $content = preg_replace(
-        '/<button\b([^>]*bg-primary[^>]*)>([\s\S]*?Рассчитать стоимость[\s\S]*?)<\/button>/u',
-        '<a href="#calculator"$1>$2</a>',
-        $content,
-        1
-      ) ?? $content;
-      $content = preg_replace(
-        '/(<a href="#calculator")([^>]*?)\stype="button"/u',
-        '$1$2',
-        $content,
-        1
-      ) ?? $content;
-    }
-    return $content;
-  }
-
-  private static function hero_projects_cta_to_page(string $content): string
-  {
-    if (! str_contains($content, 'Реализованные проекты')) {
-      return $content;
-    }
-    if (preg_match('/nexor-home-hero__actions[\s\S]*?<a\b[^>]*href=["\'][^"\']*\/projects\/?["\'][^>]*>[\s\S]*?Реализованные проекты/u', $content)) {
-      return $content;
-    }
-    return preg_replace(
-      '/(<div class="nexor-home-hero__actions">[\s\S]*?<a\b[^>]*?)href=["\']#cases["\']([^>]*>[\s\S]*?Реализованные проекты)/u',
-      '$1href="' . esc_url(home_url('/projects/')) . '"$2',
-      $content,
-      1
-    ) ?? $content;
-  }
-
   private static function video_section(): string
   {
     $o = self::option(self::VIDEO);
@@ -1707,34 +1621,7 @@ final class Nexor_Enhancements
     if (is_front_page()) {
       $content = str_replace('<main class="pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
       $content = str_replace('<main class="nexor-home pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
-      $content = str_replace('<section class="relative min-h-[85vh] flex items-center pt-16 md:pt-20">', '<section class="nexor-home-hero">', $content);
-      $content = preg_replace(
-        '/(<section class="nexor-home-hero">)\s*<div[^>]*>\s*<img\b[^>]*>\s*(?:<div[^>]*hero-overlay[^>]*><\/div>\s*)?<\/div>\s*/s',
-        '$1',
-        $content,
-        1
-      ) ?? $content;
-      $content = str_replace(
-        array(
-          '<div class="container-nexor relative z-10 py-28 md:py-36">',
-          '<div class="container-nexor relative z-10">',
-        ),
-        '<div class="container-nexor">',
-        $content
-      );
-      if (str_contains($content, 'nexor-home-hero') && ! str_contains($content, 'nexor-home-hero__layout')) {
-        $content = preg_replace(
-          '/(<section class="nexor-home-hero">\s*<div class="container-nexor">)([\s\S]*?)(<\/div>\s*<\/section>)/',
-          '$1<div class="nexor-home-hero__layout">$2</div>$3',
-          $content,
-          1
-        ) ?? $content;
-      }
-      $promo = self::hero_promotion();
-      if ($promo !== '') {
-        $content = str_replace('<div class="nexor-home-hero__layout">', '<div class="nexor-home-hero__layout">' . $promo, $content);
-      }
-      $content = self::compose_home_hero($content);
+      $content = self::inject_home_hero($content);
       $content = str_replace('<section class="py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', '<section id="nexor-system" class="nexor-system-section py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', $content);
       // The migrated five-step block is replaced by the interactive stages dial below.
       $content = self::drop_section($content, '<section class="py-[120px] md:py-[140px] bg-card">');

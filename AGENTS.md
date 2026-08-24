@@ -43,7 +43,7 @@
 |-----------|------|-----------------|
 | **Тема** | `package/wp-content/themes/nexor/` | Шаблоны, `template-parts/`, рендер мигрированного HTML, SEO в `<head>`, навигация, фронтенд JS/CSS, GSAP |
 | **Плагин** | `package/wp-content/plugins/nexor-core/` | Бизнес-логика: заявки, калькулятор (REST), проекты, админка, инъекция секций |
-| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, услуги, проекты и калькулятор главной сюда больше не входят |
+| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, hero, услуги, проекты и калькулятор главной сюда больше не входят |
 | **Деплой** | `package/deploy/` | Docker Swarm stack, wp-config, Traefik, php.ini |
 | **Тесты** | `tests/` | PHP unit + Chromium CDP аудиты production/local |
 | **Инструменты** | `tools/` | Сборка контента из React dist, генерация project-data |
@@ -70,6 +70,7 @@ nexorpro/
 │       │   ├── content/      ← *.html + metadata.json (seed)
 │       │   ├── template-parts/
 │       │   │   ├── site-header.php
+│       │   │   ├── home-hero-section.php
 │       │   │   ├── home-services-section.php
 │       │   │   ├── home-projects-section.php
 │       │   │   ├── home-calculator-section.php
@@ -149,7 +150,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -158,6 +159,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Секция | Якорь | Template part | Рендер-хелпер темы | Данные |
 |--------|-------|---------------|--------------------|--------|
 | Шапка сайта | — | `site-header.php` | `header.php` → `get_template_part` | `nexor_contact_settings()`, `nexor_navigation_payload()` |
+| Hero | — | `home-hero-section.php` | `nexor_render_home_hero_section()` | статичный оффер + `hero_promotion()` |
 | Основные услуги | `#main-services` | `home-services-section.php` | `nexor_render_home_services_section()` | option `nexor_home_services` |
 | Реализованные проекты | `#cases` | `home-projects-section.php` | `nexor_render_home_projects_section()` | option `nexor_home_projects` + CPT |
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
@@ -172,8 +174,8 @@ docker compose exec wordpress wp --allow-root <command>
 Класс `Nexor_Enhancements` в `class-nexor-enhancements.php`:
 
 - Хранит настройки в отдельных WP options (`nexor_home_prices`, `nexor_promotions`, `nexor_home_services`, `nexor_home_projects`, `nexor_home_stages`, …);
-- На главной **вставляет** секции в порядке (unit-тест проверяет): услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании;
-- Собирает hero (`compose_home_hero()`, `hero_promotion()`);
+- На главной **вставляет** секции в порядке (unit-тест проверяет): hero → услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании;
+- Hero рендерится из template-part (`home_hero()`, `hero_promotion()`); устаревший hero из `post_content` вырезается при рендере;
 - Секция этапов (`#stages`) — интерактивная карточка с круговым ползунком (GSAP Draggable + InertiaPlugin). Старый блок «Как мы делаем ремонт предсказуемым» (`nexor-process-section` / `#work-stages`) и мигрированные пять шагов **удалены** и вырезаются при рендере;
 - На страницах услуг добавляет hero-shell, trust-блок, мета «Структура услуги»;
 - На страницах проектов — блок «Связанные услуги».
@@ -244,6 +246,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Задача | Где править |
 |--------|-------------|
 | Шапка сайта | `template-parts/site-header.php` + `nexor_contact_settings()` / меню WP |
+| Hero главной | `template-parts/home-hero-section.php` + `hero_promotion()` |
 | Карточки услуг на главной | `template-parts/home-services-section.php` + option `nexor_home_services` |
 | Карточки проектов на главной | `template-parts/home-projects-section.php` + option `nexor_home_projects` |
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
@@ -257,7 +260,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | SEO title/description/canonical | мета `_nexor_seo_*` или `page_seo_defaults()` в плагине |
 | Контакты, ставки калькулятора | **Настройки → Nexor** (`nexor_settings` option) |
 | Блоки главной (цены, бонусы, popup, услуги, проекты) | **Настройки → Nexor** (секции enhancements) |
-| Hero и оставшийся статический HTML главной | контент страницы «Главная» в WP или `content/home.html` + `compose_home_hero()` |
+| Оставшийся статический HTML главной | контент страницы «Главная» в WP или `content/home.html` |
 | Новый проект | **Проекты** в админке + медиафайлы |
 | Импорт HTML из React-сборки | `tools/build-content.mjs` → `content/*.html` → `wp nexor seed` |
 | Данные проектов (bulk) | `tools/generate-project-data.mjs` → `project-data.json` → `wp nexor migrate-projects` |
@@ -415,7 +418,7 @@ HTML — не только визуал. Разметка должна отра�
 - Секции страницы — `<section>` / `<aside>` с понятным заголовком или `aria-label`; декоративные обёртки — `<div>`.
 - Таймеры, статус и live-области помечать ARIA (`role="timer"`, `aria-live` и т.п.) без дублирования скрытого мусорного текста в заголовках.
 - Не класть блочный маркетинговый текст, CTA и метаданные внутрь заголовков «чтобы стили совпали» — стилизовать соседние элементы через CSS/grid.
-- При правках hero и enhancements (`home.html`, `compose_home_hero()`, `hero_promotion()`, template-parts главной) сохранять эту семантику, даже если референс рисует всё одним визуальным блоком.
+- При правках hero и enhancements (`home-hero-section.php`, `hero_promotion()`, template-parts главной) сохранять эту семантику, даже если референс рисует всё одним визуальным блоком.
 
 ### Не делать
 

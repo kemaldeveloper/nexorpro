@@ -2655,7 +2655,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   padding: 50px 0 70px;
   color: #fff;
   background-color: #141414;
-  background-image: url('nexor-about-section.jpg');
+  background-image: linear-gradient(180deg, rgba(16, 16, 16, 0.78) 0%, rgba(16, 16, 16, 0.55) 100%), url('nexor-about-section.jpg');
   background-size: cover;
   background-position: right center;
   background-repeat: no-repeat;
