@@ -198,7 +198,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 Фронтенд получает `restUrl` и `nonce` через `wp_localize_script` → объект `NexorSettings` в `nexor.js`.
 
-Защита: WP REST nonce, проверка Origin, rate limit 5 запросов / 15 мин / IP, honeypot-поле `website`.
+Защита `/lead`: WP REST nonce, проверка Origin, honeypot `website`, невидимая Yandex SmartCaptcha (серверная проверка токена), rate limit 3 запроса / 15 мин / IP. `/calculate` без капчи.
 
 ### 5. Custom Post Types
 
@@ -263,6 +263,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Вёрстка/стили секций enhancements | HTML: утилиты из `index-DfWs8OlI.css` + `nexor-*`; кастом — `nexor.css` (бандл не трогать) |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
 | Формы заявок, popup | `nexor.js` + REST `/lead` в `nexor-core.php` |
+| Yandex SmartCaptcha | ключ клиента: **Настройки → Nexor** (`smartcaptcha_sitekey`); ключ сервера: `NEXOR_SMARTCAPTCHA_SERVER_KEY` |
 | SEO title/description/canonical | мета `_nexor_seo_*` или `page_seo_defaults()` в плагине |
 | Контакты, ставки калькулятора | **Настройки → Nexor** (`nexor_settings` option) |
 | Блоки главной (цены, бонусы, popup, услуги, проекты) | **Настройки → Nexor** (секции enhancements) |
@@ -312,9 +313,9 @@ php tests/enhancements-unit.php
 
 - **Stack:** Docker Swarm (`package/deploy/stack.yml`)
 - **Reverse proxy:** Traefik (`package/deploy/traefik-production.yml`) → `nexorpro.ru`
-- **Secrets:** `nexor_db_password`, `nexor_wp_secret`, `nexor_telegram_token`, `nexor_telegram_chat_id`
+- **Secrets:** `nexor_db_password`, `nexor_wp_secret`, `nexor_telegram_token`, `nexor_telegram_chat_id`, `nexor_smartcaptcha_server_key`
 - **Volumes:** тема и плагин read-only из `/opt/nexor-wordpress/current/`, uploads в shared volume
-- **wp-config:** `package/deploy/wp-config.example.php` — Telegram token **только** в конфиге/secrets, не в БД
+- **wp-config:** `package/deploy/wp-config.example.php` — Telegram token и SmartCaptcha server key **только** в конфиге/secrets, не в БД
 
 Telegram:
 
@@ -323,7 +324,13 @@ define('NEXOR_TELEGRAM_BOT_TOKEN', ...);
 define('NEXOR_TELEGRAM_CHAT_ID', ...);
 ```
 
-Chat ID также можно задать в **Настройки → Nexor** (fallback).
+SmartCaptcha:
+
+```php
+define('NEXOR_SMARTCAPTCHA_SERVER_KEY', ...);
+```
+
+Chat ID также можно задать в **Настройки → Nexor** (fallback). Ключ клиента SmartCaptcha — там же (`smartcaptcha_sitekey`).
 
 ---
 
@@ -457,7 +464,7 @@ HTML — не только визуал. Разметка должна отра�
 
 ### Не делать
 
-- Не коммитить секреты (`.env`, `wp-config.php`, токены Telegram).
+- Не коммитить секреты (`.env`, `wp-config.php`, токены Telegram, ключ сервера SmartCaptcha).
 - Не превращать `.container-nexor` в layout-обёртку секции (grid/flex/gap/padding/min-height) — только ширина и центрирование; layout — во внутренней обёртке.
 - Не править и не дополнять `assets/index-*.css` вручную; не дублировать в `nexor.css` утилиты, которые уже есть в бандле.
 - Не менять формулу калькулятора без явного запроса (ставки в настройках — OK).

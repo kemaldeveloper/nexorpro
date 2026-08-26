@@ -18,6 +18,80 @@
   ];
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const lock = value => document.documentElement.classList.toggle('nexor-lock', value);
+  const captchaEnabled = () => Boolean(cfg.smartCaptchaSitekey);
+
+  window.nexorSmartCaptchaReady = () => {
+    document.dispatchEvent(new CustomEvent('nexor:smartcaptcha-ready'));
+  };
+
+  function waitForSmartCaptcha() {
+    if (window.smartCaptcha) return Promise.resolve();
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => reject(new Error('Не удалось отправить заявку. Обновите страницу.')), 12000);
+      const onReady = () => {
+        clearTimeout(timer);
+        document.removeEventListener('nexor:smartcaptcha-ready', onReady);
+        if (window.smartCaptcha) resolve();
+        else reject(new Error('Не удалось отправить заявку. Обновите страницу.'));
+      };
+      document.addEventListener('nexor:smartcaptcha-ready', onReady);
+      if (window.smartCaptcha) onReady();
+    });
+  }
+
+  function mountCaptcha(form) {
+    if (!captchaEnabled() || !form) return Promise.resolve();
+    const box = form.querySelector('[data-smartcaptcha]');
+    if (!box) return Promise.reject(new Error('Не удалось отправить заявку. Обновите страницу.'));
+    if (form._captchaId != null && window.smartCaptcha) return Promise.resolve();
+    return waitForSmartCaptcha().then(() => {
+      if (form._captchaId != null) return;
+      form._captchaId = window.smartCaptcha.render(box, {
+        sitekey: cfg.smartCaptchaSitekey,
+        hl: 'ru',
+        invisible: true,
+        hideShield: true,
+        callback: token => {
+          form.dataset.smartToken = token;
+          if (typeof form._captchaResolve === 'function') {
+            const resolve = form._captchaResolve;
+            form._captchaResolve = null;
+            resolve(token);
+          }
+        },
+      });
+    });
+  }
+
+  function requestCaptchaToken(form) {
+    if (!captchaEnabled()) return Promise.resolve('');
+    const existing =
+      form.dataset.smartToken || (window.smartCaptcha && form._captchaId != null ? window.smartCaptcha.getResponse(form._captchaId) : '');
+    if (existing) return Promise.resolve(existing);
+    const execute = () =>
+      new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Не удалось отправить заявку. Попробуйте ещё раз.')), 60000);
+        form._captchaResolve = token => {
+          clearTimeout(timer);
+          resolve(token);
+        };
+        window.smartCaptcha.execute(form._captchaId);
+      });
+    if (form._captchaId != null && window.smartCaptcha) return execute();
+    return mountCaptcha(form).then(execute);
+  }
+
+  function resetCaptcha(form) {
+    delete form.dataset.smartToken;
+    form._captchaResolve = null;
+    if (window.smartCaptcha && form._captchaId != null) {
+      try {
+        window.smartCaptcha.reset(form._captchaId);
+      } catch (error) {
+        /* widget already gone */
+      }
+    }
+  }
 
   function setupNavigation() {
     const navigation = cfg.navigation || {},
@@ -199,7 +273,7 @@
       .filter(([key]) => ['additional_service_id', 'promotion_id', 'price_row_id'].includes(key))
       .map(([key, value]) => `<input type="hidden" name="${key}" value="${esc(value)}">`)
       .join('');
-    return `<form class="nexor-form" data-source="${esc(source)}"><input type="text" name="website" class="nexor-hp" tabindex="-1" autocomplete="off"><input type="hidden" name="project" value="${esc(project)}">${contextFields}<label>Имя<input name="name" autocomplete="name" required maxlength="80"></label><label>Телефон<input name="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required></label>${projectFields}<button type="submit">Отправить заявку</button><p class="nexor-form__legal">Нажимая кнопку, вы соглашаетесь с <a href="${cfg.privacy}">политикой конфиденциальности</a> и <a href="${cfg.consent}">обработкой персональных данных</a>.</p><p class="nexor-form__status" role="status" aria-live="polite"></p></form>`;
+    return `<form class="nexor-form" data-source="${esc(source)}"><input type="text" name="website" class="nexor-hp" tabindex="-1" autocomplete="off"><input type="hidden" name="project" value="${esc(project)}">${contextFields}<label>Имя<input name="name" autocomplete="name" required maxlength="80"></label><label>Телефон<input name="phone" type="tel" autocomplete="tel" placeholder="+7 (___) ___-__-__" required></label>${projectFields}${captchaEnabled() ? '<div class="nexor-form__captcha" data-smartcaptcha></div>' : ''}<button type="submit">Отправить заявку</button><p class="nexor-form__legal">Нажимая кнопку, вы соглашаетесь с <a href="${cfg.privacy}">политикой конфиденциальности</a> и <a href="${cfg.consent}">обработкой персональных данных</a>.</p><p class="nexor-form__status" role="status" aria-live="polite"></p></form>`;
   }
   function openForm(source = 'Запись на замер', project = '', context = {}, copy = {}) {
     let modal = document.querySelector('.nexor-modal');
@@ -239,7 +313,9 @@
     modal.querySelector('.nexor-modal__body').innerHTML = formMarkup(source, project, context);
     modal.hidden = false;
     lock(true);
-    modal.querySelector('input:not([type=hidden]):not(.nexor-hp)')?.focus();
+    const form = modal.querySelector('.nexor-form');
+    mountCaptcha(form).catch(() => {});
+    form?.querySelector('input:not([type=hidden]):not(.nexor-hp)')?.focus();
   }
   function closeModal() {
     const m = document.querySelector('.nexor-modal');
@@ -253,15 +329,18 @@
     form.setAttribute('aria-busy', 'true');
     status.classList.remove('is-error');
     status.textContent = 'Отправляем…';
-    const body = Object.fromEntries(new FormData(form).entries());
-    Object.assign(body, extra, { source: form.dataset.source });
     try {
+      const token = await requestCaptchaToken(form);
+      const body = Object.fromEntries(new FormData(form).entries());
+      Object.assign(body, extra, { source: form.dataset.source });
+      if (token) body['smart-token'] = token;
       const res = await fetch(cfg.restUrl + 'lead', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': cfg.nonce }, body: JSON.stringify(body) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || 'Не удалось отправить заявку');
       document.dispatchEvent(new CustomEvent('nexor:lead-success', { detail: { uuid: data.uuid || '' } }));
       location.href = data.redirect || cfg.thankYou;
     } catch (error) {
+      resetCaptcha(form);
       status.classList.add('is-error');
       status.textContent = error.message;
       button.disabled = false;

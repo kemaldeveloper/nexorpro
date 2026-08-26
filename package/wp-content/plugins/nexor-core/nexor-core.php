@@ -109,12 +109,31 @@ final class Nexor_Core {
 		return true;
 	}
 
+	private static function client_ip(): string {
+		$candidates = array(
+			$_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+			$_SERVER['HTTP_X_REAL_IP'] ?? '',
+			$_SERVER['REMOTE_ADDR'] ?? '',
+		);
+		foreach ( $candidates as $raw ) {
+			$raw = sanitize_text_field( wp_unslash( (string) $raw ) );
+			if ( '' === $raw ) {
+				continue;
+			}
+			$ip = trim( explode( ',', $raw )[0] );
+			if ( filter_var( $ip, FILTER_VALIDATE_IP ) ) {
+				return $ip;
+			}
+		}
+		return 'unknown';
+	}
+
 	private static function rate_limit(): true|WP_Error {
-		$ip   = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? 'unknown' ) );
+		$ip   = self::client_ip();
 		$key  = 'nexor_rate_' . hash_hmac( 'sha256', $ip, wp_salt( 'nonce' ) );
 		$now  = time();
 		$hits = array_values( array_filter( (array) get_transient( $key ), static fn( $t ) => (int) $t > $now - 900 ) );
-		if ( count( $hits ) >= 5 ) {
+		if ( count( $hits ) >= 3 ) {
 			return new WP_Error( 'rate_limit', 'Слишком много отправок. Повторите через 15 минут.', array( 'status' => 429 ) );
 		}
 		$hits[] = $now;
@@ -122,13 +141,66 @@ final class Nexor_Core {
 		return true;
 	}
 
+	private static function smartcaptcha_server_key(): string {
+		if ( defined( 'NEXOR_SMARTCAPTCHA_SERVER_KEY' ) && NEXOR_SMARTCAPTCHA_SERVER_KEY ) {
+			return (string) NEXOR_SMARTCAPTCHA_SERVER_KEY;
+		}
+		$env = getenv( 'NEXOR_SMARTCAPTCHA_SERVER_KEY' );
+		return false === $env ? '' : (string) $env;
+	}
+
+	public static function smartcaptcha_sitekey(): string {
+		return sanitize_text_field( (string) ( self::settings()['smartcaptcha_sitekey'] ?? '' ) );
+	}
+
+	private static function verify_smartcaptcha( string $token ): true|WP_Error {
+		$secret  = self::smartcaptcha_server_key();
+		$sitekey = self::smartcaptcha_sitekey();
+		if ( '' === $sitekey ) {
+			return true;
+		}
+		if ( '' === $secret ) {
+			error_log( 'Nexor SmartCaptcha sitekey is set but NEXOR_SMARTCAPTCHA_SERVER_KEY is missing' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return new WP_Error( 'captcha', 'Не удалось отправить заявку. Попробуйте ещё раз.', array( 'status' => 503 ) );
+		}
+		if ( '' === $token ) {
+			return new WP_Error( 'captcha', 'Не удалось отправить заявку. Обновите страницу.', array( 'status' => 400 ) );
+		}
+		$response = wp_remote_post(
+			'https://smartcaptcha.cloud.yandex.ru/validate',
+			array(
+				'timeout' => 2,
+				'body'    => array(
+					'secret' => $secret,
+					'token'  => $token,
+					'ip'     => self::client_ip(),
+				),
+			)
+		);
+		if ( is_wp_error( $response ) || 200 !== wp_remote_retrieve_response_code( $response ) ) {
+			error_log( 'Nexor SmartCaptcha validate unavailable, allowing request' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return true;
+		}
+		$body = json_decode( (string) wp_remote_retrieve_body( $response ), true );
+		if ( ! is_array( $body ) ) {
+			error_log( 'Nexor SmartCaptcha invalid JSON, allowing request' ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+			return true;
+		}
+		if ( ( $body['status'] ?? '' ) !== 'ok' ) {
+			return new WP_Error( 'captcha', 'Не удалось отправить заявку. Попробуйте ещё раз.', array( 'status' => 400 ) );
+		}
+		return true;
+	}
+
 	public static function create_lead( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$valid = self::validate_request( $request );
 		if ( is_wp_error( $valid ) ) return $valid;
-		$rate = self::rate_limit();
-		if ( is_wp_error( $rate ) ) return $rate;
 		$data = (array) $request->get_json_params();
 		if ( ! empty( $data['website'] ) ) return new WP_Error( 'spam', 'Заявка отклонена.', array( 'status' => 400 ) );
+		$captcha = self::verify_smartcaptcha( sanitize_text_field( (string) ( $data['smart-token'] ?? '' ) ) );
+		if ( is_wp_error( $captcha ) ) return $captcha;
+		$rate = self::rate_limit();
+		if ( is_wp_error( $rate ) ) return $rate;
 		$name   = sanitize_text_field( $data['name'] ?? '' );
 		$phone  = preg_replace( '/[^0-9+]/', '', (string) ( $data['phone'] ?? '' ) );
 		$digits = preg_replace( '/\D/', '', $phone );
@@ -141,7 +213,7 @@ final class Nexor_Core {
 		$uuid    = wp_generate_uuid4();
 		$payload = array();
 		foreach ( $data as $key => $value ) {
-			if ( in_array( $key, array( 'website', 'additional_service_id', 'promotion_id', 'price_row_id' ), true ) ) continue;
+			if ( in_array( $key, array( 'website', 'smart-token', 'additional_service_id', 'promotion_id', 'price_row_id' ), true ) ) continue;
 			$payload[ sanitize_key( $key ) ] = is_scalar( $value ) ? sanitize_textarea_field( (string) $value ) : wp_json_encode( $value, JSON_UNESCAPED_UNICODE );
 		}
 		$payload = array_merge( $payload, $context );
@@ -266,13 +338,13 @@ final class Nexor_Core {
 	}
 
 	private static function defaults(): array {
-		return array('phone_display'=>'+7 (926) 083-23-24','phone_link'=>'+79260832324','email'=>'nexor.msk@mail.ru','hours'=>'Ежедневно с 9:00 до 21:00','region'=>'Москва и Московская область','telegram_url'=>'https://t.me/nexor_msk','vk_url'=>'https://vk.com/club238015413','inn'=>'352803113189','ogrnip'=>'324350000048081','telegram_chat_id'=>'','metrika_id'=>'107066852','botfaqtor_id'=>'172926','rate_cosmetic'=>'25000','rate_capital'=>'35000','rate_designer'=>'50000','area_shift_min'=>'1.10','area_shift_max'=>'1.05','market_factor'=>'0.9','min_budget'=>'1700000');
+		return array('phone_display'=>'+7 (926) 083-23-24','phone_link'=>'+79260832324','email'=>'nexor.msk@mail.ru','hours'=>'Ежедневно с 9:00 до 21:00','region'=>'Москва и Московская область','telegram_url'=>'https://t.me/nexor_msk','vk_url'=>'https://vk.com/club238015413','inn'=>'352803113189','ogrnip'=>'324350000048081','telegram_chat_id'=>'','metrika_id'=>'107066852','botfaqtor_id'=>'172926','smartcaptcha_sitekey'=>'','rate_cosmetic'=>'25000','rate_capital'=>'35000','rate_designer'=>'50000','area_shift_min'=>'1.10','area_shift_max'=>'1.05','market_factor'=>'0.9','min_budget'=>'1700000');
 	}
 	private static function settings(): array { return wp_parse_args((array)get_option(self::OPTION,array()),self::defaults()); }
 	public static function register_settings(): void { register_setting('nexor_settings',self::OPTION,array('sanitize_callback'=>array(__CLASS__,'sanitize_settings'))); }
 	public static function sanitize_settings($input): array { $out=array(); foreach(self::defaults() as $key=>$default)$out[$key]=sanitize_text_field($input[$key]??$default); return $out; }
 	public static function admin_menu(): void { add_options_page('Настройки Nexor','Nexor','manage_options','nexor-settings',array(__CLASS__,'settings_page')); }
-	public static function settings_page(): void { if(!current_user_can('manage_options'))return;$s=self::settings();$labels=array('phone_display'=>'Телефон (отображение)','phone_link'=>'Телефон (ссылка)','email'=>'Email','hours'=>'Часы работы','region'=>'Регион','telegram_url'=>'Ссылка Telegram','vk_url'=>'Ссылка VK','inn'=>'ИНН','ogrnip'=>'ОГРНИП','telegram_chat_id'=>'Telegram Chat ID','metrika_id'=>'Yandex Metrika ID','botfaqtor_id'=>'BotFAQtor ID','rate_cosmetic'=>'Ставка: косметический','rate_capital'=>'Ставка: капитальный','rate_designer'=>'Ставка: дизайнерский','area_shift_min'=>'Area shift min','area_shift_max'=>'Area shift max','market_factor'=>'Market adjustment','min_budget'=>'Минимальный бюджет');echo '<div class="wrap"><h1>Настройки Nexor</h1><form method="post" action="options.php">';settings_fields('nexor_settings');echo '<table class="form-table">';foreach($labels as $key=>$label)printf('<tr><th><label for="%s">%s</label></th><td><input class="regular-text" id="%s" name="%s[%s]" value="%s"></td></tr>',esc_attr($key),esc_html($label),esc_attr($key),esc_attr(self::OPTION),esc_attr($key),esc_attr($s[$key]));echo '</table>';if(class_exists('Nexor_Enhancements'))Nexor_Enhancements::render_admin_sections();submit_button();echo '</form><p>Bot token хранится только в <code>wp-config.php</code> как <code>NEXOR_TELEGRAM_BOT_TOKEN</code>.</p></div>'; }
+	public static function settings_page(): void { if(!current_user_can('manage_options'))return;$s=self::settings();$labels=array('phone_display'=>'Телефон (отображение)','phone_link'=>'Телефон (ссылка)','email'=>'Email','hours'=>'Часы работы','region'=>'Регион','telegram_url'=>'Ссылка Telegram','vk_url'=>'Ссылка VK','inn'=>'ИНН','ogrnip'=>'ОГРНИП','telegram_chat_id'=>'Telegram Chat ID','metrika_id'=>'Yandex Metrika ID','botfaqtor_id'=>'BotFAQtor ID','smartcaptcha_sitekey'=>'Yandex SmartCaptcha (ключ клиента)','rate_cosmetic'=>'Ставка: косметический','rate_capital'=>'Ставка: капитальный','rate_designer'=>'Ставка: дизайнерский','area_shift_min'=>'Area shift min','area_shift_max'=>'Area shift max','market_factor'=>'Market adjustment','min_budget'=>'Минимальный бюджет');echo '<div class="wrap"><h1>Настройки Nexor</h1><form method="post" action="options.php">';settings_fields('nexor_settings');echo '<table class="form-table">';foreach($labels as $key=>$label)printf('<tr><th><label for="%s">%s</label></th><td><input class="regular-text" id="%s" name="%s[%s]" value="%s"></td></tr>',esc_attr($key),esc_html($label),esc_attr($key),esc_attr(self::OPTION),esc_attr($key),esc_attr($s[$key]));echo '</table>';if(class_exists('Nexor_Enhancements'))Nexor_Enhancements::render_admin_sections();submit_button();echo '</form><p>Bot token хранится только в <code>wp-config.php</code> как <code>NEXOR_TELEGRAM_BOT_TOKEN</code>. Ключ сервера SmartCaptcha — <code>NEXOR_SMARTCAPTCHA_SERVER_KEY</code> (secret / .env), не в БД.</p></div>'; }
 
 	public static function analytics(): void { if(is_admin())return;$s=self::settings();if($s['botfaqtor_id'])printf('<script>window._ab_id_=%d</script><script src="https://cdn.botfaqtor.ru/one.js" async></script>',absint($s['botfaqtor_id']));if($s['metrika_id'])printf('<script>(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();k=e.createElement(t);a=e.getElementsByTagName(t)[0];k.async=1;k.src=r;a.parentNode.insertBefore(k,a)})(window,document,"script","https://mc.yandex.ru/metrika/tag.js?id=%1$d","ym");ym(%1$d,"init",{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});</script>',absint($s['metrika_id'])); }
 	public static function schema(): void {

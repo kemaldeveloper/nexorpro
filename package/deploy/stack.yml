@@ -36,6 +36,7 @@ services:
       - nexor_wp_secret
       - nexor_telegram_token
       - nexor_telegram_chat_id
+      - nexor_smartcaptcha_server_key
     volumes:
       - nexor_wp_html:/var/www/html
       - /opt/nexor-wordpress/current/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor:ro
@@ -82,4 +83,6 @@ secrets:
   nexor_telegram_token:
     external: true
   nexor_telegram_chat_id:
+    external: true
+  nexor_smartcaptcha_server_key:
     external: true

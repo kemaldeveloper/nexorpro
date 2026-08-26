@@ -24,6 +24,7 @@ foreach ( array( 'AUTH_KEY', 'SECURE_AUTH_KEY', 'LOGGED_IN_KEY', 'NONCE_KEY', 'A
 
 define( 'NEXOR_TELEGRAM_BOT_TOKEN', $nexor_secret( 'nexor_telegram_token' ) );
 define( 'NEXOR_TELEGRAM_CHAT_ID', $nexor_secret( 'nexor_telegram_chat_id' ) );
+define( 'NEXOR_SMARTCAPTCHA_SERVER_KEY', $nexor_secret( 'nexor_smartcaptcha_server_key' ) );
 define( 'WP_ENVIRONMENT_TYPE', getenv( 'WP_ENVIRONMENT_TYPE' ) ?: 'production' );
 define( 'DISALLOW_FILE_EDIT', true );
 

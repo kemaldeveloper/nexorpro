@@ -28,6 +28,7 @@ services:
       WORDPRESS_DB_NAME: wordpress
       NEXOR_TELEGRAM_BOT_TOKEN: ${NEXOR_TELEGRAM_BOT_TOKEN:-}
       NEXOR_TELEGRAM_CHAT_ID: ${NEXOR_TELEGRAM_CHAT_ID:-}
+      NEXOR_SMARTCAPTCHA_SERVER_KEY: ${NEXOR_SMARTCAPTCHA_SERVER_KEY:-}
     volumes:
       - wp_data:/var/www/html
       - ./package/wp-content/themes/nexor:/var/www/html/wp-content/themes/nexor

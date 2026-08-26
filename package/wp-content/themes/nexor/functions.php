@@ -354,6 +354,7 @@ add_action(
     wp_enqueue_script('nexor-theme', get_template_directory_uri() . '/assets/nexor.js', $gsap_deps, file_exists($script_file) ? filemtime($script_file) : NEXOR_THEME_VERSION, true);
     $enhancements = class_exists('Nexor_Enhancements') ? Nexor_Enhancements::frontend_config() : array();
     $contacts = nexor_contact_settings();
+    $captcha_sitekey = class_exists('Nexor_Core') ? Nexor_Core::smartcaptcha_sitekey() : '';
     wp_localize_script(
       'nexor-theme',
       'NexorSettings',
@@ -370,8 +371,18 @@ add_action(
         'navigation' => nexor_navigation_payload(),
         'enhancements' => $enhancements,
         'themeUri' => get_template_directory_uri(),
+        'smartCaptchaSitekey' => $captcha_sitekey,
       )
     );
+    if ('' !== $captcha_sitekey) {
+      wp_enqueue_script(
+        'yandex-smartcaptcha',
+        'https://smartcaptcha.cloud.yandex.ru/captcha.js?render=explicit&onload=nexorSmartCaptchaReady',
+        array('nexor-theme'),
+        false,
+        true
+      );
+    }
   }
 );
 
