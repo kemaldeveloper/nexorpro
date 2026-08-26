@@ -291,6 +291,26 @@ function nexor_render_home_faq_section(array $copy = array()): string
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_cta_section(array $copy = array()): string
+{
+  $contacts = function_exists('nexor_contact_settings') ? nexor_contact_settings() : array();
+
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'cta-section',
+    array(
+      'heading' => $copy['heading'] ?? 'Запишитесь на профессиональный замер с инженером Nexor',
+      'lead' => $copy['lead'] ?? 'Инженер приедет на объект, оценит состояние помещения и зафиксирует все технические детали для дальнейшего планирования ремонта.',
+      'button_label' => $copy['button_label'] ?? 'Записаться на замер',
+      'note' => $copy['note'] ?? 'Консультация и выезд инженера — бесплатно и ни к чему не обязывают.',
+      'phone_display' => $copy['phone_display'] ?? ($contacts['phone_display'] ?? '+7 (926) 083-23-24'),
+      'phone_link' => $copy['phone_link'] ?? ($contacts['phone_link'] ?? '+79260832324'),
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 remove_action('wp_head', 'rel_canonical');
 
 add_action(

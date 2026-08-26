@@ -43,7 +43,7 @@
 |-----------|------|-----------------|
 | **Тема** | `package/wp-content/themes/nexor/` | Шаблоны, `template-parts/`, рендер мигрированного HTML, SEO в `<head>`, навигация, фронтенд JS/CSS, GSAP |
 | **Плагин** | `package/wp-content/plugins/nexor-core/` | Бизнес-логика: заявки, калькулятор (REST), проекты, админка, инъекция секций |
-| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, hero, услуги, проекты и калькулятор главной сюда больше не входят |
+| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, hero, услуги, проекты, калькулятор, FAQ и CTA замера главной сюда больше не входят |
 | **Деплой** | `package/deploy/` | Docker Swarm stack, wp-config, Traefik, php.ini |
 | **Тесты** | `tests/` | PHP unit + Chromium CDP аудиты production/local |
 | **Инструменты** | `tools/` | Сборка контента из React dist, генерация project-data |
@@ -76,7 +76,8 @@ nexorpro/
 │       │   │   ├── home-calculator-section.php
 │       │   │   ├── home-budget-section.php
 │       │   │   ├── home-about-section.php
-│       │   │   └── home-faq-section.php
+│       │   │   ├── home-faq-section.php
+│       │   │   └── home-cta-section.php
 │       │   ├── functions.php
 │       │   ├── header.php, footer.php, index.php, page.php, ...
 │       │   └── style.css
@@ -152,7 +153,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, CTA «Запишитесь на профессиональный замер», `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -169,6 +170,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
 | О компании | `#about-company-nexor` | `home-about-section.php` | `nexor_render_home_about_section()` | статичный текст + метрики (340+, 8 лет, 40+, 98%) |
 | FAQ | `#faq` | `home-faq-section.php` | `nexor_render_home_faq_section()` | статичные вопросы и ответы |
+| CTA замера | — | `home-cta-section.php` | `nexor_render_home_cta_section()` | статичный текст + телефон из `nexor_contact_settings()` |
 
 Новую editorial-секцию главной добавляй так же: template-part + `nexor_render_home_*()` в `functions.php` + вызов из `inject_frontend_content()`.
 
@@ -177,7 +179,7 @@ docker compose exec wordpress wp --allow-root <command>
 Класс `Nexor_Enhancements` в `class-nexor-enhancements.php`:
 
 - Хранит настройки в отдельных WP options (`nexor_home_prices`, `nexor_promotions`, `nexor_home_services`, `nexor_home_projects`, `nexor_home_stages`, …);
-- На главной **вставляет** секции в порядке (unit-тест проверяет): hero → услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании → FAQ;
+- На главной **вставляет** секции в порядке (unit-тест проверяет): hero → услуги → проекты → калькулятор → смета → цены → сроки → система Nexor → этапы → до/после → доп. услуги → бонусы → о компании → FAQ → CTA замера;
 - Hero рендерится из template-part (`home_hero()`, `hero_promotion()`); устаревший hero из `post_content` вырезается при рендере;
 - Секция этапов (`#stages`) — интерактивная карточка с круговым ползунком (GSAP Draggable + InertiaPlugin). Старый блок «Как мы делаем ремонт предсказуемым» (`nexor-process-section` / `#work-stages`) и мигрированные пять шагов **удалены** и вырезаются при рендере;
 - На страницах услуг добавляет hero-shell, trust-блок, мета «Структура услуги»;
@@ -187,7 +189,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 Порядок секций на главной (якоря):
 
-`#main-services` → `#cases` → `#calculator` → `#budget-control` → `#prices` → `#repair-timeline` → система Nexor → `#stages` → `#before-after` → `#additional-services` → `#promotions` → `#about-company-nexor` → `#faq`.
+`#main-services` → `#cases` → `#calculator` → `#budget-control` → `#prices` → `#repair-timeline` → система Nexor → `#stages` → `#before-after` → `#additional-services` → `#promotions` → `#about-company-nexor` → `#faq` → CTA замера.
 
 ### 4. REST API
 
@@ -259,6 +261,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
 | Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
 | FAQ главной (`#faq`) | `template-parts/home-faq-section.php` |
+| CTA «Запишитесь на профессиональный замер» | `template-parts/home-cta-section.php` |
 | Квиз калькулятора / формула | `nexor.js` + REST `/calculate` в `nexor-core.php` (ставки — **Настройки → Nexor**) |
 | Вёрстка/стили секций enhancements | HTML: утилиты из `index-DfWs8OlI.css` + `nexor-*`; кастом — `nexor.css` (бандл не трогать) |
 | Этапы (`#stages`, ползунок) | HTML в enhancements + CSS + GSAP-логика в `nexor.js` |
@@ -284,7 +287,7 @@ npm run test:unit
 php tests/enhancements-unit.php
 ```
 
-Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах, инъекцию калькулятора и блока «О компании» из template-part.
+Проверяет: seed акций, stable ID заявок, политику поиска, порядок секций на главной, UTF-8 в доп. услугах, инъекцию калькулятора, блока «О компании» и CTA замера из template-part.
 
 ### Production-аудиты (Chromium CDP)
 

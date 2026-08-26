@@ -293,6 +293,10 @@ function nexor_render_home_faq_section(array $copy = array()): string
 {
   return '<section id="faq" class="nexor-faq-section"><h2>Частые вопросы о ремонте</h2><ul class="nexor-faq__list"><li><button type="button" class="nexor-faq__trigger" aria-expanded="true">Как формируется стоимость ремонта?</button></li></ul></section>';
 }
+function nexor_render_home_cta_section(array $copy = array()): string
+{
+  return '<section class="py-24 md:py-32 bg-foreground"><h2>Запишитесь на профессиональный замер с инженером Nexor</h2></section>';
+}
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
@@ -342,7 +346,7 @@ Nexor_Enhancements::search_policy($empty);
 assert_true($empty->values['post__in'] === array(0), 'empty search cannot return all content');
 $source = '<main><section id="calculator"></section><section id="cases"><h2 class="heading-section text-foreground mb-5">Реализованные проекты</h2></section><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
 $html = Nexor_Enhancements::inject_frontend_content($source);
-$order = array_map(fn($needle) => strpos($html, $needle), array('class="nexor-home-hero"', 'id="main-services"', 'id="cases"', 'id="calculator"', 'id="budget-control"', 'id="prices"', 'id="repair-timeline"', 'Ремонт без неприятных сюрпризов', 'id="additional-services"', 'id="promotions"', 'id="about-company-nexor"', 'id="faq"'));
+$order = array_map(fn($needle) => strpos($html, $needle), array('class="nexor-home-hero"', 'id="main-services"', 'id="cases"', 'id="calculator"', 'id="budget-control"', 'id="prices"', 'id="repair-timeline"', 'Ремонт без неприятных сюрпризов', 'id="additional-services"', 'id="promotions"', 'id="about-company-nexor"', 'id="faq"', 'Запишитесь на профессиональный замер'));
 assert_true($order === $sorted = call_user_func(function ($v) {
   $s = $v;
   sort($s);
@@ -353,6 +357,7 @@ assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($htm
 assert_true(str_contains($html, 'class="nexor-budget-section"') && substr_count($html, 'id="budget-control"') === 1, 'homepage budget is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-about-section"') && substr_count($html, 'id="about-company-nexor"') === 1, 'homepage about is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-faq-section"') && substr_count($html, 'id="faq"') === 1, 'homepage FAQ is rendered once from the template part');
+assert_true(str_contains($html, 'py-24 md:py-32 bg-foreground') && substr_count($html, 'Запишитесь на профессиональный замер') === 1, 'homepage measurement CTA is rendered once from the template part');
 assert_true(str_contains($html, '340+') && str_contains($html, 'Объектов сдано') && !str_contains($html, 'py-20 mt-8 bg-foreground'), 'about section includes company stats and drops the legacy stats strip');
 $legacy_about_source = '<main><section id="about-company-nexor" class="py-[140px] lg:py-[180px] bg-card"><h2>OLD ABOUT</h2></section><section class="py-20 mt-8 bg-foreground"><div class="container-nexor"><div class="grid grid-cols-2 md:grid-cols-4 gap-10 md:gap-6"><div class="text-center"><div class="text-5xl md:text-6xl font-bold text-primary mb-3">340+</div><div class="text-sm font-medium text-white/80 uppercase tracking-wide">Объектов сдано</div></div></div></div></section><section id="faq"></section></main>';
 $legacy_about_html = Nexor_Enhancements::inject_frontend_content($legacy_about_source);
@@ -367,6 +372,13 @@ assert_true(str_contains($legacy_faq_html, 'class="nexor-faq-section"') && !str_
 $missing_faq_source = '<main><section id="about-company-nexor"></section></main>';
 $missing_faq_html = Nexor_Enhancements::inject_frontend_content($missing_faq_source);
 assert_true(str_contains($missing_faq_html, 'id="faq"') && strpos($missing_faq_html, 'id="about-company-nexor"') < strpos($missing_faq_html, 'id="faq"'), 'FAQ is injected after about when missing from migrated HTML');
+$legacy_cta_source = '<main><section id="faq"></section><section class="py-24 md:py-32 bg-foreground"><h2>Запишитесь на профессиональный замер с инженером Nexor</h2><p>OLD CTA</p></section></main>';
+$legacy_cta_html = Nexor_Enhancements::inject_frontend_content($legacy_cta_source);
+assert_true(str_contains($legacy_cta_html, 'py-24 md:py-32 bg-foreground') && !str_contains($legacy_cta_html, 'OLD CTA') && substr_count($legacy_cta_html, 'Запишитесь на профессиональный замер') === 1, 'migrated measurement CTA markup is replaced by the template part');
+assert_true(strpos($legacy_cta_html, 'id="faq"') < strpos($legacy_cta_html, 'Запишитесь на профессиональный замер'), 'measurement CTA is injected after FAQ');
+$missing_cta_source = '<main><section id="faq"></section></main>';
+$missing_cta_html = Nexor_Enhancements::inject_frontend_content($missing_cta_source);
+assert_true(str_contains($missing_cta_html, 'Запишитесь на профессиональный замер') && strpos($missing_cta_html, 'id="faq"') < strpos($missing_cta_html, 'Запишитесь на профессиональный замер'), 'measurement CTA is injected after FAQ when missing from migrated HTML');
 $missing_calc_source = '<main><section><h2>Ремонт без неприятных сюрпризов — благодаря системе Nexor</h2></section><section id="about-company-nexor"></section></main>';
 $missing_calc_html = Nexor_Enhancements::inject_frontend_content($missing_calc_source);
 assert_true(str_contains($missing_calc_html, 'id="calculator"') && strpos($missing_calc_html, 'id="calculator"') < strpos($missing_calc_html, 'Ремонт без неприятных сюрпризов'), 'calculator is injected when missing from migrated HTML');

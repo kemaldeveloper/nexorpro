@@ -1272,6 +1272,27 @@ final class Nexor_Enhancements
     return nexor_render_home_faq_section();
   }
 
+  private static function home_cta(): string
+  {
+    if (! function_exists('nexor_render_home_cta_section')) {
+      return '';
+    }
+
+    return nexor_render_home_cta_section();
+  }
+
+  private static function drop_home_cta(string $content): string
+  {
+    $content = self::drop_section($content, '<section class="py-24 md:py-32 bg-foreground">');
+    $replaced = preg_replace(
+      '/<section\b[^>]*>\s*<div class="container-nexor">\s*<div class="max-w-3xl mx-auto text-center">\s*<h2[^>]*>Запишитесь на профессиональный замер.*?<\/section>/s',
+      '',
+      $content,
+      1
+    );
+    return is_string($replaced) ? $replaced : $content;
+  }
+
   private static function home_hero(): string
   {
     if (! function_exists('nexor_render_home_hero_section')) {
@@ -1675,6 +1696,12 @@ final class Nexor_Enhancements
           $replaced = preg_replace('/<\/main>/', $faq . '</main>', $content, 1);
           $content = is_string($replaced) ? $replaced : $content;
         }
+      }
+      $cta = self::home_cta();
+      if ('' !== $cta) {
+        $content = self::drop_home_cta($content);
+        $replaced = preg_replace('/<\/main>/', $cta . '</main>', $content, 1);
+        $content = is_string($replaced) ? $replaced : $content;
       }
     } elseif (is_page(self::SERVICE_SLUGS)) {
       $content = self::service_page_shell($content);
