@@ -2807,113 +2807,146 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 }
 
 .nexor-faq-section {
-  padding: clamp(4.5rem, 8vw, 9rem) 0 clamp(4rem, 6vw, 6rem);
-  background: #faf8f6;
+  --faq-marker: 11px;
+  --faq-index: 2.4em;
+  --faq-gap: clamp(0.7rem, 1.4vw, 1.15rem);
+  --faq-toggle: 24px;
+  --faq-pad-y: clamp(1.35rem, 2.2vw, 1.85rem);
+  --faq-accent: var(--nx-accent);
+  --faq-paper: #faf8f6;
+  padding: 80px 0 clamp(4.5rem, 7vw, 7rem);
+  background: var(--faq-paper);
 }
 
 .nexor-faq__layout {
   display: grid;
-  gap: clamp(2.5rem, 4vw, 4rem);
+  gap: clamp(2.75rem, 4.5vw, 4.25rem);
 }
 
 .nexor-faq__header .heading-section {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.35rem;
+  color: var(--nx-ink);
+  font-size: clamp(30px, 3.4vw, 46px);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.12;
+  text-wrap: balance;
 }
 
 .nexor-faq__intro {
   margin: 0;
-  max-width: 36rem;
-  color: #656363;
-  font-size: clamp(16px, 1.15vw, 18px);
+  max-width: 38.5rem;
+  color: #6d665f;
+  font-size: clamp(15px, 1.1vw, 17px);
   line-height: 1.7;
 }
 
 .nexor-faq__list {
-  display: grid;
-  gap: 12px;
+  position: relative;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.nexor-faq__item {
-  border: 1px solid var(--nx-line);
-  border-radius: 12px;
-  background: var(--nx-white);
-  box-shadow: 0 8px 24px rgba(40, 30, 23, 0.04);
-  transition:
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+.nexor-faq__list::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--hero-accent);
+  z-index: 0;
 }
 
-.nexor-faq__item:hover {
-  box-shadow: 0 14px 36px rgba(40, 30, 23, 0.08);
+.nexor-faq__item {
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid #e8e2db;
+  background-repeat: no-repeat;
+  transition: background 0.28s ease;
 }
 
 .nexor-faq__item:has(.nexor-faq__trigger[aria-expanded='true']) {
-  border-color: rgba(147, 70, 35, 0.3);
-  box-shadow:
-    0 14px 36px rgba(40, 30, 23, 0.08),
-    0 0 0 1px rgba(147, 70, 35, 0.1);
+  background-image: radial-gradient(ellipse 80% 110% at 28% 38%, rgba(184, 108, 70, 0.22), rgba(184, 108, 70, 0.08) 40%, transparent 70%);
 }
 
 .nexor-faq__trigger {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: var(--faq-marker) var(--faq-index) minmax(0, 1fr) var(--faq-toggle);
+  column-gap: var(--faq-gap);
+  align-items: start;
   width: 100%;
   margin: 0;
-  padding: 20px;
+  padding: var(--faq-pad-y) 0;
   border: 0;
+  overflow: visible;
   background: transparent;
   color: inherit;
+  font: inherit;
   text-align: left;
   cursor: pointer;
 }
 
 .nexor-faq__trigger:focus-visible {
-  outline: 2px solid var(--nx-accent);
+  outline: 2px solid var(--faq-accent);
   outline-offset: -2px;
 }
 
 .nexor-faq__marker {
-  flex: 0 0 4px;
-  width: 4px;
-  height: 24px;
-  border-radius: 999px;
-  background: transparent;
-  transition: background-color 0.2s ease;
+  position: relative;
+  z-index: 1;
+  left: -6px;
+  width: var(--faq-marker);
+  height: var(--faq-marker);
+  margin-top: 0.48em;
+  border: 1.5px solid var(--faq-accent);
+  border-radius: 50%;
+  background: var(--faq-paper);
+  box-shadow: 0 0 0 3px var(--faq-paper);
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .nexor-faq__trigger[aria-expanded='true'] .nexor-faq__marker {
-  background: var(--nx-accent);
+  background: var(--faq-accent);
+}
+
+.nexor-faq__index {
+  margin: 0;
+  color: #b3aaa4;
+  font-size: clamp(14px, 1.05vw, 16px);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+  transition: color 0.2s ease;
+}
+
+.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__index {
+  color: var(--faq-accent);
 }
 
 .nexor-faq__question {
-  flex: 1;
   min-width: 0;
   color: var(--nx-ink);
-  font-size: clamp(15px, 1.05vw, 17px);
+  font-size: clamp(16px, 1.25vw, 18px);
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.45;
   transition: color 0.2s ease;
 }
 
 .nexor-faq__trigger[aria-expanded='true'] .nexor-faq__question {
-  color: var(--nx-accent);
+  color: var(--faq-accent);
 }
 
 .nexor-faq__toggle {
   position: relative;
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #ece7df;
-  color: #656363;
-  transition:
-    background-color 0.2s ease,
-    color 0.2s ease;
+  width: var(--faq-toggle);
+  height: var(--faq-toggle);
+  margin-top: 0.12em;
+  color: var(--faq-accent);
 }
 
 .nexor-faq__toggle::before,
@@ -2921,20 +2954,19 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   content: '';
   position: absolute;
   inset: 50% auto auto 50%;
-  width: 10px;
-  height: 2px;
   background: currentColor;
   transform: translate(-50%, -50%);
 }
 
-.nexor-faq__toggle::after {
-  width: 2px;
-  height: 10px;
+.nexor-faq__toggle::before {
+  width: 22px;
+  height: 1.5px;
 }
 
-.nexor-faq__trigger[aria-expanded='true'] .nexor-faq__toggle {
-  background: var(--nx-accent);
-  color: var(--nx-white);
+.nexor-faq__toggle::after {
+  width: 1.5px;
+  height: 22px;
+  transition: transform 0.2s ease;
 }
 
 .nexor-faq__trigger[aria-expanded='true'] .nexor-faq__toggle::after {
@@ -2944,7 +2976,7 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 .nexor-faq__answer {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows 0.2s ease;
+  transition: grid-template-rows 0.28s ease;
 }
 
 .nexor-faq__trigger[aria-expanded='true'] + .nexor-faq__answer {
@@ -2958,28 +2990,23 @@ header > div a[aria-label*='ВКонтакте'] svg path {
 
 .nexor-faq__panel p {
   margin: 0;
-  padding: 0 20px 20px 40px;
-  color: #656363;
-  font-size: 15px;
+  padding: 0 calc(var(--faq-toggle) + var(--faq-gap)) 1.55rem calc(var(--faq-marker) + var(--faq-index) + var(--faq-gap) * 2);
+  color: #6d665f;
+  font-size: clamp(14px, 1.05vw, 16px);
   line-height: 1.7;
 }
 
-@media (min-width: 1024px) {
-  .nexor-faq__layout {
-    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-    align-items: start;
-    gap: 4rem;
-  }
-
-  .nexor-faq__header {
-    position: sticky;
-    top: 8rem;
-  }
-}
-
 @media (max-width: 767px) {
-  .nexor-faq__trigger {
-    padding: 17px;
+  .nexor-faq__header .heading-section {
+    margin-bottom: 1.1rem;
+  }
+
+  .nexor-faq__heading-mark::after {
+    width: 2.5rem;
+  }
+
+  .nexor-faq__index {
+    font-size: 13px;
   }
 
   .nexor-faq__question {
@@ -2987,15 +3014,15 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   }
 
   .nexor-faq__panel p {
-    padding: 0 17px 17px 37px;
+    padding-bottom: 1.25rem;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .nexor-faq__item,
   .nexor-faq__marker,
+  .nexor-faq__index,
   .nexor-faq__question,
-  .nexor-faq__toggle,
   .nexor-faq__toggle::after,
   .nexor-faq__answer {
     transition: none;

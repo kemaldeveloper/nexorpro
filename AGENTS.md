@@ -369,19 +369,19 @@ Chat ID также можно задать в **Настройки → Nexor** (
 **Не трогай бандл.** Не дописывай селекторы в `index-*.css`, не «подкручивай» утилиты, не заводи второй Tailwind. Hash в имени файла — часть релиза; переименовывать/дробить файл без задачи на пересборку нельзя.
 
 ```html
-<section id="faq" class="nexor-faq-section section-padding bg-background">
+<section id="faq" class="nexor-faq-section">
   <div class="container-nexor">
     <div class="nexor-faq__layout">
       <h2 class="heading-section">Частые вопросы о ремонте</h2>
-      <ul class="nexor-faq__list flex flex-col gap-3">
-        <li class="nexor-faq__item bg-card rounded-xl border border-border">…</li>
+      <ul class="nexor-faq__list">
+        <li class="nexor-faq__item">…</li>
       </ul>
     </div>
   </div>
 </section>
 ```
 
-Здесь `section-padding`, `bg-background`, `heading-section`, `flex`, `gap-3`, `bg-card`, `rounded-xl`, `border-border` — из бандла; `nexor-faq-*` в `nexor.css` — только layout колонок и состояние аккордеона.
+Здесь `heading-section` — из бандла; `nexor-faq-*` в `nexor.css` — одноколоночный аккордеон (таймлайн, нумерация, плюс/минус, состояние `[aria-expanded]`).
 
 ### CSS: отступы между селекторами
 

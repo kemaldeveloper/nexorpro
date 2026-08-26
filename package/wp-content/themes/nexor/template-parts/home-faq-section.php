@@ -50,12 +50,19 @@ $items = array_values(array_filter($items, static function ($item): bool {
 if (! $heading || ! $items) {
   return;
 }
+
+$heading_parts = preg_split('/\s+/u', $heading, 2);
+$heading_first = $heading_parts[0] ?? $heading;
+$heading_rest = $heading_parts[1] ?? '';
 ?>
 <section id="faq" class="nexor-faq-section" aria-labelledby="nexor-faq-heading">
   <div class="container-nexor">
     <div class="nexor-faq__layout nexor-reveal">
-      <div class="nexor-faq__header">
-        <h2 id="nexor-faq-heading" class="heading-section"><?php echo esc_html($heading); ?></h2>
+      <div class="nexor-faq__header flex flex-col gap-10">
+        <h2 id="nexor-faq-heading" class="title">
+          <?php echo esc_html($heading_first);
+          echo $heading_rest !== '' ? ' ' . esc_html($heading_rest) : ''; ?>
+        </h2>
         <?php if ($intro) : ?>
           <p class="nexor-faq__intro"><?php echo esc_html($intro); ?></p>
         <?php endif; ?>
@@ -73,9 +80,9 @@ if (! $heading || ! $items) {
               class="nexor-faq__trigger"
               id="<?php echo esc_attr($question_id); ?>"
               aria-expanded="<?php echo $open ? 'true' : 'false'; ?>"
-              aria-controls="<?php echo esc_attr($answer_id); ?>"
-            >
-              <span class="nexor-faq__marker" aria-hidden="true"></span>
+              aria-controls="<?php echo esc_attr($answer_id); ?>">
+              <div class="nexor-faq__marker" aria-hidden="true"></div>
+              <span class="nexor-faq__index" aria-hidden="true"><?php echo esc_html(sprintf('%02d', $index + 1)); ?></span>
               <span class="nexor-faq__question"><?php echo esc_html((string) $item['question']); ?></span>
               <span class="nexor-faq__toggle" aria-hidden="true"></span>
             </button>
@@ -83,8 +90,7 @@ if (! $heading || ! $items) {
               class="nexor-faq__answer"
               id="<?php echo esc_attr($answer_id); ?>"
               role="region"
-              aria-labelledby="<?php echo esc_attr($question_id); ?>"
-            >
+              aria-labelledby="<?php echo esc_attr($question_id); ?>">
               <div class="nexor-faq__panel">
                 <p><?php echo esc_html((string) $item['answer']); ?></p>
               </div>
