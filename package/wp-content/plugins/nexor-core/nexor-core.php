@@ -117,24 +117,47 @@ final class Nexor_Core
     return true;
   }
 
+  private static function valid_ip(string $raw): string
+  {
+    $ip = trim($raw);
+    if ('' === $ip) {
+      return '';
+    }
+    $valid = filter_var($ip, FILTER_VALIDATE_IP);
+    return false === $valid ? '' : $valid;
+  }
+
+  private static function is_private_ip(string $ip): bool
+  {
+    return false === filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+  }
+
+  /** Client IP for rate-limit and SmartCaptcha. Ignore spoofable forwarding headers from a public peer; behind Traefik/Docker use the rightmost public XFF hop (the address the proxy appended). */
   private static function client_ip(): string
   {
-    $candidates = array(
-      $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
-      $_SERVER['HTTP_X_REAL_IP'] ?? '',
-      $_SERVER['REMOTE_ADDR'] ?? '',
-    );
-    foreach ($candidates as $raw) {
-      $raw = sanitize_text_field(wp_unslash((string) $raw));
-      if ('' === $raw) {
-        continue;
+    $remote = self::valid_ip(sanitize_text_field(wp_unslash((string) ($_SERVER['REMOTE_ADDR'] ?? ''))));
+    if ($remote && ! self::is_private_ip($remote)) {
+      return $remote;
+    }
+
+    $xff = sanitize_text_field(wp_unslash((string) ($_SERVER['HTTP_X_FORWARDED_FOR'] ?? '')));
+    if ('' !== $xff) {
+      $hops = array_reverse(array_map('trim', explode(',', $xff)));
+      foreach ($hops as $hop) {
+        $ip = self::valid_ip($hop);
+        if ($ip && ! self::is_private_ip($ip)) {
+          return $ip;
+        }
       }
-      $ip = trim(explode(',', $raw)[0]);
-      if (filter_var($ip, FILTER_VALIDATE_IP)) {
-        return $ip;
+      foreach ($hops as $hop) {
+        $ip = self::valid_ip($hop);
+        if ($ip) {
+          return $ip;
+        }
       }
     }
-    return 'unknown';
+
+    return $remote ?: 'unknown';
   }
 
   private static function rate_limit(): true|WP_Error
@@ -182,7 +205,7 @@ final class Nexor_Core
     $response = wp_remote_post(
       'https://smartcaptcha.cloud.yandex.ru/validate',
       array(
-        'timeout' => 2,
+        'timeout' => 8,
         'body'    => array(
           'secret' => $secret,
           'token'  => $token,
@@ -191,13 +214,13 @@ final class Nexor_Core
       )
     );
     if (is_wp_error($response) || 200 !== wp_remote_retrieve_response_code($response)) {
-      error_log('Nexor SmartCaptcha validate unavailable, allowing request'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-      return true;
+      error_log('Nexor SmartCaptcha validate unavailable, rejecting request'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+      return new WP_Error('captcha', 'Не удалось отправить заявку. Попробуйте ещё раз.', array('status' => 503));
     }
     $body = json_decode((string) wp_remote_retrieve_body($response), true);
     if (! is_array($body)) {
-      error_log('Nexor SmartCaptcha invalid JSON, allowing request'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-      return true;
+      error_log('Nexor SmartCaptcha invalid JSON, rejecting request'); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+      return new WP_Error('captcha', 'Не удалось отправить заявку. Попробуйте ещё раз.', array('status' => 503));
     }
     if (($body['status'] ?? '') !== 'ok') {
       return new WP_Error('captcha', 'Не удалось отправить заявку. Попробуйте ещё раз.', array('status' => 400));
