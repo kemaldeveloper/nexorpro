@@ -12,12 +12,16 @@ if (! defined('ABSPATH')) {
 
 define('NEXOR_THEME_VERSION', '1.6.0');
 
-/** Contacts for the global PHP header (from Nexor settings with safe defaults). */
+/** Contacts for the global PHP header and footer (from Nexor settings with safe defaults). */
 function nexor_contact_settings(): array
 {
   $defaults = array(
     'phone_display' => '+7 (926) 083-23-24',
     'phone_link'    => '+79260832324',
+    'email'         => 'nexor.msk@mail.ru',
+    'hours'         => 'Ежедневно с 9:00 до 21:00',
+    'inn'           => '352803113189',
+    'ogrnip'        => '324350000048081',
     'telegram_url'  => 'https://t.me/nexor_msk',
     'vk_url'        => 'https://vk.com/club238015413',
   );
@@ -32,6 +36,13 @@ function nexor_contact_settings(): array
 function nexor_strip_embedded_header(string $content): string
 {
   $stripped = preg_replace('/<header\b[^>]*\bfixed\b[^>]*>.*?<\/header>/is', '', $content, 1);
+  return is_string($stripped) ? $stripped : $content;
+}
+
+/** Strip legacy per-page &lt;footer&gt; blocks from migrated HTML (now rendered in footer.php). */
+function nexor_strip_embedded_footer(string $content): string
+{
+  $stripped = preg_replace('/<footer\b[^>]*>.*?<\/footer>/is', '', $content);
   return is_string($stripped) ? $stripped : $content;
 }
 
@@ -473,6 +484,7 @@ function nexor_render_migrated_content(): void
 {
   $content = get_the_content();
   $content = nexor_strip_embedded_header($content);
+  $content = nexor_strip_embedded_footer($content);
   $replacements = apply_filters('nexor_content_replacements', array());
   if ($replacements) {
     $content = str_replace(array_keys($replacements), array_values($replacements), $content);

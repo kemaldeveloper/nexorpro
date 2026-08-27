@@ -17,7 +17,7 @@
 - CPT «Проекты» с галереями;
 - Schema.org, sitemap, robots.
 
-Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
+Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка, подвал и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
 
 ---
 
@@ -43,7 +43,7 @@
 |-----------|------|-----------------|
 | **Тема** | `package/wp-content/themes/nexor/` | Шаблоны, `template-parts/`, рендер мигрированного HTML, SEO в `<head>`, навигация, фронтенд JS/CSS, GSAP |
 | **Плагин** | `package/wp-content/plugins/nexor-core/` | Бизнес-логика: заявки, калькулятор (REST), проекты, админка, инъекция секций |
-| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, hero, услуги, проекты, калькулятор, FAQ и CTA замера главной сюда больше не входят |
+| **Контент** | `package/wp-content/themes/nexor/content/*.html` | Исходная HTML-разметка страниц (seed при активации). Шапка, подвал, hero, услуги, проекты, калькулятор, FAQ и CTA замера главной сюда больше не входят |
 | **Деплой** | `package/deploy/` | Docker Swarm stack, wp-config, Traefik, php.ini |
 | **Тесты** | `tests/` | PHP unit + Chromium CDP аудиты production/local |
 | **Инструменты** | `tools/` | Сборка контента из React dist, генерация project-data |
@@ -70,6 +70,7 @@ nexorpro/
 │       │   ├── content/      ← *.html + metadata.json (seed)
 │       │   ├── template-parts/
 │       │   │   ├── site-header.php
+│       │   │   ├── site-footer.php
 │       │   │   ├── home-hero-section.php
 │       │   │   ├── home-services-section.php
 │       │   │   ├── home-projects-section.php
@@ -146,14 +147,14 @@ docker compose exec wordpress wp --allow-root <command>
 Страницы рендерятся через `nexor_render_migrated_content()` в `functions.php`:
 
 1. Берётся `post_content` (HTML из редактора WP или seed);
-2. Вырезается встроенный `<header>` (`nexor_strip_embedded_header`) — шапка рендерится из `template-parts/site-header.php`;
+2. Вырезаются встроенные `<header>` и `<footer>` (`nexor_strip_embedded_header` / `nexor_strip_embedded_footer`) — шапка и подвал рендерятся из `template-parts/site-header.php` и `site-footer.php`;
 3. Применяется фильтр `nexor_content_replacements` (телефон, email, соцсети из настроек);
 4. Применяется фильтр `nexor_migrated_content` (инъекция секций из `Nexor_Enhancements`);
 5. Подставляются `{{THEME_URI}}` и `url(/assets/...)` → пути темы.
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, CTA «Запишитесь на профессиональный замер», `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов). Плагин **вырезает или заменяет** их при рендере — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, CTA «Запишитесь на профессиональный замер», `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов) и встроенные `<header>`/`<footer>`. Тема **вырезает** шапку и подвал при рендере; плагин **вырезает или заменяет** секции — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -162,6 +163,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Секция | Якорь | Template part | Рендер-хелпер темы | Данные |
 |--------|-------|---------------|--------------------|--------|
 | Шапка сайта | — | `site-header.php` | `header.php` → `get_template_part` | `nexor_contact_settings()`, `nexor_navigation_payload()` |
+| Подвал сайта | — | `site-footer.php` | `footer.php` → `get_template_part` | `nexor_contact_settings()`, меню `footer` / `nexor_navigation_payload()` |
 | Hero | — | `home-hero-section.php` | `nexor_render_home_hero_section()` | статичный оффер + `hero_promotion()` |
 | Основные услуги | `#main-services` | `home-services-section.php` | `nexor_render_home_services_section()` | option `nexor_home_services` |
 | Реализованные проекты | `#cases` | `home-projects-section.php` | `nexor_render_home_projects_section()` | option `nexor_home_projects` + CPT |
@@ -253,6 +255,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Задача | Где править |
 |--------|-------------|
 | Шапка сайта | `template-parts/site-header.php` + `nexor_contact_settings()` / меню WP |
+| Подвал сайта | `template-parts/site-footer.php` + `nexor_contact_settings()` / меню WP (`footer`) |
 | Hero главной | `template-parts/home-hero-section.php` + `hero_promotion()` |
 | Карточки услуг на главной | `template-parts/home-services-section.php` + option `nexor_home_services` |
 | Карточки проектов на главной | `template-parts/home-projects-section.php` + option `nexor_home_projects` |

@@ -31,7 +31,9 @@ for (const [route, name] of routes) {
     .replaceAll('https://nexor-remont.ru', 'https://nexorpro.ru')
     .replaceAll('src="/assets/', 'src="{{THEME_URI}}/assets/')
     .replaceAll('href="/assets/', 'href="{{THEME_URI}}/assets/')
-    .replaceAll('src="/favicon', 'src="{{THEME_URI}}/favicon');
+    .replaceAll('src="/favicon', 'src="{{THEME_URI}}/favicon')
+    .replace(/<header\b[^>]*\bfixed\b[^>]*>[\s\S]*?<\/header>/i, '')
+    .replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/i, '');
   fs.writeFileSync(path.join(out, `${name}.html`), body);
   metadata[name] = {
     route: `/${route}`.replace(/\/$/, '') || '/',
