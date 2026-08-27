@@ -3,7 +3,8 @@
 Документация для AI-агентов и разработчиков, работающих с репозиторием **nexorpro** — нативного WordPress-сайта [nexorpro.ru](https://nexorpro.ru) (компания Nexor, ремонт квартир и домов под ключ в Москве и МО).
 
 **Текущая версия релиза:** `1.6.0` (`VERSION`, `package.json`, `style.css`, `NEXOR_THEME_VERSION`).  
-**Схема enhancements:** `1.7.2` (`Nexor_Enhancements::VERSION`) — не путать с версией релиза.
+**Схема enhancements:** `1.7.2` (`Nexor_Enhancements::VERSION`) — не путать с версией релиза.  
+**WordPress:** `7.0.2` / PHP `8.3` — prod: `wordpress:7.0.2-php8.3-apache` в `package/deploy/stack.yml`; локально: `wordpress:php8.3-apache` в `docker-compose.yml`.
 
 ---
 
@@ -25,7 +26,7 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  WordPress (PHP 8.2+, WP 6.6+)                              │
+│  WordPress 7.0.2 (PHP 8.3)                                  │
 ├─────────────────────────────────────────────────────────────┤
 │  Тема nexor          │  Плагин nexor-core                   │
 │  ─────────────────   │  ─────────────────                   │
@@ -317,7 +318,7 @@ php tests/enhancements-unit.php
 
 ## Production-деплой
 
-- **Stack:** Docker Swarm (`package/deploy/stack.yml`)
+- **Stack:** Docker Swarm (`package/deploy/stack.yml`), образ `wordpress:7.0.2-php8.3-apache`
 - **Reverse proxy:** Traefik (`package/deploy/traefik-production.yml`) → `nexorpro.ru`
 - **Secrets:** `nexor_db_password`, `nexor_wp_secret`, `nexor_telegram_token`, `nexor_telegram_chat_id`, `nexor_smartcaptcha_server_key`
 - **Volumes:** тема и плагин read-only из `/opt/nexor-wordpress/current/`, uploads в shared volume
@@ -491,6 +492,7 @@ HTML — не только визуал. Разметка должна отра�
 - `NEXOR_THEME_VERSION` в `functions.php`
 - `Nexor_Enhancements::VERSION` в `class-nexor-enhancements.php` — это **схема options** (сейчас `1.7.2`), её можно поднимать отдельно от релиза темы
 - `Nexor_Core::VERSION` в `nexor-core.php` (может отставать — это версия плагина WP)
+- WordPress/PHP — не константы темы: prod пинит `wordpress:7.0.2-php8.3-apache`, локальный compose берёт плавающий `wordpress:php8.3-apache`
 
 ---
 
