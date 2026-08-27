@@ -18,11 +18,12 @@ if (! $heading) {
 
 $button_class = 'inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-terracotta-dark rounded-[10px] h-12 px-7 text-base font-medium';
 $phone_class = 'inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-all duration-200 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border hover:text-accent-foreground rounded-[10px] h-12 px-7 text-base border-white/25 text-white bg-white/5 hover:bg-white/10 hover:border-white/40 font-medium';
+$heading_html = str_replace('Nexor', '<span class="cta__brand">Nexor</span>', esc_html($heading));
 ?>
 <section class="cta py-16 md:py-32 flex flex-col">
   <div class="container-nexor flex-1 flex flex-col">
     <div class="max-w-3xl mx-auto text-center flex-1 flex flex-col items-center justify-center">
-      <h2 class="title text-white mb-10" style="line-height: 1.2;"><?php echo esc_html($heading); ?></h2>
+      <h2 class="title text-white mb-10"><?php echo $heading_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above, brand span is static. ?></h2>
       <?php if ($lead) : ?>
         <p class="text-lg text-white/70 mb-10 max-w-2xl mx-auto"><?php echo esc_html($lead); ?></p>
       <?php endif; ?>
