@@ -22,10 +22,10 @@ $heading_html = str_replace('Nexor', '<span class="cta__brand">Nexor</span>', es
 ?>
 <section class="cta py-16 md:py-32 flex flex-col">
   <div class="container-nexor flex-1 flex flex-col">
-    <div class="max-w-3xl mx-auto text-center flex-1 flex flex-col items-center justify-center">
-      <h2 class="title text-white mb-10"><?php echo $heading_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped above, brand span is static. ?></h2>
+    <div class="max-w-6xl mx-auto text-center flex-1 flex flex-col items-center justify-center">
+      <h2 class="cta__title text-white mb-10"><?php echo $heading_html; ?></h2>
       <?php if ($lead) : ?>
-        <p class="text-lg text-white/70 mb-10 max-w-2xl mx-auto"><?php echo esc_html($lead); ?></p>
+        <p class="text-xl text-white/70 mb-10 max-w-2xl mx-auto"><?php echo esc_html($lead); ?></p>
       <?php endif; ?>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
         <button type="button" class="<?php echo esc_attr($button_class); ?>">
@@ -41,7 +41,7 @@ $heading_html = str_replace('Nexor', '<span class="cta__brand">Nexor</span>', es
         <?php endif; ?>
       </div>
       <?php if ($note) : ?>
-        <p class="cta__note mt-12 text-base text-white/60"><?php echo esc_html($note); ?></p>
+        <p class="cta__note mt-12 text-lg text-white/60"><?php echo esc_html($note); ?></p>
       <?php endif; ?>
     </div>
   </div>

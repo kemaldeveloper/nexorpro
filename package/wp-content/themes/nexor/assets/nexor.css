@@ -5743,8 +5743,15 @@ body:has(.nexor-service-page) header > div {
   z-index: 1;
 }
 
-.cta .title {
+.cta__title {
+  font-size: clamp(44px, 5.9vw, 59px);
   line-height: 1.2;
+  font-weight: 500;
+  text-wrap: balance;
+  text-align: center;
+  color: #fff;
+  letter-spacing: -0.04em;
+  max-width: 1040px;
 }
 
 .cta__brand {
