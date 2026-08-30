@@ -357,6 +357,8 @@
       const trigger = e.target.closest('[data-nexor-context-type],[data-nexor-open-form]');
       if (!trigger) return;
       e.preventDefault();
+      const bonusModal = document.querySelector('.nexor-bonus-modal');
+      if (bonusModal && !bonusModal.hidden) bonusModal.hidden = true;
       const type = trigger.dataset.nexorContextType,
         id = trigger.dataset.nexorContextId;
       const key = type === 'additional' ? 'additional_service_id' : type === 'promotion' ? 'promotion_id' : type === 'price' ? 'price_row_id' : '';
