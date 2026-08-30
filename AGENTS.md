@@ -18,7 +18,7 @@
 - CPT «Проекты» с галереями;
 - Schema.org, sitemap, robots.
 
-Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка, подвал и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, бонусы, popup, этапы) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
+Контент страниц хранится как **HTML-разметка** (миграция из React). Шапка, подвал и часть секций главной вынесены в PHP `template-parts/`. Остальные динамические блоки (цены, popup, этапы) генерируются плагином и встраиваются в HTML через фильтр `nexor_migrated_content`.
 
 ---
 
@@ -79,6 +79,7 @@ nexorpro/
 │       │   │   ├── home-budget-section.php
 │       │   │   ├── home-about-section.php
 │       │   │   ├── home-faq-section.php
+│       │   │   ├── home-promotions-section.php
 │       │   │   └── home-cta-section.php
 │       │   ├── functions.php
 │       │   ├── header.php, footer.php, index.php, page.php, ...
@@ -171,6 +172,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
 | Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
 | Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
+| Бонусы для клиентов | `#promotions` | `home-promotions-section.php` | `nexor_render_home_promotions_section()` | option `nexor_promotions` |
 | О компании | `#about-company-nexor` | `home-about-section.php` | `nexor_render_home_about_section()` | статичный текст + метрики (340+, 8 лет, 40+, 98%) |
 | FAQ | `#faq` | `home-faq-section.php` | `nexor_render_home_faq_section()` | статичные вопросы и ответы |
 | CTA замера | — | `home-cta-section.php` | `nexor_render_home_cta_section()` | статичный текст + телефон из `nexor_contact_settings()` |
@@ -263,6 +265,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
+| Бонусы для клиентов (`#promotions`) | `template-parts/home-promotions-section.php` + option `nexor_promotions` |
 | Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
 | FAQ главной (`#faq`) | `template-parts/home-faq-section.php` |
 | CTA «Запишитесь на профессиональный замер» | `template-parts/home-cta-section.php` |
@@ -509,7 +512,7 @@ Editorial-секции вроде услуг/проектов/калькулят
 5. Если секция управляется из админки — option + sanitize + `render_*_admin()`
 6. Обновить `enhancements-unit.php` (в тестах заглушить рендер-хелпер) и при необходимости audit-скрипт
 
-Секции только из options (цены, этапы, бонусы) — по-прежнему HTML в `class-nexor-enhancements.php` без template-part.
+Секции только из options (цены, этапы) — по-прежнему HTML в `class-nexor-enhancements.php` без template-part.
 
 ### Изменить страницу услуги
 

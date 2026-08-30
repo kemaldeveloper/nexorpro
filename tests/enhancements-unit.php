@@ -285,6 +285,10 @@ function nexor_render_home_timeline_section(array $copy = array()): string
 
   return '<section id="repair-timeline" class="nexor-timeline-section nexor-reveal" data-timeline-active="new-build"><table class="nexor-timeline"></table></section>';
 }
+function nexor_render_home_promotions_section(array $copy = array()): string
+{
+  return '<section id="promotions" class="nexor-enhancement-section nexor-promotions-section"></section>';
+}
 function nexor_render_home_about_section(array $copy = array()): string
 {
   return '<section id="about-company-nexor" class="nexor-about-section"><h2>Nexor — не бригада</h2><ul class="nexor-about__stats"><li><span class="nexor-about__stat-value">340+</span><span class="nexor-about__stat-label">Объектов сдано</span></li></ul></section>';
@@ -355,6 +359,7 @@ assert_true($order === $sorted = call_user_func(function ($v) {
 assert_true(str_contains($html, 'class="nexor-home-hero"') && substr_count($html, '<section class="nexor-home-hero">') === 1, 'homepage hero is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-calculator"') && substr_count($html, 'id="calculator"') === 1, 'homepage calculator is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-budget-section"') && substr_count($html, 'id="budget-control"') === 1, 'homepage budget is rendered once from the template part');
+assert_true(str_contains($html, 'nexor-promotions-section') && substr_count($html, 'id="promotions"') === 1, 'homepage promotions is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-about-section"') && substr_count($html, 'id="about-company-nexor"') === 1, 'homepage about is rendered once from the template part');
 assert_true(str_contains($html, 'class="nexor-faq-section"') && substr_count($html, 'id="faq"') === 1, 'homepage FAQ is rendered once from the template part');
 assert_true(str_contains($html, 'py-24 md:py-32 bg-foreground') && substr_count($html, 'Запишитесь на профессиональный замер') === 1, 'homepage measurement CTA is rendered once from the template part');

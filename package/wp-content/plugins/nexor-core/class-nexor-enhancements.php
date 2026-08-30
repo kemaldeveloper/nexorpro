@@ -161,7 +161,7 @@ final class Nexor_Enhancements
       self::PRICES => array('enabled' => 0, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'Окончательная стоимость и сроки определяются после расчёта и осмотра объекта.', 'rows' => array()),
       self::VIDEO => array('enabled' => 0, 'heading' => 'Видеоматериал', 'text' => '', 'source_type' => 'url', 'attachment_id' => 0, 'url' => '', 'poster_id' => 0, 'transcript' => '', 'caption_attachment_id' => 0),
       self::ADDITIONAL => array('enabled' => 1, 'heading' => 'Дополнительная помощь, которая экономит ваше время', 'intro' => 'Не ограничиваемся только ремонтом. При необходимости поможем с подбором материалов, дизайном, мебелью и другими вопросами, чтобы вам не пришлось искать отдельных специалистов.', 'rows' => self::additional_seed()),
-      self::PROMOTIONS => array('enabled' => 1, 'heading' => 'Бонусы для клиентов', 'disclaimer' => 'Бонусы не суммируются и не комбинируются.', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'Временное предложение до 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => self::promotion_seed()),
+      self::PROMOTIONS => array('enabled' => 1, 'heading' => 'Бонусы, которые делают ремонт выгоднее', 'disclaimer' => 'Бонусы не суммируются и не комбинируются.', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'Только до 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => self::promotion_seed()),
       self::BUDGET => array('enabled' => 1, 'heading' => 'Как нам это удаётся?', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'metric_note' => 'За последние реализованные проекты', 'rows' => array(
         array('id' => 'detailed-measurement', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно.'),
         array('id' => 'fixed-contract', 'enabled' => 1, 'order' => 20, 'title' => 'Фиксируем стоимость и объём', 'description' => 'В договоре до старта работ — никаких устных договорённостей.'),
@@ -735,7 +735,7 @@ final class Nexor_Enhancements
     self::textarea_field(self::PROMOTIONS, 'disclaimer', 'Общее условие', $o);
     printf('<label><input type="checkbox" name="%s[featured_enabled]" value="1" %s> Показывать отдельный временный баннер</label>', esc_attr(self::PROMOTIONS), checked(!empty($o['featured_enabled']), true, false));
     self::text_field(self::PROMOTIONS, 'featured_id', 'ID бонуса для баннера', $o);
-    self::text_field(self::PROMOTIONS, 'featured_eyebrow', 'Надпись баннера', $o);
+    self::text_field(self::PROMOTIONS, 'featured_eyebrow', 'Надпись дедлайна', $o);
     self::text_field(self::PROMOTIONS, 'featured_deadline', 'Дедлайн ISO 8601', $o);
     self::render_rows(self::PROMOTIONS, (array)$o['rows'], array('title' => array('Название', 'text'), 'summary' => array('Кратко', 'textarea'), 'threshold_amount' => array('Порог, ₽', 'number'), 'condition_text' => array('Условия', 'textarea'), 'cta_label' => array('CTA', 'text'), 'legal_text' => array('Юридический текст', 'textarea')));
     echo '</section>';
@@ -1553,40 +1553,137 @@ final class Nexor_Enhancements
     $scene = esc_url(get_theme_file_uri('assets/remont-doma-142-m2-kp-pavlovy-ozera-kuhnya-gostinaya-DtSHqve7.webp'));
     return '<section id="additional-services" class="nexor-additional-section"><div class="container-nexor"><div class="nexor-section-heading nexor-reveal"><p>Сервис полного цикла</p><h2 class="heading-section">' . esc_html($o['heading']) . '</h2><div class="nexor-additional__intro">' . esc_html($o['intro']) . '</div></div><div class="nexor-service-desk nexor-reveal"><div class="nexor-service-desk__scene"><img src="' . $scene . '" alt="Готовый интерьер Nexor — интерактивная схема дополнительных услуг" loading="lazy" width="1200" height="800"><div class="nexor-service-desk__shade"></div>' . $hotspots . '<p class="nexor-service-desk__hint">Нажмите на метку, чтобы узнать подробнее</p></div><div class="nexor-service-desk__drawer" aria-live="polite">' . $panels . '</div></div></div></section>';
   }
-  private static function cards_section(string $option, string $id, string $type, array $required): string
+  private static function promotion_deadline_label(string $iso, string $fallback = ''): string
   {
-    $o = self::option($option);
-    $rows = self::enabled_rows($option, $required);
-    if (!$rows) return '';
-    $cards = '';
-    $banner = '';
-    $featured_id = $type === 'promotion' ? sanitize_key($o['featured_id'] ?? '') : '';
-    $featured = null;
-    if ($featured_id) foreach ($rows as $row) if ($featured_id === $row['id']) {
-      $featured = $row;
-      break;
+    $timestamp = strtotime($iso);
+    if (! $timestamp) {
+      return $fallback;
     }
-    if ($featured && !empty($o['featured_enabled'])) {
-      $deadline = strtotime((string)($o['featured_deadline'] ?? ''));
-      if ($deadline && $deadline > time()) {
-        $banner = sprintf('<article class="nexor-bonus-banner" data-nexor-deadline="%s"><div class="nexor-bonus-banner__content"><p class="nexor-bonus-banner__eyebrow">%s</p><h3>%s</h3><button type="button" data-nexor-context-type="promotion" data-nexor-context-id="%s">%s</button></div><div class="nexor-bonus-countdown" role="timer" aria-live="off"><p>До окончания предложения</p><div><span><strong data-days>00</strong><small>дней</small></span><span><strong data-hours>00</strong><small>часов</small></span><span><strong data-minutes>00</strong><small>минут</small></span><span><strong data-seconds>00</strong><small>секунд</small></span></div></div></article>', esc_attr($o['featured_deadline']), esc_html($o['featured_eyebrow']), esc_html($featured['title']), esc_attr($featured['id']), esc_html($featured['cta_label']));
+    $months = array(1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля', 5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа', 9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря');
+    $month = $months[(int) date('n', $timestamp)] ?? '';
+    if (! $month) {
+      return $fallback;
+    }
+    return 'Только до ' . (int) date('j', $timestamp) . ' ' . $month;
+  }
+
+  private static function promotion_card_image(string $id): string
+  {
+    $map = array(
+      'full-design-project-from-5000000' => 'design-materials-samples-BJsw3pIb.webp',
+      'visualization-gift-turnkey' => 'promo-visualization-bg.webp',
+      'air-conditioner-from-2000000' => 'promo-ac-bg.webp',
+      'tv-from-3000000' => 'promo-tv-bg.webp',
+    );
+    if (empty($map[$id]) || ! function_exists('get_theme_file_uri')) {
+      return '';
+    }
+    return get_theme_file_uri('assets/' . $map[$id]);
+  }
+
+  private static function promotion_card_payload(array $row): array
+  {
+    $id = (string) $row['id'];
+    $title = (string) $row['title'];
+    $variant = match ($id) {
+      'works-discount-5-five-days' => 'discount',
+      'visualization-gift-turnkey' => 'visualization',
+      'air-conditioner-from-2000000' => 'conditioner',
+      'tv-from-3000000' => 'tv',
+      default => 'plain',
+    };
+    $kicker = '';
+    $value = '';
+    $note = '';
+    if ('discount' === $variant && preg_match('/^(Скидка)\s+(\d+\s*%)\s+(.+)$/u', $title, $parts)) {
+      $kicker = $parts[1];
+      $value = preg_replace('/\s+/u', '', $parts[2]);
+      $note = $parts[3];
+    }
+    return array(
+      'id' => $id,
+      'title' => $title,
+      'variant' => $variant,
+      'kicker' => $kicker,
+      'value' => $value,
+      'note' => $note,
+      'threshold_amount' => absint($row['threshold_amount'] ?? 0),
+      'details' => trim(($row['condition_text'] ?? '') . ' ' . ($row['legal_text'] ?? '')),
+      'cta_label' => (string) $row['cta_label'],
+      'image' => self::promotion_card_image($id),
+    );
+  }
+
+  private static function promotions_section(): string
+  {
+    $o = self::option(self::PROMOTIONS);
+    $rows = self::enabled_rows(self::PROMOTIONS, array('title', 'condition_text', 'cta_label', 'legal_text'));
+    if (! $rows) {
+      return '';
+    }
+
+    if (! function_exists('nexor_render_home_promotions_section')) {
+      return '';
+    }
+
+    $featured_id = sanitize_key($o['featured_id'] ?? '');
+    $featured_row = null;
+    if ($featured_id) {
+      foreach ($rows as $row) {
+        if ($featured_id === $row['id']) {
+          $featured_row = $row;
+          break;
+        }
       }
     }
-    foreach ($rows as $row) {
-      if ($type === 'promotion' && $row['id'] === $featured_id) continue;
-      $title = $row['title'];
-      $description = $row['description'] ?? ($row['summary'] ?? '');
-      $amount = $type === 'promotion' && absint($row['threshold_amount'] ?? 0) ? '<p class="nexor-bonus-card__amount">От ' . esc_html(number_format_i18n(absint($row['threshold_amount']), 0)) . ' ₽</p>' : '';
-      $details = $type === 'promotion' ? trim(($row['condition_text'] ?? '') . ' ' . ($row['legal_text'] ?? '')) : '';
-      $highlight = $type === 'promotion' && $row['id'] === 'visualization-gift-turnkey';
-      $badge = $highlight ? '<p class="nexor-bonus-card__badge">Для каждого клиента</p>' : '';
-      $cta = $type === 'promotion'
-        ? sprintf('<button type="button" class="nexor-bonus-card__details-button" data-nexor-bonus-details data-bonus-id="%s" data-bonus-title="%s" data-bonus-details="%s" data-bonus-cta="%s">Подробнее <span aria-hidden="true">&#8599;</span></button>', esc_attr($row['id']), esc_attr($title), esc_attr($details), esc_attr($row['cta_label']))
-        : sprintf('<button type="button" data-nexor-context-type="%s" data-nexor-context-id="%s">%s</button>', esc_attr($type), esc_attr($row['id']), esc_html($row['cta_label']));
-      $cards .= sprintf('<article class="nexor-card nexor-bonus-card%s nexor-reveal">%s<span class="nexor-bonus-card__number" aria-hidden="true">%02d</span><h3>%s</h3>%s%s%s%s</article>', $highlight ? ' nexor-card--universal' : '', $badge, count(explode('</article>', $cards)), esc_html($title), trim($description) ? '<p>' . esc_html($description) . '</p>' : '', $amount, trim($details) ? '<p class="nexor-card__details">' . esc_html($details) . '</p>' : '', $cta);
+
+    $featured = array();
+    $deadline_label = '';
+    if ($featured_row && ! empty($o['featured_enabled'])) {
+      $deadline = strtotime((string) ($o['featured_deadline'] ?? ''));
+      if ($deadline && $deadline > time()) {
+        $threshold = absint($featured_row['threshold_amount'] ?? 0);
+        $deadline_label = self::promotion_deadline_label((string) ($o['featured_deadline'] ?? ''), (string) ($o['featured_eyebrow'] ?? ''));
+        $featured = array(
+          'id' => (string) ($featured_row['id'] ?? ''),
+          'title' => (string) ($featured_row['title'] ?? ''),
+          'cta_label' => 'Получить подарок',
+          'note' => $threshold ? 'при ремонте под ключ от ' . number_format_i18n($threshold, 0) . ' ₽' : (string) ($featured_row['condition_text'] ?? ''),
+          'image' => self::promotion_card_image((string) $featured_row['id']),
+        );
+      }
     }
-    $disclaimer = $type === 'promotion' && trim((string)($o['disclaimer'] ?? '')) ? '<p class="nexor-promotions__disclaimer">' . esc_html($o['disclaimer']) . '</p>' : '';
-    return '<section id="' . esc_attr($id) . '" class="nexor-enhancement-section nexor-promotions-section"><div class="container-nexor"><div class="nexor-section-heading nexor-reveal"><p>Преимущества договора</p><h2 class="heading-section">' . esc_html($o['heading']) . '</h2></div>' . $banner . $disclaimer . '<div class="nexor-card-grid nexor-bonus-mosaic">' . $cards . '</div></div></section>';
+
+    $cards = array();
+    foreach ($rows as $row) {
+      if ($featured && $row['id'] === $featured_id) {
+        continue;
+      }
+      $cards[] = self::promotion_card_payload($row);
+    }
+
+    $card_order = array(
+      'works-discount-5-five-days' => 1,
+      'visualization-gift-turnkey' => 2,
+      'air-conditioner-from-2000000' => 3,
+      'tv-from-3000000' => 4,
+    );
+    usort($cards, static function (array $a, array $b) use ($card_order): int {
+      return ($card_order[$a['id']] ?? 50) <=> ($card_order[$b['id']] ?? 50);
+    });
+
+    $heading = trim((string) ($o['heading'] ?? ''));
+    if (in_array($heading, array('', 'Бонусы для клиентов', 'Акции'), true)) {
+      $heading = 'Бонусы, которые делают ремонт выгоднее';
+    }
+
+    return nexor_render_home_promotions_section(array(
+      'heading' => $heading,
+      'disclaimer' => (string) ($o['disclaimer'] ?? ''),
+      'deadline_label' => $deadline_label,
+      'featured' => $featured,
+      'cards' => $cards,
+    ));
   }
   private static function service_details(int $post_id): string
   {
@@ -1684,7 +1781,7 @@ final class Nexor_Enhancements
           $content = self::insert_before($content, 'Запишитесь на профессиональный замер', $about);
         }
       }
-      $cluster = self::video_section() . self::additional_section() . self::cards_section(self::PROMOTIONS, 'promotions', 'promotion', array('title', 'condition_text', 'cta_label', 'legal_text'));
+      $cluster = self::video_section() . self::additional_section() . self::promotions_section();
       $content = self::insert_before($content, 'id="about-company-nexor"', $cluster);
       $faq = self::home_faq();
       if ('' !== $faq && str_contains($content, 'id="faq"')) {

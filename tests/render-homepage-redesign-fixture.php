@@ -91,6 +91,13 @@ function nexor_render_home_cta_section( array $copy = array() ): string {
 	include $theme_path . '/template-parts/home-cta-section.php';
 	return (string) ob_get_clean();
 }
+function nexor_render_home_promotions_section( array $copy = array() ): string {
+	global $theme_path;
+	$args = $copy;
+	ob_start();
+	include $theme_path . '/template-parts/home-promotions-section.php';
+	return (string) ob_get_clean();
+}
 
 $additional = array(
 	array( 'id'=>'material-selection', 'enabled'=>1, 'order'=>10, 'title'=>'Подбор материалов', 'subtitle'=>'Поможем выбрать материалы без переплат', 'description'=>'Подберем материалы с учетом вашего бюджета, подскажем, где действительно стоит вложиться, а где можно сэкономить без потери качества.', 'included_items'=>"Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.\nКонсультация по напольным покрытиям, дверям, сантехнике и другим материалам.\nПомощь с выбором проверенных производителей.", 'benefit'=>'Экономите время и избегаете лишних расходов.' ),

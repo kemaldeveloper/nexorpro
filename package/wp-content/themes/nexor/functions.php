@@ -219,6 +219,23 @@ function nexor_render_home_timeline_section(array $copy = array()): string
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_promotions_section(array $copy = array()): string
+{
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'promotions-section',
+    array(
+      'heading' => $copy['heading'] ?? 'Бонусы, которые делают ремонт выгоднее',
+      'disclaimer' => $copy['disclaimer'] ?? '',
+      'deadline_label' => $copy['deadline_label'] ?? '',
+      'featured' => $copy['featured'] ?? array(),
+      'cards' => $copy['cards'] ?? array(),
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 function nexor_render_home_about_section(array $copy = array()): string
 {
   ob_start();

@@ -65,8 +65,7 @@
 
   function requestCaptchaToken(form) {
     if (!captchaEnabled()) return Promise.resolve('');
-    const existing =
-      form.dataset.smartToken || (window.smartCaptcha && form._captchaId != null ? window.smartCaptcha.getResponse(form._captchaId) : '');
+    const existing = form.dataset.smartToken || (window.smartCaptcha && form._captchaId != null ? window.smartCaptcha.getResponse(form._captchaId) : '');
     if (existing) return Promise.resolve(existing);
     const execute = () =>
       new Promise((resolve, reject) => {
@@ -1124,8 +1123,7 @@
       const icons = {
         check:
           '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="m8.5 12.2 2.2 2.2 5.3-5.4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>',
-        gift:
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg>',
+        gift: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="3" y="8" width="18" height="4" rx="1"></rect><path d="M12 8v13"></path><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"></path><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"></path></svg>',
         calendar:
           '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="4" y="5.5" width="16" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.5"></rect><path d="M8 4v3M16 4v3M4 10h16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>',
         arrow:
