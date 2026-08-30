@@ -705,14 +705,23 @@
         .addEventListener('click', () => selectProject(thumbnails[(activeProject - 1 + thumbnails.length) % thumbnails.length], (activeProject - 1 + thumbnails.length) % thumbnails.length, false));
       controls.querySelector('[data-project-next]').addEventListener('click', () => selectProject(thumbnails[(activeProject + 1) % thumbnails.length], (activeProject + 1) % thumbnails.length, false));
     }
+    const mediaFilename = img =>
+      new URL(img.src, location.href).pathname
+        .split('/')
+        .pop()
+        .replace(/-\d+x\d+(?=\.[a-z0-9]+$)/i, '');
     const selectProject = (button, index, moveFocus = true) => {
       const thumbnail = button.querySelector('img'),
-        filename = new URL(thumbnail.currentSrc || thumbnail.src, location.href).pathname.split('/').pop(),
+        filename = mediaFilename(thumbnail),
         project = projects[projectAliases[filename] || filename];
       if (!project || !afterImage || !beforeImage) return;
       activeProject = index;
-      const base = new URL('.', thumbnail.currentSrc || thumbnail.src),
+      const base = new URL('.', thumbnail.src),
         beforeFilename = projectAliases[filename] ? filename.replace('-after.webp', '-before.webp') : project.before;
+      [afterImage, beforeImage].forEach(img => {
+        img.removeAttribute('srcset');
+        img.removeAttribute('sizes');
+      });
       afterImage.src = new URL(filename, base).href;
       beforeImage.src = new URL(beforeFilename, base).href;
       afterImage.alt = project.afterAlt;
