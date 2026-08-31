@@ -219,6 +219,13 @@ function nexor_render_home_timeline_section(array $copy = array()): string
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_nexor_system_section(array $copy = array()): string
+{
+  ob_start();
+  get_template_part('template-parts/home', 'nexor-system-section', $copy);
+  return (string) ob_get_clean();
+}
+
 function nexor_render_home_promotions_section(array $copy = array()): string
 {
   ob_start();

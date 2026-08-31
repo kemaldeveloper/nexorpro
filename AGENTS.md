@@ -77,6 +77,8 @@ nexorpro/
 │       │   │   ├── home-projects-section.php
 │       │   │   ├── home-calculator-section.php
 │       │   │   ├── home-budget-section.php
+│       │   │   ├── home-timeline-section.php
+│       │   │   ├── home-nexor-system-section.php
 │       │   │   ├── home-about-section.php
 │       │   │   ├── home-faq-section.php
 │       │   │   ├── home-promotions-section.php
@@ -156,7 +158,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 **Не ломайте** существующие CSS-классы и `id` якорей в HTML главной и страниц услуг — PHP ищет их для вставки блоков (`#calculator`, `#cases`, `#about-company-nexor`, `#faq`, «Ремонт без неприятных сюрпризов»).
 
-Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#about-company-nexor`, `#faq`, CTA «Запишитесь на профессиональный замер», `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов) и встроенные `<header>`/`<footer>`. Тема **вырезает** шапку и подвал при рендере; плагин **вырезает или заменяет** секции — править нужно template-part / enhancements, а не устаревший `post_content`.
+Уже сохранённый HTML в БД может содержать старые копии вынесенных секций (`#cases`, `#calculator`, `#budget-control`, `#nexor-system` / «Ремонт без неприятных сюрпризов», `#about-company-nexor`, `#faq`, CTA «Запишитесь на профессиональный замер», `.nexor-home-hero`, отдельную тёмную полосу «340+ объектов сдано», пятишаговый блок этапов) и встроенные `<header>`/`<footer>`. Тема **вырезает** шапку и подвал при рендере; плагин **вырезает или заменяет** секции — править нужно template-part / enhancements, а не устаревший `post_content`.
 
 ### 2. Template parts главной
 
@@ -172,6 +174,7 @@ docker compose exec wordpress wp --allow-root <command>
 | Калькулятор | `#calculator` | `home-calculator-section.php` | `nexor_render_home_calculator_section()` | статичный intro; квиз гидрирует `nexor.js` |
 | Смета | `#budget-control` | `home-budget-section.php` | `nexor_render_home_budget_section()` | option `nexor_budget_control` |
 | Сроки ремонта | `#repair-timeline` | `home-timeline-section.php` | `nexor_render_home_timeline_section()` | option `nexor_home_timeline` |
+| Система Nexor | `#nexor-system` | `home-nexor-system-section.php` | `nexor_render_home_nexor_system_section()` | статичная композиция вокруг чертежа планировки: заголовок, лид, 4 выноски-подписи, карточка-цитата; десктоп-раскладка на `cqw`, JS не требуется |
 | Бонусы для клиентов | `#promotions` | `home-promotions-section.php` | `nexor_render_home_promotions_section()` | option `nexor_promotions` |
 | О компании | `#about-company-nexor` | `home-about-section.php` | `nexor_render_home_about_section()` | статичный текст + метрики (340+, 8 лет, 40+, 98%) |
 | FAQ | `#faq` | `home-faq-section.php` | `nexor_render_home_faq_section()` | статичные вопросы и ответы |
@@ -194,7 +197,7 @@ docker compose exec wordpress wp --allow-root <command>
 
 Порядок секций на главной (якоря):
 
-`#main-services` → `#cases` → `#calculator` → `#budget-control` → `#prices` → `#repair-timeline` → система Nexor → `#stages` → `#before-after` → `#additional-services` → `#promotions` → `#about-company-nexor` → `#faq` → CTA замера.
+`#main-services` → `#cases` → `#calculator` → `#budget-control` → `#prices` → `#repair-timeline` → `#nexor-system` → `#stages` → `#before-after` → `#additional-services` → `#promotions` → `#about-company-nexor` → `#faq` → CTA замера.
 
 ### 4. REST API
 
@@ -265,6 +268,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Оболочка калькулятора (`#calculator`) | `template-parts/home-calculator-section.php` |
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
+| Секция «Система Nexor» (`#nexor-system`) | `template-parts/home-nexor-system-section.php` + вёрстка `.nexor-system-*` в `nexor.css` (десктоп-раскладка на `cqw`); фон-чертёж — `assets/nexor-system-floor-plan.jpg/.webp` |
 | Бонусы для клиентов (`#promotions`) | `template-parts/home-promotions-section.php` + option `nexor_promotions` |
 | Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
 | FAQ главной (`#faq`) | `template-parts/home-faq-section.php` |

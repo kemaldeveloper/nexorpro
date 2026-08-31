@@ -547,25 +547,6 @@
       ),
     );
   }
-  function setupSystemBlueprint() {
-    const section = document.querySelector('#nexor-system');
-    const grid = section?.querySelector('[class*="grid-cols-1"]');
-    const cards = grid ? [...grid.children] : [];
-    if (!section || cards.length < 4) return;
-    grid.classList.add('nexor-blueprint-grid');
-    cards.forEach((card, index) => {
-      card.classList.add('nexor-blueprint-point', 'nexor-reveal');
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-pressed', String(index === 0));
-      card.addEventListener('click', () => cards.forEach(item => item.setAttribute('aria-pressed', String(item === card))));
-      card.addEventListener('keydown', event => {
-        if (!['Enter', ' '].includes(event.key)) return;
-        event.preventDefault();
-        card.click();
-      });
-    });
-  }
   function setupBeforeAfter() {
     const heading = [...document.querySelectorAll('main h2')].find(el => el.textContent.includes('сравните результат до и после'));
     const section = heading?.closest('section');
@@ -1731,7 +1712,6 @@
     setupForms();
     setupFaq();
     setupTimeline();
-    setupSystemBlueprint();
     setupProjectFilters();
     setupCalculator();
     setupBeforeAfter();

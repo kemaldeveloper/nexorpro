@@ -1,7 +1,7 @@
 186874e65a2cebf981300e8fa707cbaec3f2f215f020dbb694ef6514a6d845e5  ./.gitignore
 cb1d9a30bc4ab8a397f39b7d786bb82aca0b816077eefc35d7c822017d75f6a5  ./VERSION
 a445a94e3102196df2d01fd8d765221b66fcdd5b7ba05856bdcc234f45d9d0ce  ./docs/ADMIN-GUIDE.md
-0724198664325dd111befba244da286203ce25d13918435c1b4a45c17806651d  ./docs/CHANGELOG.md
+2c0922144392def4d08a6069ce68aaf201b00ce8a6887055721028befcea12da  ./docs/CHANGELOG.md
 5783a136e22b0434921ae8b7e27dd1a13656f02bf3eab8aa9d0375b5da528b0f  ./package.json
 e9ef401fc34ae36f17c42b37c539f9fdb4ce68cbd7861967fdc05c2368588bd2  ./package/deploy/.htaccess
 97154c2a339dbd87283d6cd0eb178ff06fb662a0c2fb172558267d8eb65212ee  ./package/deploy/php.ini
@@ -113,7 +113,7 @@ d238866bc131e1568a0357b42db499eeac4424fd02ac89f2263b2f42c78bac01  ./package/impo
 6f98d79b5d114272cb59b7cb25dfebf26116cba1a7ad7d498370567a88e8159e  ./package/import-media/remont-kvartiry-94-m2-zhk-oktyabrskoe-pole-spalnya-master.webp
 d1542e06f820b3d63a46b765ba995cad770720699c492b9c31472a5a2a3906db  ./package/import-media/remont-kvartiry-94-m2-zhk-oktyabrskoe-pole-vannaya-komnata-dushevaya.webp
 dc0a8399c16e16492fa234881571cd64439a96263fbbdbb99a3dda2747ee759e  ./package/wp-content/plugins/nexor-core/asset-media-map.json
-624245db593ae488e51aec8bc0c8b125287d3d70558b13aac5ec5b74bb47b70c  ./package/wp-content/plugins/nexor-core/class-nexor-enhancements.php
+54786ca10357bad86352b41979969e9c211ead0d7fc5a17b1a3b323c4d03e589  ./package/wp-content/plugins/nexor-core/class-nexor-enhancements.php
 709f76c591f3faafe38c120366c69787cd027b1688b95ef69be8a53899296266  ./package/wp-content/plugins/nexor-core/nexor-core.php
 aa4fb86784375a2c121066bf4cf25ff35e65815d1e448c9434ad794d5cab66ea  ./package/wp-content/plugins/nexor-core/project-data.json
 49368a576e5813cadf42a05434c167f707b3a2f54d4dc3df38bc37b6f606909b  ./package/wp-content/themes/nexor/404.php
@@ -143,8 +143,8 @@ a187b077090fe8ae3fd2d7496aabbeae604819c718a282e0afc92df72b450766  ./package/wp-c
 0a7bb5ec7f77bb76039257b8a05d6735986aed6d1f81abbbaf087f95fda4b1d7  ./package/wp-content/themes/nexor/assets/hero-interior-DlyWYF5d.webp
 eee2e290f22eca85b2cb001698881691b7db6cf6f27fc613d1a9b09f9c22a8b1  ./package/wp-content/themes/nexor/assets/index-DfWs8OlI.css
 c2840c4168fd1717b7ebe5fd3be046ca7ef74c882a90851dd63e3b2bbb24b7a1  ./package/wp-content/themes/nexor/assets/nexor-remont-domov-kvartir-moskva-o-kompanii-CSmLdHUt.webp
-e30ee12350fd2b928a81571934523da5dbc7bdd0eb763d6b86383572e214f17a  ./package/wp-content/themes/nexor/assets/nexor.css
-6ec86e2585ad4d1509c7d415ac337f20e3e6a7a4a5fc50338e0edf6eede6fb33  ./package/wp-content/themes/nexor/assets/nexor.js
+0395f9911c778f75a26df9cad5db8eb9d044d64bfb8ed6296c3fb18a33e0024b  ./package/wp-content/themes/nexor/assets/nexor.css
+203baa67da83dad7ed1266cab26128cbc3bf0c38f6e1f4affbca0ceb9c7ec691  ./package/wp-content/themes/nexor/assets/nexor.js
 79cc578ac975cf8d3e59ffe8837310aa8e40dc632c1a8ce9d60eaa23291c6c2a  ./package/wp-content/themes/nexor/assets/novostroyka-cost-photo-CutkxtV4.webp
 52d46b0c93fb72305e1e3cafb9a45e53865fa36eff3c0ad9408a5ff1a97369f1  ./package/wp-content/themes/nexor/assets/novostroyka-errors-CBQc5w5p.webp
 1659aadddec4d47bf8bb3c2a3182219f464ef39167aeb46dc7dc4e6583fd2dd9  ./package/wp-content/themes/nexor/assets/novostroyka-expert-C2lj2lU3.webp
@@ -220,6 +220,8 @@ cea7bdc7d4d4d6ff7ff7bb2a318e820e4c6b5d6ef833d6f62e7e5bcb3ff5820a  ./package/wp-c
 d238866bc131e1568a0357b42db499eeac4424fd02ac89f2263b2f42c78bac01  ./package/wp-content/themes/nexor/assets/remont-kvartiry-94-m2-zhk-oktyabrskoe-pole-spalnya-detskaya-ili-kabinet-BTmJyCY2.webp
 6f98d79b5d114272cb59b7cb25dfebf26116cba1a7ad7d498370567a88e8159e  ./package/wp-content/themes/nexor/assets/remont-kvartiry-94-m2-zhk-oktyabrskoe-pole-spalnya-master-Y-0OA4P_.webp
 d1542e06f820b3d63a46b765ba995cad770720699c492b9c31472a5a2a3906db  ./package/wp-content/themes/nexor/assets/remont-kvartiry-94-m2-zhk-oktyabrskoe-pole-vannaya-komnata-dushevaya-DiPcM0Lk.webp
+a32b74d1c1e0653b0a2272d8ebfdd57ae08eb26cf8e2ca0dcec0c27667de3762  ./package/wp-content/themes/nexor/assets/nexor-system-floor-plan.webp
+5e8e75ffc41653b16159f3e60c677ff31220107113c0aa53fdf91c03a0c5eed7  ./package/wp-content/themes/nexor/assets/nexor-system-floor-plan.jpg
 25e1ea126694af6a4097ea0343a8beb8a416b39122507532fc3b5327d2985f8d  ./package/wp-content/themes/nexor/assets/stage-card-blueprint.webp
 48d515b65ce1a587be0c85b5cfde71793d71bf97f97f82adc7f83256a59baea8  ./package/wp-content/themes/nexor/content/capital-remont.html
 d0d577cbc1b44176c67696f963aec32a8844e43ebc511247fdab303c666b7aa2  ./package/wp-content/themes/nexor/content/consent.html
@@ -244,7 +246,7 @@ fecdc3905cfc2149d0a0996a78514302be39276871ea27e1ec464092073e7684  ./package/wp-c
 dd821076a9b03adc2173c93956226aea3d92482d7578fc4339c5d3a2e9c24586  ./package/wp-content/themes/nexor/favicon.ico
 6c8de373fe4467ea86cee215022556c865fb4b38ec051dc254b7864f9dca7f66  ./package/wp-content/themes/nexor/favicon.png
 327f567af84b3214af8a47e469fd3ff0a5dc9ff0da2fdbb01501ae8e31ff2018  ./package/wp-content/themes/nexor/footer.php
-efd72c39afe2795ea0f40e5c481d7997ce2f092f61f74c445b8fb54a3ce35eb7  ./package/wp-content/themes/nexor/functions.php
+4225fb802acaa3084cfd47c9c9a1ab51ddfadea5bdfdf9266af24204461c88b3  ./package/wp-content/themes/nexor/functions.php
 6b407223ba122daec9487616e09e2363bf3565b42a4850f9127904980b82b5d7  ./package/wp-content/themes/nexor/header.php
 cf6a71d34aee7a0f021f1493fe341c43cbb2ddb1e24030a41a56f3492903f725  ./package/wp-content/themes/nexor/index.php
 9f6b0f3bcf546d9cdc72818c95d6496668a3ee5575c99169b5b40d9b369ce374  ./package/wp-content/themes/nexor/og-image.jpg
@@ -258,7 +260,7 @@ da2a26ad8c72c4494546994111141000f1bc17ce41933c1e5213d80c65e9e4cb  ./package/wp-c
 0001c3ddd988286ca5be3876115dec33f55bec86ca5111700356a257ddc97767  ./tests/configure-homepage-options.php
 5dc53db8dabc6640ec243f53e611949e51dd48e8a728bfbfdf4e52e25b5ae4f6  ./tests/configure-timeline-option.php
 f3f85b11fe2212fce09164d79fd95fa925fefcecc8ecd4e6224e79c10340e6ab  ./tests/customer-production-evidence.mjs
-9498c84ceece54b3cce9461385af7ab902a440df1fcc5a198f58821da50dd0fd  ./tests/enhancements-unit.php
+77e595874514411edb17d47374fae30db2f9a52498b4c567a251035f65d3b46b  ./tests/enhancements-unit.php
 3f8576c6e5b3526be76fc2855b62c6eb50ddd14ad5ae3200c8e4c6582c2d9bd4  ./tests/enhancements-visual-fixture.html
 1850aacfe958ee8b182d9a3d61f3ab14dcd94728536d74f92c5402913c88007d  ./tests/exit-intent-production-audit.mjs
 25775d659bdffef01e1ab0863d0fdbd86dfeab49c57b2af0de921c7569ba44a5  ./tests/header-responsive-audit.mjs
@@ -276,7 +278,7 @@ c28d2fc8e2dddd821b2916a09d8b1104c6559200b79c6d71653adb0e0f748303  ./tests/produc
 47b64afd24dbb99fec53b69f8e3a3f6a46e448e20f96cc4b30c7b15ae3e503f8  ./tests/production-layout-audit.mjs
 868aec832103ab3ba948bf56c91485fa315582c0a6bb59ce19537ffd37258416  ./tests/production-release-evidence.mjs
 44b32112ed8035005e319c63d5c6da83a28451c35e71b10cfe21bd1b1fb5edfc  ./tests/production-section-screenshots.mjs
-94425f0f38236f920a68d77253d1953b0498e6f59b1e905560ad376c0a55f428  ./tests/render-homepage-redesign-fixture.php
+e8c6370a62e9f366d18a37056418c6aeb08c006c2ea12e1fa44e0226d3387989  ./tests/render-homepage-redesign-fixture.php
 33fc2fa4b0b6a23180337aae070d8f898c16d0c1304569e8eb9ca18b10810a89  ./tests/service-pages-production-audit.mjs
 6dcf04c38599be09179a0c9cb058cf52d95e61ee72aedba3061528dfca40723a  ./tools/build-content.mjs
 a0ccf21d17a8897b7f2c916bf300615e439fc72156a32497b81c0960307994de  ./tools/generate-project-data.mjs

@@ -1254,6 +1254,15 @@ final class Nexor_Enhancements
     ));
   }
 
+  private static function nexor_system_section(): string
+  {
+    if (! function_exists('nexor_render_home_nexor_system_section')) {
+      return '';
+    }
+
+    return nexor_render_home_nexor_system_section();
+  }
+
   private static function home_about(): string
   {
     if (! function_exists('nexor_render_home_about_section')) {
@@ -1332,6 +1341,24 @@ final class Nexor_Enhancements
       return substr($content, 0, $at) . $hero . substr($content, $at);
     }
     return $hero . $content;
+  }
+
+  private static function inject_nexor_system(string $content): string
+  {
+    $html = self::nexor_system_section();
+    if ('' === $html) {
+      return $content;
+    }
+    $at = strpos($content, 'Ремонт без неприятных сюрпризов');
+    if (false === $at) {
+      return self::insert_before($content, 'id="before-after"', $html);
+    }
+    $start = strrpos(substr($content, 0, $at), '<section');
+    $end = strpos($content, '</section>', $at);
+    if (false === $start || false === $end) {
+      return $content;
+    }
+    return substr($content, 0, $start) . $html . substr($content, $end + strlen('</section>'));
   }
 
   private static function prices_section(): string
@@ -1749,10 +1776,10 @@ final class Nexor_Enhancements
       $content = str_replace('<main class="pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
       $content = str_replace('<main class="nexor-home pt-[104px] md:pt-[124px]">', '<main class="nexor-home">', $content);
       $content = self::inject_home_hero($content);
-      $content = str_replace('<section class="py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', '<section id="nexor-system" class="nexor-system-section py-[120px] md:py-[140px]" style="background-color:#FAF8F6">', $content);
       // The migrated five-step block is replaced by the interactive stages dial below.
       $content = self::drop_section($content, '<section class="py-[120px] md:py-[140px] bg-card">');
       $content = str_replace('<section class="bg-background py-[120px] md:py-[160px]">', '<section id="before-after" class="nexor-before-after-section bg-background py-[120px] md:py-[160px]">', $content);
+      $content = self::inject_nexor_system($content);
       $content = self::insert_before($content, 'id="before-after"', self::stages_section());
       self::pull_section($content, 'cases');
       $calculator = self::home_calculator();
@@ -1760,7 +1787,7 @@ final class Nexor_Enhancements
         $replaced = preg_replace('/<section\b[^>]*\bid="calculator"[^>]*>.*?<\/section>/s', $calculator, $content, 1);
         $content = is_string($replaced) ? $replaced : $content;
       } elseif ('' !== $calculator) {
-        $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $calculator);
+        $content = self::insert_before($content, 'id="nexor-system"', $calculator);
       }
       $content = self::insert_before($content, 'id="calculator"', self::home_services() . self::home_projects());
       $budget = self::budget_section();
@@ -1769,7 +1796,7 @@ final class Nexor_Enhancements
         $content = is_string($replaced) ? $replaced : $content;
       }
       $before_surprise = ('' !== $budget && ! str_contains($content, 'id="budget-control"') ? $budget : '') . self::prices_section() . self::timeline_section();
-      $content = self::insert_before($content, 'Ремонт без неприятных сюрпризов', $before_surprise);
+      $content = self::insert_before($content, 'id="nexor-system"', $before_surprise);
       $content = self::drop_legacy_company_stats($content);
       $about = self::home_about();
       if ('' !== $about && str_contains($content, 'id="about-company-nexor"')) {
