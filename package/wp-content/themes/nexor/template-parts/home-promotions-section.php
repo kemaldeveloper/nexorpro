@@ -27,9 +27,6 @@ $cta_icon = $arrow_icon(16);
   <div class="container-nexor">
     <div class="nexor-promotions__layout">
       <div class="nexor-promotions__header nexor-reveal">
-        <?php if ($deadline_label) : ?>
-          <p class="nexor-promotions__deadline"><?php echo esc_html($deadline_label); ?></p>
-        <?php endif; ?>
         <h2 class="heading-section">
           <?php if ($heading_lead) : ?>
             <?php echo esc_html($heading_lead); ?> <em><?php echo esc_html($heading_last); ?></em>
@@ -48,7 +45,12 @@ $cta_icon = $arrow_icon(16);
           ?>
           <article class="nexor-promo-card nexor-promo-card--featured nexor-reveal">
             <div class="nexor-promo-card__copy flex-1">
-              <p class="nexor-promo-card__badge">Главный подарок</p>
+              <div class="nexor-promo-card__badges">
+                <?php if ($deadline_label) : ?>
+                  <p class="nexor-promo-card__badge nexor-promo-card__badge--deadline"><?php echo esc_html($deadline_label); ?></p>
+                <?php endif; ?>
+                <p class="nexor-promo-card__badge">Главный подарок</p>
+              </div>
               <h3><?php echo esc_html($featured_title); ?></h3>
               <?php if ($featured_note) : ?>
                 <p class="nexor-promo-card__note"><?php echo esc_html($featured_note); ?></p>

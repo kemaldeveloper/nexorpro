@@ -4167,19 +4167,6 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   color: var(--nx-accent);
 }
 
-.nexor-promotions__deadline {
-  display: inline-flex;
-  margin: 0 0 18px;
-  padding: 8px 14px;
-  border: 1px solid rgba(45, 39, 34, 0.18);
-  border-radius: 999px;
-  color: #5c534c;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .nexor-promotions__grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -4259,6 +4246,12 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   padding: clamp(22px, 2.6vw, 36px) clamp(22px, 2.6vw, 32px) 18px;
 }
 
+.nexor-promo-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .nexor-promo-card__badge {
   display: inline-flex;
   margin: 0;
@@ -4269,6 +4262,12 @@ header > div a[aria-label*='ВКонтакте'] svg path {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.nexor-promo-card__badge--deadline {
+  border-color: rgba(255, 255, 255, 0.55);
+  color: #fff;
+  font-weight: 600;
 }
 
 .nexor-promo-card--featured h3 {
