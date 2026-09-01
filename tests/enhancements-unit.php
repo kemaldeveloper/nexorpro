@@ -289,6 +289,22 @@ function nexor_render_home_nexor_system_section(array $copy = array()): string
 {
   return '<section id="nexor-system" class="nexor-system-section" aria-labelledby="nexor-system-title"><div class="nexor-system__layout nexor-reveal"><div class="nexor-system__intro"><p class="nexor-system__eyebrow">Наша система работы</p><h2 id="nexor-system-title" class="nexor-system__title">Вы всегда понимаете, что происходит на вашем объекте</h2></div><figure class="nexor-system__plan"></figure><ul class="nexor-system__points"><li class="nexor-system__point nexor-system__point--estimate"></li><li class="nexor-system__point nexor-system__point--control"></li><li class="nexor-system__point nexor-system__point--contract"></li><li class="nexor-system__point nexor-system__point--payment"></li></ul><figure class="nexor-system__quote"></figure></div></section>';
 }
+function nexor_render_home_additional_section(array $copy = array()): string
+{
+  $rows = $copy['rows'] ?? array();
+  if (! $rows) {
+    return '';
+  }
+  $panels = '';
+  foreach ($rows as $row) {
+    $items = '';
+    foreach ($row['items'] ?? array() as $item) {
+      $items .= '<li>' . esc_html($item) . '</li>';
+    }
+    $panels .= '<article class="nexor-service-panel"><h4>Что входит:</h4><ul>' . $items . '</ul><p class="nexor-service-panel__benefit">' . esc_html($row['benefit'] ?? '') . '</p></article>';
+  }
+  return '<section id="additional-services" class="nexor-additional-section">' . $panels . '</section>';
+}
 function nexor_render_home_promotions_section(array $copy = array()): string
 {
   return '<section id="promotions" class="nexor-enhancement-section nexor-promotions-section"></section>';
@@ -308,7 +324,7 @@ function nexor_render_home_cta_section(array $copy = array()): string
 $GLOBALS['options'] = array(
   'nexor_home_prices' => array('enabled' => 1, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'После осмотра.', 'rows' => array(array('id' => 'price-1', 'enabled' => 1, 'order' => 10, 'service_page_id' => 10, 'service_label' => 'Капитальный ремонт', 'price_label' => 'По расчёту', 'duration_label' => 'После осмотра', 'note' => '', 'cta_label' => 'Уточнить'))),
   'nexor_home_video' => array('enabled' => 0),
-  'nexor_additional_services' => array('enabled' => 1, 'heading' => 'Дополнительная помощь, которая экономит ваше время', 'intro' => 'Не ограничиваемся только ремонтом.', 'rows' => array(array('id' => 'extra-1', 'enabled' => 1, 'order' => 10, 'title' => 'Подбор материалов', 'subtitle' => 'Поможем выбрать материалы без переплат', 'description' => 'Подберем материалы с учетом вашего бюджета.', 'included_items' => "Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.", 'benefit' => 'Экономите время и избегаете лишних расходов.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''))),
+  'nexor_additional_services' => array('enabled' => 1, 'heading' => 'Управляем ремонтом от идеи до вашего комфорта', 'intro' => 'Не ограничиваемся только ремонтом.', 'rows' => array(array('id' => 'extra-1', 'enabled' => 1, 'order' => 10, 'title' => 'Подбор материалов', 'subtitle' => 'Поможем выбрать материалы без переплат', 'description' => 'Подберем материалы с учетом вашего бюджета.', 'included_items' => "Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.", 'benefit' => 'Экономите время и избегаете лишних расходов.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''))),
   'nexor_promotions' => array('enabled' => 1, 'heading' => 'Акции', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'До 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => array(array('id' => 'promo-1', 'enabled' => 1, 'order' => 10, 'title' => 'Акция', 'summary' => '', 'threshold_amount' => 0, 'condition_text' => 'Условие', 'cta_label' => 'Выбрать', 'legal_text' => 'Правила'), array('id' => 'full-design-project-from-5000000', 'enabled' => 1, 'order' => 50, 'title' => 'Дизайн-проект в подарок', 'summary' => '', 'threshold_amount' => 5000000, 'condition_text' => 'При ремонте под ключ', 'cta_label' => 'Получить дизайн-проект', 'legal_text' => 'До 31 августа'))),
   'nexor_budget_control' => array('enabled' => 1, 'heading' => 'Как нам это удаётся?', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'metric_note' => 'За последние реализованные проекты', 'rows' => array(array('id' => 'budget-1', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно.'))),
   'nexor_home_timeline' => array('enabled' => 1, 'heading' => 'Реальные сроки ремонта без обещаний «за 30 дней»', 'disclaimer' => 'Точные сроки фиксируем в договоре после замера, составления сметы и согласования объема работ. Они могут измениться только при изменении объема работ или по инициативе заказчика.', 'rows' => array(array('id' => 'timeline-1', 'enabled' => 1, 'order' => 10, 'area' => 'До 50 м²', 'new_build' => 'от 45 дней', 'capital' => '60–90 дней', 'designer' => '90–120 дней'))),

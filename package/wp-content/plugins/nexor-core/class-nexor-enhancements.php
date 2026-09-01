@@ -6,7 +6,13 @@ if (! defined('ABSPATH')) exit;
 
 final class Nexor_Enhancements
 {
-  private const VERSION = '1.7.2';
+  private const VERSION = '1.7.5';
+  /** Заголовок секции доп. услуг до схемы 1.7.3 — маркер "значение не меняли вручную". */
+  private const ADDITIONAL_LEGACY_HEADING = 'Дополнительная помощь, которая экономит ваше время';
+  /** Название пункта про мебель до схемы 1.7.4 — маркер "значение не меняли вручную". */
+  private const ADDITIONAL_LEGACY_FURNITURE_TITLE = 'Комплектация мебелью';
+  /** Название пункта про отчёты до схемы 1.7.5 — маркер "значение не меняли вручную". */
+  private const ADDITIONAL_LEGACY_PHOTO_TITLE = 'Фото- и видеоотчеты';
   private const VERSION_OPTION = 'nexor_enhancements_schema_version';
   private const PRICES = 'nexor_home_prices';
   private const VIDEO = 'nexor_home_video';
@@ -43,11 +49,24 @@ final class Nexor_Enhancements
   {
     return array(
       array('id' => 'material-selection', 'enabled' => 1, 'order' => 10, 'title' => 'Подбор материалов', 'subtitle' => 'Поможем выбрать материалы без переплат', 'description' => 'Подберем материалы с учетом вашего бюджета, подскажем, где действительно стоит вложиться, а где можно сэкономить без потери качества.', 'included_items' => "Подбор материалов по бюджету.\nПомощь с выбором цветов и фактур.\nКонсультация по напольным покрытиям, дверям, сантехнике и другим материалам.\nПомощь с выбором проверенных производителей.", 'benefit' => 'Экономите время и избегаете лишних расходов.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
-      array('id' => 'designer-consultation', 'enabled' => 1, 'order' => 20, 'title' => 'Консультация дизайнера', 'subtitle' => 'Поможем создать интерьер, в котором будет комфортно жить', 'description' => 'Если нужен взгляд профессионала, дизайнер поможет определиться со стилем, планировкой и цветовыми решениями.', 'included_items' => "Консультация по интерьеру.\nПодбор цветовых решений.\nПланировка и зонирование.\nРекомендации по освещению и эргономике.", 'benefit' => 'Получаете продуманные решения еще до начала ремонта.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
-      array('id' => 'interior-design-project', 'enabled' => 1, 'order' => 30, 'title' => 'Дизайн-проект', 'subtitle' => 'Разработаем дизайн-проект для вашего ремонта', 'description' => 'Если нужен полноценный проект, подготовим всю необходимую документацию для реализации без лишних вопросов на стройке.', 'included_items' => "Обмерный план.\nПланировочные решения.\nКомплект рабочих чертежей.\nРазвертки стен, пола и потолка.\n3D-визуализация будущего интерьера.", 'benefit' => 'Ремонт проходит без лишних переделок и неожиданностей.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
-      array('id' => 'furniture-completion', 'enabled' => 1, 'order' => 40, 'title' => 'Комплектация мебелью', 'subtitle' => 'Поможем подобрать мебель и двери', 'description' => 'Работаем с проверенными партнерами и помогаем подобрать мебель и двери по выгодным условиям.', 'included_items' => "Подбор кухни.\nКорпусная мебель.\nМежкомнатные и входные двери.\nКонтроль доставки и установки.\nПартнерские скидки.", 'benefit' => 'Не тратите время на поиск поставщиков и организацию доставки.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
-      array('id' => 'own-materials-warehouse', 'enabled' => 1, 'order' => 50, 'title' => 'Собственный склад материалов', 'subtitle' => 'Не придется искать материалы самостоятельно', 'description' => 'Используем проверенные материалы и организуем поставку прямо на объект.', 'included_items' => "Быстрая доставка материалов.\nПроверенные поставщики.\nЦены производителей.\nВыкуп неиспользованных материалов после окончания ремонта.", 'benefit' => 'Материалы приезжают вовремя, без задержек ремонта.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
-      array('id' => 'photo-video-reports', 'enabled' => 1, 'order' => 60, 'title' => 'Фото- и видеоотчеты', 'subtitle' => 'Всегда знаете, что происходит на объекте', 'description' => 'Даже если нет возможности приезжать на объект, вы сможете контролировать ход ремонта дистанционно.', 'included_items' => "Регулярные фотоотчеты.\nВидео выполненных этапов.\nИнформация о ходе работ.\nКонтроль каждого этапа ремонта.", 'benefit' => 'Контролируете ремонт из любой точки, даже если не можете приехать на объект.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+      array('id' => 'interior-design-project', 'enabled' => 1, 'order' => 20, 'title' => 'Дизайн-проект', 'subtitle' => 'Разработаем дизайн-проект для вашего ремонта', 'description' => 'Если нужен полноценный проект, подготовим всю необходимую документацию для реализации без лишних вопросов на стройке.', 'included_items' => "Обмерный план.\nПланировочные решения.\nКомплект рабочих чертежей.\nРазвертки стен, пола и потолка.\n3D-визуализация будущего интерьера.", 'benefit' => 'Ремонт проходит без лишних переделок и неожиданностей.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+      array('id' => 'own-materials-warehouse', 'enabled' => 1, 'order' => 30, 'title' => 'Собственный склад материалов', 'subtitle' => 'Не придется искать материалы самостоятельно', 'description' => 'Используем проверенные материалы и организуем поставку прямо на объект.', 'included_items' => "Быстрая доставка материалов.\nПроверенные поставщики.\nЦены производителей.\nВыкуп неиспользованных материалов после окончания ремонта.", 'benefit' => 'Материалы приезжают вовремя, без задержек ремонта.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+      array('id' => 'designer-consultation', 'enabled' => 1, 'order' => 40, 'title' => 'Консультация дизайнера', 'subtitle' => 'Поможем создать интерьер, в котором будет комфортно жить', 'description' => 'Если нужен взгляд профессионала, дизайнер поможет определиться со стилем, планировкой и цветовыми решениями.', 'included_items' => "Консультация по интерьеру.\nПодбор цветовых решений.\nПланировка и зонирование.\nРекомендации по освещению и эргономике.", 'benefit' => 'Получаете продуманные решения еще до начала ремонта.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+      array('id' => 'photo-video-reports', 'enabled' => 1, 'order' => 50, 'title' => 'Фото- и видеоотчёты', 'subtitle' => 'Всегда знаете, что происходит на объекте', 'description' => 'Даже если нет возможности приезжать на объект, вы сможете контролировать ход ремонта дистанционно.', 'included_items' => "Регулярные фотоотчеты.\nВидео выполненных этапов.\nИнформация о ходе работ.\nКонтроль каждого этапа ремонта.", 'benefit' => 'Контролируете ремонт из любой точки, даже если не можете приехать на объект.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+      array('id' => 'furniture-completion', 'enabled' => 1, 'order' => 60, 'title' => 'Комплектация мебелью и декором', 'subtitle' => 'Поможем подобрать мебель и двери', 'description' => 'Работаем с проверенными партнерами и помогаем подобрать мебель и двери по выгодным условиям.', 'included_items' => "Подбор кухни.\nКорпусная мебель.\nМежкомнатные и входные двери.\nКонтроль доставки и установки.\nПартнерские скидки.", 'benefit' => 'Не тратите время на поиск поставщиков и организацию доставки.', 'cta_label' => '', 'cta_mode' => 'form', 'cta_target' => ''),
+    );
+  }
+
+  /** Порядок доп. услуг до схемы 1.7.5 — маркер "значение не меняли вручную". */
+  private static function additional_legacy_orders(): array
+  {
+    return array(
+      'material-selection' => 10,
+      'designer-consultation' => 20,
+      'interior-design-project' => 30,
+      'furniture-completion' => 40,
+      'own-materials-warehouse' => 50,
+      'photo-video-reports' => 60,
     );
   }
 
@@ -160,7 +179,7 @@ final class Nexor_Enhancements
     return array(
       self::PRICES => array('enabled' => 0, 'heading' => 'Цены и сроки', 'intro' => '', 'disclaimer' => 'Окончательная стоимость и сроки определяются после расчёта и осмотра объекта.', 'rows' => array()),
       self::VIDEO => array('enabled' => 0, 'heading' => 'Видеоматериал', 'text' => '', 'source_type' => 'url', 'attachment_id' => 0, 'url' => '', 'poster_id' => 0, 'transcript' => '', 'caption_attachment_id' => 0),
-      self::ADDITIONAL => array('enabled' => 1, 'heading' => 'Дополнительная помощь, которая экономит ваше время', 'intro' => 'Не ограничиваемся только ремонтом. При необходимости поможем с подбором материалов, дизайном, мебелью и другими вопросами, чтобы вам не пришлось искать отдельных специалистов.', 'rows' => self::additional_seed()),
+      self::ADDITIONAL => array('enabled' => 1, 'heading' => 'Управляем ремонтом от идеи до вашего комфорта', 'intro' => 'Не ограничиваемся только ремонтом. При необходимости поможем с подбором материалов, дизайном, мебелью и другими вопросами, чтобы вам не пришлось искать отдельных специалистов.', 'rows' => self::additional_seed()),
       self::PROMOTIONS => array('enabled' => 1, 'heading' => 'Бонусы, которые делают ремонт выгоднее', 'disclaimer' => 'Бонусы не суммируются и не комбинируются.', 'featured_enabled' => 1, 'featured_id' => 'full-design-project-from-5000000', 'featured_eyebrow' => 'Только до 31 августа', 'featured_deadline' => '2026-08-31T23:59:59+03:00', 'rows' => self::promotion_seed()),
       self::BUDGET => array('enabled' => 1, 'heading' => 'Как нам это удаётся?', 'metric' => '0%', 'metric_label' => 'отклонение итоговой сметы от первоначальной', 'metric_note' => 'За последние реализованные проекты', 'rows' => array(
         array('id' => 'detailed-measurement', 'enabled' => 1, 'order' => 10, 'title' => 'Считаем детально', 'description' => 'Закладываем работы, которые другие забывают и потом выставляют дополнительно.'),
@@ -210,6 +229,29 @@ final class Nexor_Enhancements
         if (self::ADDITIONAL === $option) {
           if (empty($current['rows'])) $merged = $default;
           else $merged['rows'] = self::merge_additional_rows((array) $current['rows']);
+          // 1.7.3: обновлённый заголовок секции. Перезаписываем только пока в базе
+          // лежит прежний дефолт, чтобы правки редактора не потерялись.
+          if (self::ADDITIONAL_LEGACY_HEADING === trim((string) ($current['heading'] ?? ''))) $merged['heading'] = $default['heading'];
+
+          // 1.7.4: пункт про мебель теперь включает декор. Переименовываем по той
+          // же логике — только пока в базе лежит прежнее дефолтное название.
+          $seed_titles = array_column($default['rows'], 'title', 'id');
+          $seed_orders = array_column($default['rows'], 'order', 'id');
+          $legacy_orders = self::additional_legacy_orders();
+          foreach ($merged['rows'] as $index => $row) {
+            $id = (string) ($row['id'] ?? '');
+            if ('furniture-completion' === $id && self::ADDITIONAL_LEGACY_FURNITURE_TITLE === trim((string) ($row['title'] ?? ''))) {
+              $merged['rows'][$index]['title'] = $seed_titles['furniture-completion'];
+            }
+            if ('photo-video-reports' === $id && self::ADDITIONAL_LEGACY_PHOTO_TITLE === trim((string) ($row['title'] ?? ''))) {
+              $merged['rows'][$index]['title'] = $seed_titles['photo-video-reports'];
+            }
+            // 1.7.5: порядок и нумерация как на референсе — только пока order
+            // совпадает с прежним дефолтом для этой строки.
+            if (isset($legacy_orders[$id], $seed_orders[$id]) && intval($row['order'] ?? 0) === $legacy_orders[$id]) {
+              $merged['rows'][$index]['order'] = $seed_orders[$id];
+            }
+          }
         }
 
         if (self::STAGES === $option) {
@@ -1549,36 +1591,28 @@ final class Nexor_Enhancements
     $o = self::option(self::ADDITIONAL);
     $rows = self::enabled_rows(self::ADDITIONAL, array('title', 'subtitle', 'description', 'included_items', 'benefit'));
     if (! $rows || ! trim((string) $o['heading']) || ! trim((string) $o['intro'])) return '';
-    $hotspots = '';
-    $panels = '';
-    foreach ($rows as $i => $row) {
-      $items = '';
-      foreach (array_filter(array_map('trim', preg_split('/\R/u', (string) $row['included_items']))) as $item) {
-        $items .= '<li>' . esc_html($item) . '</li>';
-      }
-      $hotspots .= sprintf(
-        '<button type="button" class="nexor-service-hotspot" style="--hotspot-index:%1$d" data-service-panel="nexor-service-panel-%2$s" aria-controls="nexor-service-panel-%2$s" aria-expanded="%3$s"><span>%4$02d</span><strong>%5$s</strong></button>',
-        $i,
-        esc_attr($row['id']),
-        0 === $i ? 'true' : 'false',
-        $i + 1,
-        esc_html($row['title'])
-      );
-      $panels .= sprintf(
-        '<article id="nexor-service-panel-%1$s" class="nexor-service-panel%2$s" data-service-index="%3$d"><button type="button" class="nexor-service-panel__close" aria-label="Закрыть описание">&#215;</button><span class="nexor-service-panel__number">%4$02d</span><h3>%5$s</h3><p class="nexor-service-panel__subtitle">%6$s</p><p class="nexor-service-panel__description">%7$s</p><h4>Что входит:</h4><ul>%8$s</ul><p class="nexor-service-panel__benefit">%9$s</p><button type="button" class="nexor-service-panel__cta" data-nexor-context-type="additional" data-nexor-context-id="%1$s">Обсудить задачу</button></article>',
-        esc_attr($row['id']),
-        0 === $i ? ' is-active' : '',
-        $i,
-        $i + 1,
-        esc_html($row['title']),
-        esc_html($row['subtitle']),
-        esc_html($row['description']),
-        $items,
-        esc_html($row['benefit'])
+
+    if (! function_exists('nexor_render_home_additional_section')) {
+      return '';
+    }
+
+    $cards = array();
+    foreach ($rows as $row) {
+      $cards[] = array(
+        'id' => (string) $row['id'],
+        'title' => (string) $row['title'],
+        'subtitle' => (string) $row['subtitle'],
+        'description' => (string) $row['description'],
+        'benefit' => (string) $row['benefit'],
+        'items' => array_filter(array_map('trim', preg_split('/\R/u', (string) $row['included_items']))),
       );
     }
-    $scene = esc_url(get_theme_file_uri('assets/remont-doma-142-m2-kp-pavlovy-ozera-kuhnya-gostinaya-DtSHqve7.webp'));
-    return '<section id="additional-services" class="nexor-additional-section"><div class="container-nexor"><div class="nexor-section-heading nexor-reveal"><p>Сервис полного цикла</p><h2 class="heading-section">' . esc_html($o['heading']) . '</h2><div class="nexor-additional__intro">' . esc_html($o['intro']) . '</div></div><div class="nexor-service-desk nexor-reveal"><div class="nexor-service-desk__scene"><img src="' . $scene . '" alt="Готовый интерьер Nexor — интерактивная схема дополнительных услуг" loading="lazy" width="1200" height="800"><div class="nexor-service-desk__shade"></div>' . $hotspots . '<p class="nexor-service-desk__hint">Нажмите на метку, чтобы узнать подробнее</p></div><div class="nexor-service-desk__drawer" aria-live="polite">' . $panels . '</div></div></div></section>';
+
+    return nexor_render_home_additional_section(array(
+      'heading' => (string) $o['heading'],
+      'intro' => (string) $o['intro'],
+      'rows' => $cards,
+    ));
   }
   private static function promotion_deadline_label(string $iso, string $fallback = ''): string
   {

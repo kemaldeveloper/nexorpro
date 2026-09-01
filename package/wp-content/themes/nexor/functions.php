@@ -226,6 +226,22 @@ function nexor_render_home_nexor_system_section(array $copy = array()): string
   return (string) ob_get_clean();
 }
 
+function nexor_render_home_additional_section(array $copy = array()): string
+{
+  ob_start();
+  get_template_part(
+    'template-parts/home',
+    'additional-section',
+    array(
+      'eyebrow' => $copy['eyebrow'] ?? 'Сервис полного цикла',
+      'heading' => $copy['heading'] ?? '',
+      'intro' => $copy['intro'] ?? '',
+      'rows' => $copy['rows'] ?? array(),
+    )
+  );
+  return (string) ob_get_clean();
+}
+
 function nexor_render_home_promotions_section(array $copy = array()): string
 {
   ob_start();

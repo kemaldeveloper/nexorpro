@@ -3,7 +3,7 @@
 Документация для AI-агентов и разработчиков, работающих с репозиторием **nexorpro** — нативного WordPress-сайта [nexorpro.ru](https://nexorpro.ru) (компания Nexor, ремонт квартир и домов под ключ в Москве и МО).
 
 **Текущая версия релиза:** `1.6.0` (`VERSION`, `package.json`, `style.css`, `NEXOR_THEME_VERSION`).  
-**Схема enhancements:** `1.7.2` (`Nexor_Enhancements::VERSION`) — не путать с версией релиза.  
+**Схема enhancements:** `1.7.3` (`Nexor_Enhancements::VERSION`) — не путать с версией релиза.  
 **WordPress:** `7.0.2` / PHP `8.3` — prod: `wordpress:7.0.2-php8.3-apache` в `package/deploy/stack.yml`; локально: `wordpress:php8.3-apache` в `docker-compose.yml`.
 
 ---
@@ -269,6 +269,7 @@ Vanilla JS (~1400 строк), без bundler. GSAP подключается о�
 | Секция «Как мы держим смету» (`#budget-control`) | `template-parts/home-budget-section.php` + option `nexor_budget_control` |
 | Секция сроков (`#repair-timeline`) | `template-parts/home-timeline-section.php` + option `nexor_home_timeline` |
 | Секция «Система Nexor» (`#nexor-system`) | `template-parts/home-nexor-system-section.php` + вёрстка `.nexor-system-*` в `nexor.css` (десктоп-раскладка на `cqw`); фон-чертёж — `assets/nexor-system-floor-plan.jpg/.webp` |
+| Дополнительные услуги (`#additional-services`) | `template-parts/home-additional-section.php` + option `nexor_additional_services`; интерактив хотспотов/панелей — `nexor.js` |
 | Бонусы для клиентов (`#promotions`) | `template-parts/home-promotions-section.php` + option `nexor_promotions` |
 | Секция «О компании» (`#about-company-nexor`) | `template-parts/home-about-section.php` |
 | FAQ главной (`#faq`) | `template-parts/home-faq-section.php` |
@@ -497,7 +498,7 @@ HTML — не только визуал. Разметка должна отра�
 - `package.json` → `version`
 - `style.css` → `Version`
 - `NEXOR_THEME_VERSION` в `functions.php`
-- `Nexor_Enhancements::VERSION` в `class-nexor-enhancements.php` — это **схема options** (сейчас `1.7.2`), её можно поднимать отдельно от релиза темы
+- `Nexor_Enhancements::VERSION` в `class-nexor-enhancements.php` — это **схема options** (сейчас `1.7.3`), её можно поднимать отдельно от релиза темы
 - `Nexor_Core::VERSION` в `nexor-core.php` (может отставать — это версия плагина WP)
 - WordPress/PHP — не константы темы: prod пинит `wordpress:7.0.2-php8.3-apache`, локальный compose берёт плавающий `wordpress:php8.3-apache`
 

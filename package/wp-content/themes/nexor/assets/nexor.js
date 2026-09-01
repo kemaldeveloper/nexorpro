@@ -359,6 +359,8 @@
       e.preventDefault();
       const bonusModal = document.querySelector('.nexor-bonus-modal');
       if (bonusModal && !bonusModal.hidden) bonusModal.hidden = true;
+      const serviceModal = document.querySelector('.nexor-service-modal');
+      if (serviceModal && !serviceModal.hidden) serviceModal.hidden = true;
       const type = trigger.dataset.nexorContextType,
         id = trigger.dataset.nexorContextId;
       const key = type === 'additional' ? 'additional_service_id' : type === 'promotion' ? 'promotion_id' : type === 'price' ? 'price_row_id' : '';
@@ -748,7 +750,7 @@
     box.innerHTML = '<button aria-label="Закрыть">×</button><img alt="">';
     document.body.append(box);
     document.querySelectorAll('main img').forEach(img => {
-      if (img.closest('#calculator,.nexor-before-after-section,.nexor-service-desk,.nexor-stage-card')) return;
+      if (img.closest('#calculator,.nexor-before-after-section,.nexor-stage-card')) return;
       img.style.cursor = 'zoom-in';
       img.addEventListener('click', () => {
         box.querySelector('img').src = img.currentSrc || img.src;
@@ -822,40 +824,76 @@
   }
 
   function setupAdditionalServices() {
-    document.querySelectorAll('.nexor-service-desk').forEach(desk => {
-      const hotspots = [...desk.querySelectorAll('[data-service-panel]')],
-        panels = [...desk.querySelectorAll('.nexor-service-panel')],
-        drawer = desk.querySelector('.nexor-service-desk__drawer');
-      if (!hotspots.length || !drawer) return;
-      const open = id => {
-        hotspots.forEach(button => button.setAttribute('aria-expanded', String(button.dataset.servicePanel === id)));
-        panels.forEach(panel => panel.classList.toggle('is-active', panel.id === id));
-        drawer.classList.add('is-open');
+    document.querySelectorAll('.nexor-additional-scene').forEach(scene => {
+      const pins = [...scene.querySelectorAll('[data-service-panel]')];
+      if (!pins.length) return;
+
+      let modal = document.querySelector('.nexor-service-modal');
+      if (!modal) {
+        modal = document.createElement('div');
+        modal.className = 'nexor-service-modal';
+        modal.hidden = true;
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-labelledby', 'nexor-service-modal-title');
+        modal.innerHTML =
+          '<div class="nexor-service-modal__panel"><button type="button" class="nexor-service-modal__close" aria-label="Закрыть">&#215;</button><div class="nexor-service-modal__body"></div></div>';
+        document.body.append(modal);
+      }
+      const body = modal.querySelector('.nexor-service-modal__body');
+      let lastFocus = null;
+      const close = () => {
+        if (modal.hidden) return;
+        modal.hidden = true;
+        lock(false);
+        lastFocus?.focus?.();
       };
-      hotspots.forEach(button => {
-        button.addEventListener('click', () => open(button.dataset.servicePanel));
+      const open = trigger => {
+        const template = document.getElementById(trigger.dataset.servicePanel);
+        if (!template) return;
+        lastFocus = trigger;
+        body.replaceChildren(template.content.cloneNode(true));
+        const title = body.querySelector('.nexor-service-modal__title');
+        if (title) title.id = 'nexor-service-modal-title';
+        modal.hidden = false;
+        lock(true);
+        modal.querySelector('.nexor-service-modal__close').focus();
+      };
+      pins.forEach((button, index) => {
+        button.addEventListener('click', () => open(button));
         button.addEventListener('keydown', event => {
           if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
           event.preventDefault();
-          const index = hotspots.indexOf(button),
-            next = event.key === 'Home' ? 0 : event.key === 'End' ? hotspots.length - 1 : (index + (['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : -1) + hotspots.length) % hotspots.length;
-          hotspots[next].focus();
-          open(hotspots[next].dataset.servicePanel);
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? pins.length - 1 : (index + (['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : -1) + pins.length) % pins.length;
+          pins[next].focus();
         });
       });
-      panels.forEach(panel =>
-        panel.querySelector('.nexor-service-panel__close')?.addEventListener('click', () => {
-          drawer.classList.remove('is-open');
-          hotspots.forEach(button => button.setAttribute('aria-expanded', 'false'));
-        }),
-      );
-      open(hotspots[0].dataset.servicePanel);
-      if (matchMedia('(max-width: 767px)').matches) drawer.classList.remove('is-open');
+      modal.addEventListener('click', event => {
+        if (event.target === modal || event.target.closest('.nexor-service-modal__close')) close();
+      });
+      modal.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          close();
+        }
+        if (event.key === 'Tab') {
+          const focusable = [...modal.querySelectorAll('button:not([disabled]),a[href]')],
+            first = focusable[0],
+            last = focusable.at(-1);
+          if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+          } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+          }
+        }
+      });
       try {
         if (!localStorage.getItem('nexor_service_desk_seen_v1')) {
-          desk.classList.add('is-guided');
+          scene.classList.add('is-guided');
           localStorage.setItem('nexor_service_desk_seen_v1', '1');
-          setTimeout(() => desk.classList.remove('is-guided'), 5500);
+          setTimeout(() => scene.classList.remove('is-guided'), 5500);
         }
       } catch {}
     });
